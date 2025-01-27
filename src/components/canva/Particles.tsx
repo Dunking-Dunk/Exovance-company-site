@@ -6,9 +6,9 @@ import { useMemo, useRef, useEffect } from "react";
 import * as THREE from "three";
 import { scroll } from 'motion'
 
-import SimulationMaterial from './shaders/SimulationMaterial';
-import vertexShader from "!!raw-loader!./shaders/vertexShader.glsl";
-import fragmentShader from "!!raw-loader!./shaders/fragmentShader.glsl";
+import SimulationMaterial from './shaders/particles/simulationMaterial';
+import vertexShader from "!!raw-loader!./shaders/particles/vertexShader.glsl";
+import fragmentShader from "!!raw-loader!./shaders/particles/fragmentShader.glsl";
 
 extend({ SimulationMaterial: SimulationMaterial });
 

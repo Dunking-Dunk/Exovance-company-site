@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import React, { useRef } from 'react'
+import Header from './Header'
 
 const Scene = dynamic(() => import('@/components/canva/Scene'), { ssr: false })
 
@@ -24,6 +25,7 @@ const Layout = ({ children }: Props) => {
             className='bg-customBlack'
             id="scroller"
         >
+            <Header />
             {children}
             <Scene
                 style={{
