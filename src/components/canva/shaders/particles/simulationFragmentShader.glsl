@@ -211,7 +211,10 @@ float snoise(vec3 v){
                 // Add curl noise for organic movement
                 
                 // Spherical coordinates
-                float radius=10.*uScroll;
+                float radius;
+             
+                radius=10.*min(uScroll, 1.);
+                
                 float theta=atan(pos.y,pos.x)+uTime*.2;
                 float phi=acos(pos.z/radius)+sin(uTime*.1)*.2;
                 

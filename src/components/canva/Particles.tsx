@@ -13,7 +13,7 @@ import fragmentShader from "!!raw-loader!./shaders/particles/fragmentShader.glsl
 extend({ SimulationMaterial: SimulationMaterial });
 
 export const Particles = () => {
-    const size = 128;
+    const size = 512;
 
     // This reference gives us direct access to our points
     const points = useRef();
@@ -102,7 +102,7 @@ export const Particles = () => {
         );
 
         // Smooth scroll progress
-        const dt = state.clock.getElapsedTime();
+        const dt = 10;
         const dampedScroll = damp(simulationMaterialRef.current.uniforms.uScroll.value, scrollProgress.current, 0.001, dt);
 
         simulationMaterialRef.current.uniforms.uScroll.value = dampedScroll;
