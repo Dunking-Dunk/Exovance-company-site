@@ -9,7 +9,7 @@ const Header = (props: Props) => {
     return (
         <div className='fixed z-50 top-0 flex justify-between w-full px-52 py-8'>
             <div>
-                <CompanyName className='text-2xl'/>
+                <CompanyName className='text-2xl' />
             </div>
             <ul className='flex gap-x-32'>
                 <FollowerPointerCard><Link href={'/'} className='cursor-none'>About</Link></FollowerPointerCard>

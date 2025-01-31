@@ -85,7 +85,7 @@ export const Particles = () => {
 
     scroll(progress => {
         scrollProgress.current = progress + 0.1;
-    }, { container: document.getElementById('scroller') })
+    })
 
     useFrame((state) => {
         const { gl, clock } = state;
@@ -102,7 +102,7 @@ export const Particles = () => {
         );
 
         // Smooth scroll progress
-        const dt = 10;
+        const dt = 4;
         const dampedScroll = damp(simulationMaterialRef.current.uniforms.uScroll.value, scrollProgress.current, 0.001, dt);
 
         simulationMaterialRef.current.uniforms.uScroll.value = dampedScroll;

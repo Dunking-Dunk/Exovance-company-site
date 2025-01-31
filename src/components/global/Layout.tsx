@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic'
 import React, { useRef } from 'react'
 import Header from './Header'
+import SmoothScroll from './SmoothScroll'
 
 const Scene = dynamic(() => import('@/components/canva/Scene'), { ssr: false })
 
@@ -13,6 +14,7 @@ type Props = {
 const Layout = ({ children }: Props) => {
     const ref = useRef<HTMLDivElement | null>(null)
     return (
+
         <div
             ref={ref}
             style={{
@@ -23,7 +25,7 @@ const Layout = ({ children }: Props) => {
                 touchAction: 'auto'
             }}
             className='bg-customBlack'
-            id="scroller"
+
         >
             <Header />
             {children}
@@ -39,7 +41,7 @@ const Layout = ({ children }: Props) => {
                 eventSource={ref}
                 eventPrefix='client'
             />
-        </div>
+        </div >
     )
 }
 
