@@ -15,13 +15,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        customBlack: '#030303',
-        customGrayLight: '#cbcbcb',
-        customGray: '#a7a7a7',
-        customGrayDark: '#838383',
-        customGrayDarker: '#606060',
+        customBlack: 'var(--custom-black)',
+        customGrayLight: 'var(--custom-gray-light)',
+        customGray: 'var(--custom-gray)',
+        customGrayDark: 'var(--custom-gray-dark)',
+        customGrayDarker: 'var(--custom-gray-darker)',
       },
       animation: {
         aurora: "aurora 60s linear infinite",
@@ -49,7 +47,7 @@ const config: Config = {
       },
     },
   },
-  
+
   plugins: [addVariablesForColors],
 };
 export default config;

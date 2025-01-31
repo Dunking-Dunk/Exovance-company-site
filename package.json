@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ducanh2912/next-pwa": "^10.2.9",
     "@react-three/drei": "^9.121.3",
     "@react-three/fiber": "^8.17.12",
     "babel-plugin-glsl": "^1.0.0",
@@ -21,6 +22,7 @@
     "leva": "^0.10.0",
     "motion": "^12.0.5",
     "next": "14.2.23",
+    "next-themes": "^0.4.4",
     "npm": "^11.0.0",
     "react": "^18",
     "react-dom": "^18",

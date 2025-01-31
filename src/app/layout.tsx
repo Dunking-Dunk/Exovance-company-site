@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Layout from "@/components/global/Layout";
+import { ThemeProvider } from "@/components/provider/theme-provider";
 
 
 export const metadata: Metadata = {
@@ -18,9 +19,14 @@ export default function RootLayout({
       <body
         className={`antialiased`}
       >
-        <Layout>
-          {children}
-        </Layout>
+        <ThemeProvider attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange>
+          <Layout>
+            {children}
+          </Layout>
+        </ThemeProvider>
       </body>
     </html>
   );
