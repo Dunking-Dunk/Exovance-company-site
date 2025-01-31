@@ -13,7 +13,7 @@ import fragmentShader from "!!raw-loader!./shaders/particles/fragmentShader.glsl
 extend({ SimulationMaterial: SimulationMaterial });
 
 export const Particles = () => {
-    const size = 512;
+    const size = 128;
 
     // This reference gives us direct access to our points
     const points = useRef();
