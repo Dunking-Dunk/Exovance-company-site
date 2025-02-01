@@ -51,19 +51,6 @@ export function BackgroundHero(props: any) {
         }`,
     });
 
-    const gradientMaterial4 = new THREE.ShaderMaterial({
-        vertexShader: `varying vec3 vPosition;
-        void main() {
-            vPosition = position;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }`,
-        fragmentShader: `varying vec3 vPosition;
-        void main() {
-            float gradient = smoothstep(-0., -0.2, vPosition.y);
-            vec3 color = mix(vec3(0.0), vec3(0.1), gradient);
-            gl_FragColor = vec4(color, 1.0);
-        }`,
-    });
 
     return (
         <group {...props} dispose={null}>
@@ -84,7 +71,7 @@ export function BackgroundHero(props: any) {
             <mesh
                 geometry={nodes.mountain.geometry}
                 material={gradientMaterial3}
-                position={[-50, -10, -35]}
+                position={[-50, -10, -31]}
                 rotation={[Math.PI, 0, 0]}
                 scale={[60, 25.478, 10.834]}
             />
@@ -95,28 +82,6 @@ export function BackgroundHero(props: any) {
                 rotation={[Math.PI, 0, 0]}
                 scale={[60, 40.478, 8.834]}
             />
-            {/* 
-            <mesh
-                geometry={nodes.mountain.geometry}
-                material={gradientMaterial3}
-                position={[40, -5, -50]}
-                rotation={[Math.PI, 0, 0]}
-                scale={[30, 40.478, 15.834]}
-            />
-            <mesh
-                geometry={nodes.mountain.geometry}
-                material={gradientMaterial3}
-                position={[-50, -3, -60]}
-                rotation={[Math.PI, 0, 0]}
-                scale={[40, 45.478, 15.834]}
-            />
-            <mesh
-                geometry={nodes.mountain.geometry}
-                material={gradientMaterial4}
-                position={[0, -2, -70]}
-                rotation={[Math.PI, 0, 0]}
-                scale={[50, 50.478, 20.834]}
-            /> */}
         </group>
     )
 }

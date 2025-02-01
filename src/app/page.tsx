@@ -3,10 +3,13 @@
 import dynamic from "next/dynamic";
 import { Particles } from "@/components/canva/Particles";
 import CompanyName from "@/components/global/Company-name";
-import { Spotlight2 } from "@/components/ui/spotlight2";
 import { Spotlight } from "@/components/ui/spotlight";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
-import SmoothScroll from "@/components/global/SmoothScroll";
+import GlitchText from "@/components/ui/glitch-text";
+import Arrow from "@/components/ui/arrow";
+import AnimatedParagraph from "@/components/ui/animated-paragraph";
+import Vision from "@/components/page/Vision";
+import Abstract from "@/components/page/Abstract";
 
 const Background = dynamic(() => import("@/components/canva/backgroundHero").then((mod: any) => mod.BackgroundHero), {
   ssr: false
@@ -15,7 +18,7 @@ const Background = dynamic(() => import("@/components/canva/backgroundHero").the
 const View = dynamic(() => import("@/components/canva/View").then((mod: any) => mod.View), {
   ssr: false,
   loading: () => (
-    <div className='flex h-96 w-full flex-col items-center justify-center'>
+    <div className='absolute inset-0 z-10 h-96 w-full flex-col items-center justify-center'>
       <svg className='-ml-1 mr-3 h-5 w-5 animate-spin text-black' fill='none' viewBox='0 0 24 24'>
         <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
         <path
@@ -28,43 +31,52 @@ const View = dynamic(() => import("@/components/canva/View").then((mod: any) => 
   ),
 })
 
-
 const Common = dynamic(() => import("@/components/canva/View").then((mod: any) => mod.Common), {
   ssr: false
 })
-
 
 export default function Home() {
 
   return (
     <div className="w-full h-full relative" >
-      <div className="z-10 h-screen w-full flex md:items-center md:justify-center antialiased bg-grid-white/[0.02] relative overflow-hidden">
-        <Spotlight2
-          className="-top-40 left-0 md:left-60 md:-top-20"
-          fill="white" />
+      <div className="absolute inset-0 z-[0] bg-gradient-to-b from-zinc-900 from-40% via-gray-50/10 to-transparent h-screen" />
+
+      {/* Hero Page */}
+      <section className="relative z-10 h-screen  w-full  flex flex-col items-center justify-center antialiased bg-grid-white/[0.02]  overflow-hidden">
         <Spotlight />
         <CompanyName className="text-9xl" />
+        <div className="absolute top-[35%] right-[30%] -rotate-[40deg]">
+          <Arrow />
+        </div>
+        <GlitchText text="UNKNOWN" className="absolute top-[28%] right-[23%]  text-3xl font-light text-customGrayDarker" duration={2} />
+        <TextGenerateEffect words="SCROLL TO DISCOVER" duration={3} className="font-base text-2xl text-customGrayDarker absolute bottom-28" />
         {/* @ts-ignore */}
-        <View className="absolute inset-0 -z-10">
+        <View className="absolute inset-0 z-[0]">
           <Background />
         </View>
-      </div>
-      <div className="z-10 px-28 py-8 grid grid-rows-2 h-screen w-full antialiased">
+      </section>
+
+      {/* About Us */}
+      <section className="z-10 px-48 py-8 space-y-6 grid grid-rows-2 h-screen w-full antialiased">
         <div className="flex items-center">
-          <TextGenerateEffect words="INNOVATE THE <br/> UNSEEN" duration={3} className="w-2/3" />
+          <TextGenerateEffect words="INNOVATE <br/> THE UNSEEN" duration={3} className="text-customGray text-9xl font-semibold" />
         </div>
-      </div>
-      <div className="z-10 px-28 py-8 grid grid-rows-2 h-screen w-full antialiased">
+        <AnimatedParagraph />
+      </section>
 
-      </div>
-      <div className="px-28 py-8 grid grid-rows-2 h-screen w-full antialiased">
+      {/* Vision*/}
+      <Vision />
 
-      </div>
+      {/* Abstract */}
+      <Abstract />
+
+      {/* particle */}
       {/* @ts-ignore */}
       <View className="fixed inset-0 -z-10">
         <Common />
         <Particles />
       </View>
+
     </div>
   );
 }

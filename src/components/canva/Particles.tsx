@@ -4,15 +4,20 @@ import { OrbitControls, useFBO } from "@react-three/drei";
 import { Canvas, useFrame, extend, createPortal } from "@react-three/fiber";
 import { useMemo, useRef, useEffect } from "react";
 import * as THREE from "three";
-import { scroll } from 'motion'
+import { useScroll } from 'motion/react'
 
 import SimulationMaterial from './shaders/particles/simulationMaterial';
 import vertexShader from "!!raw-loader!./shaders/particles/vertexShader.glsl";
 import fragmentShader from "!!raw-loader!./shaders/particles/fragmentShader.glsl";
+import { getVariableColor } from "@/lib/utils";
+import { useTheme } from "next-themes";
+import { useMotionValueEvent, useTransform } from "framer-motion";
+import { damp } from "three/src/math/MathUtils.js";
 
 extend({ SimulationMaterial: SimulationMaterial });
 
 export const Particles = () => {
+    const { theme } = useTheme()
     const size = 128;
 
     // This reference gives us direct access to our points
@@ -27,8 +32,10 @@ export const Particles = () => {
         targetY: 0,
     });
 
-    // Add scroll progress state
-    const scrollProgress = useRef(0);
+    // Damping function
+
+    const {scrollYProgress}= useScroll()
+    const distance = useTransform(scrollYProgress, [0, 1], [1, 10]);
 
     useEffect(() => {
         const updateMousePosition = (e) => {
@@ -73,19 +80,14 @@ export const Particles = () => {
     const uniforms = useMemo(() => ({
         uPositions: {
             value: null,
+        },
+        uColor: {
+            value: null
         }
     }), [])
 
     const mouse = useRef(new THREE.Vector3());
 
-    // Damping function
-    const damp = (current, target, lambda, dt) => {
-        return THREE.MathUtils.damp(current, target, lambda, dt);
-    };
-
-    scroll(progress => {
-        scrollProgress.current = progress + 0.1;
-    })
 
     useFrame((state) => {
         const { gl, clock } = state;
@@ -102,8 +104,8 @@ export const Particles = () => {
         );
 
         // Smooth scroll progress
-        const dt = 4;
-        const dampedScroll = damp(simulationMaterialRef.current.uniforms.uScroll.value, scrollProgress.current, 0.001, dt);
+        const dt = 10;
+        const dampedScroll = damp(simulationMaterialRef.current.uniforms.uScroll.value, distance.get(), 0.001, dt);
 
         simulationMaterialRef.current.uniforms.uScroll.value = dampedScroll;
 
@@ -120,8 +122,9 @@ export const Particles = () => {
 
         // Update points material
         points.current.material.uniforms.uPositions.value = renderTarget.texture;
-    });
+        points.current.material.uniforms.uColor.value = theme === 'dark' ? new THREE.Vector3(.9804, .9373, .9373) : new THREE.Vector3(0.0, 0.0, 0.0)
 
+    });
 
     return (
         <>

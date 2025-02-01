@@ -1,4 +1,41 @@
-#define PI 3.1415926538
+
+uniform sampler2D positionsA;
+uniform float uTime;
+uniform vec3 uMouse;
+uniform float uMouseRadius;
+uniform float uFrequency;
+uniform float uScroll;
+
+varying vec2 vUv;
+
+void main() {
+    vec4 position = texture2D(positionsA, vUv);
+    vec3 pos = position.xyz;
+    
+    // Time-based animation
+    float angle = uTime * uFrequency;
+    pos.x += sin(angle + pos.y * 2.0) * 0.02;
+    pos.y += cos(angle + pos.x * 2.0) * 0.02;
+    pos.z += sin(angle * 0.7) * 0.02;
+    
+    // Mouse interaction
+    vec3 mouseOffset = pos - uMouse;
+    float mouseDistance = length(mouseOffset);
+    if (mouseDistance < uMouseRadius) {
+        float strength = 1.0 - (mouseDistance / uMouseRadius);
+        pos += normalize(mouseOffset) * strength * 0.1;
+    }
+    
+    // Scroll influence
+    pos.y += uScroll * 0.01;
+    
+    gl_FragColor = vec4(pos, 1.0);
+}    
+        
+
+
+
+        #define PI 3.1415926538
 #define HALF_PI 1.5707963267948966
 
 uniform sampler2D positionsA;
@@ -206,12 +243,9 @@ float snoise(vec3 v){
                 return 2.2*n_xyz;
             }
             void main(){
-                 vec3 pos;
-
-                // Use different position data based on the scroll value
-                if (uScroll < 5.) {
-                pos = texture2D(positionsA, vUv).xyz; 
-             float time=uTime*.3;
+                vec3 pos=texture2D(positionsA,vUv).xyz;
+                
+                float time=uTime*.3;
                 // Add curl noise for organic movement
                 
                 // Spherical coordinates
@@ -255,43 +289,4 @@ float snoise(vec3 v){
                 }
                 
                 gl_FragColor=vec4(finalPos,1.);
-                } else if (uScroll < 8.) {
-                pos = texture2D(positionsB, vUv).xyz; 
-                float angle = uTime * uFrequency;
-                pos.x += sin(angle + pos.y * 2.0) * 0.02;
-                pos.y += cos(angle + pos.x * 2.0) * 0.02;
-                pos.z += sin(angle * 0.7) * 0.02;
-
-                // Mouse interaction
-                vec3 mouseOffset = pos - uMouse;
-                float mouseDistance = length(mouseOffset);
-                if (mouseDistance < uMouseRadius) {
-                    float strength = 1.0 - (mouseDistance / uMouseRadius);
-                    pos += normalize(mouseOffset) * strength * 0.1;
-                }
-
-                // Scroll influence
-                pos.y += uScroll * 0.01;
-
-                gl_FragColor = vec4(pos, 1.0);
-                } else {
-                pos = texture2D(positionsC, vUv).xyz; 
-                float angle = uTime * uFrequency;
-                pos.x += sin(angle + pos.y * 2.0) * 0.02;
-                pos.y += cos(angle + pos.x * 2.0) * 0.02;
-                pos.z += sin(angle * 0.7) * 0.02;
-                
-                // Mouse interaction
-                vec3 mouseOffset = pos - uMouse;
-                float mouseDistance = length(mouseOffset);
-                if (mouseDistance < uMouseRadius) {
-                    float strength = 1.0 - (mouseDistance / uMouseRadius);
-                    pos += normalize(mouseOffset) * strength * 0.1;
-                }
-                
-                // Scroll influence
-                pos.y += uScroll * 0.01;
-                
-                gl_FragColor = vec4(pos, 1.0);
-                }
             }
