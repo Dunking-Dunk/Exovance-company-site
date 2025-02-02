@@ -20,7 +20,7 @@ const Vision = () => {
             scrollTrigger: {
                 trigger: containerRef.current,
                 start: "top top",
-                end: "+=300%",
+                end: "+=240%",
                 pin: true,
                 scrub: 1,
                 snap: {
@@ -97,7 +97,7 @@ const Vision = () => {
     }, []);
 
     return (
-        <div ref={containerRef} className="w-full h-screen overflow-hidden relative">
+        <div ref={containerRef} className="w-full h-screen overflow-hidden relative z-10">
             <section className="pin-section absolute top-0 left-0 w-full h-full  flex items-center justify-center" data-section="0">
                 <span className="overflow-hidden relative">
                     <h3 className="text-9xl font-bold text-customGrayDark pin-section-text">IMAGINE</h3>

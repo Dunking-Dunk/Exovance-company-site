@@ -205,27 +205,25 @@ float snoise(vec3 v){
                 float n_xyz=mix(n_yz.x,n_yz.y,fade_xyz.x);
                 return 2.2*n_xyz;
             }
+            
             void main(){
-                 vec3 pos;
-
+                vec3 pos;
+                
+                // Interpolate between previous and current positions
+                vec3 targetPos;
+                
                 // Use different position data based on the scroll value
-                if (uScroll < 5.) {
-                pos = texture2D(positionsA, vUv).xyz; 
-             float time=uTime*.3;
-                // Add curl noise for organic movement
+                
+                pos=texture2D(positionsA,vUv).xyz;
+                float time=uTime*.3;
                 
                 // Spherical coordinates
-                float radius;
-             
-                radius=uScroll;
-                
+                float radius=uScroll;
                 float theta=atan(pos.y,pos.x)+uTime*.2;
                 float phi=acos(pos.z/radius)+sin(uTime*.1)*.2;
                 
                 // Convert back to Cartesian coordinates
-            
                 vec3 spherePos;
-
                 spherePos+=curlNoise(pos*uFrequency)*1.5;
                 
                 // Mouse interaction
@@ -237,61 +235,24 @@ float snoise(vec3 v){
                 vec3 mouseRepulsion=normalize(mouseDirection)*mouseInfluence*2.;
                 
                 // Mix between current and sphere positions
-                vec3 finalPos=mix(pos,spherePos,.1);
+                targetPos=mix(pos,spherePos,.1);
                 
                 // Add mouse repulsion
-                finalPos+=mouseRepulsion;
+                targetPos+=mouseRepulsion;
                 
                 // Normalize to maintain sphere surface
-                finalPos=normalize(finalPos)*radius;
-                finalPos+=curlNoise(finalPos+3.)*.2;
-                // finalPos+=curlNoise(finalPos+uFrequency)*.09;
-                finalPos+=cnoise(finalPos+time)*.1;
+                targetPos=normalize(targetPos)*radius;
+                targetPos+=curlNoise(targetPos+3.)*.2;
+                targetPos+=cnoise(targetPos+time)*.1;
                 
                 // Ensure particles are pushed away from the sphere's surface
-                float distanceFromCenter=length(finalPos);
+                float distanceFromCenter=length(targetPos);
                 if(distanceFromCenter<1.){
-                    finalPos=normalize(finalPos)*(1.+(1.-distanceFromCenter)*mouseInfluence);
+                    targetPos=normalize(targetPos)*(1.+(1.-distanceFromCenter)*mouseInfluence);
                 }
                 
-                gl_FragColor=vec4(finalPos,1.);
-                } else if (uScroll < 8.) {
-                pos = texture2D(positionsB, vUv).xyz; 
-                float angle = uTime * uFrequency;
-                pos.x += sin(angle + pos.y * 2.0) * 0.02;
-                pos.y += cos(angle + pos.x * 2.0) * 0.02;
-                pos.z += sin(angle * 0.7) * 0.02;
-
-                // Mouse interaction
-                vec3 mouseOffset = pos - uMouse;
-                float mouseDistance = length(mouseOffset);
-                if (mouseDistance < uMouseRadius) {
-                    float strength = 1.0 - (mouseDistance / uMouseRadius);
-                    pos += normalize(mouseOffset) * strength * 0.1;
-                }
-
-                // Scroll influence
-                pos.y += uScroll * 0.01;
-
-                gl_FragColor = vec4(pos, 1.0);
-                } else {
-                pos = texture2D(positionsC, vUv).xyz; 
-                float angle = uTime * uFrequency;
-                pos.x += sin(angle + pos.y * 2.0) * 0.02;
-                pos.y += cos(angle + pos.x * 2.0) * 0.02;
-                pos.z += sin(angle * 0.7) * 0.02;
+                // Smoothly transition from previous position to current target position  // Smooth interpolation based on time
                 
-                // Mouse interaction
-                vec3 mouseOffset = pos - uMouse;
-                float mouseDistance = length(mouseOffset);
-                if (mouseDistance < uMouseRadius) {
-                    float strength = 1.0 - (mouseDistance / uMouseRadius);
-                    pos += normalize(mouseOffset) * strength * 0.1;
-                }
-                
-                // Scroll influence
-                pos.y += uScroll * 0.01;
-                
-                gl_FragColor = vec4(pos, 1.0);
-                }
+                gl_FragColor=vec4(targetPos,1.);
             }
+            

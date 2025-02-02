@@ -10,6 +10,7 @@ import Arrow from "@/components/ui/arrow";
 import AnimatedParagraph from "@/components/ui/animated-paragraph";
 import Vision from "@/components/page/Vision";
 import Abstract from "@/components/page/Abstract";
+import Service from "@/components/page/Service";
 
 const Background = dynamic(() => import("@/components/canva/backgroundHero").then((mod: any) => mod.BackgroundHero), {
   ssr: false
@@ -69,6 +70,9 @@ export default function Home() {
 
       {/* Abstract */}
       <Abstract />
+
+      {/* Services */}
+      <Service />
 
       {/* particle */}
       {/* @ts-ignore */}

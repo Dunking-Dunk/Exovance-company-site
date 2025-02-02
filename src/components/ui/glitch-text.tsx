@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react'
-import { motion, AnimatePresence, Variant } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import { cn } from '@/lib/utils';
 
 interface GlitchTextProps {
@@ -17,21 +17,13 @@ const generateRandomChar = () => {
     return chars[Math.floor(Math.random() * chars.length)];
 }
 
-const glitchVariants:any = {
-    hidden: { 
-        opacity: 0,
-        y: 20,
-        scale: 0.9
-    },
-    visible: (i: number) => ({
+const glitchVariants: any = {
+    visible: {
         opacity: 1,
         y: 0,
         scale: 1,
-        transition: {
-            duration: 0.1,
-            delay: i * 0.1
-        }
-    }),
+        transition: { duration: 0.3 }
+    },
     glitch: {
         opacity: [1, 0.8, 0.6, 1],
         x: [0, -2, 3, -1, 0],
@@ -51,19 +43,22 @@ const glitchVariants:any = {
     }
 };
 
-const GlitchText = ({ 
-    text, 
-    className = "", 
+const GlitchText = ({
+    text,
+    className = "",
     duration = 2,
     glitchIntensity = 0.3,
     delay = 0
 }: GlitchTextProps) => {
-    const [displayText, setDisplayText] = useState(
-        Array(text.length).fill('0').join('')
-    );
+    const [displayText, setDisplayText] = useState(Array(text.length).fill('0').join(''));
     const [isGlitching, setIsGlitching] = useState(true);
 
+    const ref = React.useRef(null);
+    const isInView = useInView(ref, { once: true, margin: "0px 0px -50px 0px" });
+
     useEffect(() => {
+        if (!isInView) return;
+
         let interval: NodeJS.Timeout;
         let startTime = Date.now();
         const animationDuration = duration * 1000;
@@ -98,17 +93,11 @@ const GlitchText = ({
             clearTimeout(timeoutId);
             clearInterval(interval);
         };
-    }, [text, duration, glitchIntensity, delay]);
+    }, [isInView, text, duration, glitchIntensity, delay]);
 
     return (
-        <motion.div 
-            className={cn('relative' ,className)}
-            initial="hidden"
-            animate="visible"
-            custom={delay}
-        >
+        <motion.div ref={ref} className={cn('relative', className)} initial={{ opacity: 0 }} animate={isInView ? "visible" : {}} variants={glitchVariants}>
             <motion.div
-                variants={glitchVariants}
                 animate={isGlitching ? "glitch" : "visible"}
                 className="relative inline-block"
             >
@@ -117,20 +106,12 @@ const GlitchText = ({
                 </span>
                 {isGlitching && (
                     <>
-                                   <motion.span
+                        <motion.span
                             key="glitch-top"
                             className="absolute top-0 left-0 w-full text-customGrayDarker opacity-50 mix-blend-screen"
                             style={{ clipPath: 'inset(0 0 50% 0)' }}
-                            initial={{ x: 0 }}
-                            animate={{
-                                x: [-2, 1, -1, 2, 0],
-                            }}
-                            transition={{
-                                duration: 0.2,
-                                repeat: Infinity,
-                                repeatType: "reverse"
-                            }}
-                            exit={{ opacity: 0 }}
+                            animate={{ x: [-2, 1, -1, 2, 0] }}
+                            transition={{ duration: 0.2, repeat: Infinity, repeatType: "reverse" }}
                         >
                             {displayText}
                         </motion.span>
@@ -138,21 +119,12 @@ const GlitchText = ({
                             key="glitch-bottom"
                             className="absolute top-0 left-0 w-full text-customGrayLight opacity-50 mix-blend-screen"
                             style={{ clipPath: 'inset(50% 0 0 0)' }}
-                            initial={{ x: 0 }}
-                            animate={{
-                                x: [2, -1, 1, -2, 0],
-                            }}
-                            transition={{
-                                duration: 0.2,
-                                repeat: Infinity,
-                                repeatType: "reverse"
-                            }}
-                            exit={{ opacity: 0 }}
+                            animate={{ x: [2, -1, 1, -2, 0] }}
+                            transition={{ duration: 0.2, repeat: Infinity, repeatType: "reverse" }}
                         >
                             {displayText}
                         </motion.span>
                     </>
-         
                 )}
             </motion.div>
         </motion.div>
