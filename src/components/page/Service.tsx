@@ -94,7 +94,6 @@ const Service = (props: Props) => {
                     services.map(({ title, description }, index) => <Card title={title} description={description} index={index} />)
                 }
             </div>
-            <div className='w-full h-screen service__outro' />
         </div>
     )
 }

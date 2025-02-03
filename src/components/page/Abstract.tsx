@@ -2,6 +2,7 @@
 
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { TextGenerateEffect } from "../ui/text-generate-effect";
 
 const Abstract = () => {
   const container = useRef(null);
@@ -115,7 +116,7 @@ const Abstract = () => {
             }}
           >
             <div className="group cursor-pointer">
-              <span className="bg-customGray text-customBlack px-4 py-1 rounded-full text-sm font-semibold
+              <span className="bg-customGray text-customBlack px-4 py-1 rounded-sm text-sm font-semibold
                            transition-all duration-300 ease-in-out
                            hover:bg-gray-800 hover:text-gray-200
                            group-hover:shadow-lg">
@@ -134,7 +135,8 @@ const Abstract = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-customGray text-5xl md:text-7xl font-bold leading-tight tracking-wider font-exo2"
         >
-          PIONEERING INTELLIGENT
+          <TextGenerateEffect words="PIONEERING INTELLIGENT"  duration={2}/>
+       
         </motion.h1>
 
         <div className="relative my-4 text-center">
@@ -156,7 +158,7 @@ const Abstract = () => {
           transition={{ duration: 0.8, delay: 0.8, ease: "easeInOut" }}
           className="text-customGray text-right text-5xl md:text-7xl font-bold tracking-wider font-exo2"
         >
-          FUTURISTIC WORLD
+          <TextGenerateEffect words="FUTURISTIC WORLD" duration={2}/>
         </motion.h1>
       </div>
 

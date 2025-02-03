@@ -242,51 +242,166 @@ float snoise(vec3 v){
                 float n_xyz=mix(n_yz.x,n_yz.y,fade_xyz.x);
                 return 2.2*n_xyz;
             }
-            void main(){
-                vec3 pos=texture2D(positionsA,vUv).xyz;
-                
-                float time=uTime*.3;
-                // Add curl noise for organic movement
-                
-                // Spherical coordinates
-                float radius;
-             
-                radius=uScroll;
-                
-                float theta=atan(pos.y,pos.x)+uTime*.2;
-                float phi=acos(pos.z/radius)+sin(uTime*.1)*.2;
-                
-                // Convert back to Cartesian coordinates
-            
-                vec3 spherePos;
 
-                spherePos+=curlNoise(pos*uFrequency)*1.5;
+          void main(){
+                vec3 pos;
                 
-                // Mouse interaction
-                vec3 mouseDirection=pos-uMouse;
-                float mouseDistance=length(mouseDirection);
-                float mouseInfluence=smoothstep(uMouseRadius,0.,mouseDistance);
+                // Interpolate between previous and current positions
+                vec3 targetPos;
                 
-                // Push particles away from mouse
-                vec3 mouseRepulsion=normalize(mouseDirection)*mouseInfluence*2.;
-                
-                // Mix between current and sphere positions
-                vec3 finalPos=mix(pos,spherePos,.1);
-                
-                // Add mouse repulsion
-                finalPos+=mouseRepulsion;
-                
-                // Normalize to maintain sphere surface
-                finalPos=normalize(finalPos)*radius;
-                finalPos+=curlNoise(finalPos+3.)*.2;
-                // finalPos+=curlNoise(finalPos+uFrequency)*.09;
-                finalPos+=cnoise(finalPos+time)*.1;
-                
-                // Ensure particles are pushed away from the sphere's surface
-                float distanceFromCenter=length(finalPos);
-                if(distanceFromCenter<1.){
-                    finalPos=normalize(finalPos)*(1.+(1.-distanceFromCenter)*mouseInfluence);
+                // Use different position data based on the scroll value
+                if(uScroll<5.){
+                    pos=texture2D(positionsA,vUv).xyz;
+                    float time=uTime*.3;
+                    
+                    // Spherical coordinates
+                    float radius=uScroll;
+                    float theta=atan(pos.y,pos.x)+uTime*.2;
+                    float phi=acos(pos.z/radius)+sin(uTime*.1)*.2;
+                    
+                    // Convert back to Cartesian coordinates
+                    vec3 spherePos;
+                    spherePos+=curlNoise(pos*uFrequency)*1.5;
+                    
+                    // Mouse interaction
+                    vec3 mouseDirection=pos-uMouse;
+                    float mouseDistance=length(mouseDirection);
+                    float mouseInfluence=smoothstep(uMouseRadius,0.,mouseDistance);
+                    
+                    // Push particles away from mouse
+                    vec3 mouseRepulsion=normalize(mouseDirection)*mouseInfluence*2.;
+                    
+                    // Mix between current and sphere positions
+                    targetPos=mix(pos,spherePos,.1);
+                    
+                    // Add mouse repulsion
+                    targetPos+=mouseRepulsion;
+                    
+                    // Normalize to maintain sphere surface
+                    targetPos=normalize(targetPos)*radius;
+                    targetPos+=curlNoise(targetPos+3.)*.2;
+                    targetPos+=cnoise(targetPos+time)*.1;
+                    
+                    // Ensure particles are pushed away from the sphere's surface
+                    float distanceFromCenter=length(targetPos);
+                    if(distanceFromCenter<1.){
+                        targetPos=normalize(targetPos)*(1.+(1.-distanceFromCenter)*mouseInfluence);
+                    }
+                }
+                else if(uScroll<8.){
+                    pos=texture2D(positionsB,vUv).xyz;
+                    float angle=uTime*uFrequency;
+                    pos.x+=sin(angle+pos.y*2.)*.02;
+                    pos.y+=cos(angle+pos.x*2.)*.02;
+                    pos.z+=sin(angle*.7)*.02;
+                    
+                    // Mouse interaction
+                    vec3 mouseOffset=pos-uMouse;
+                    float mouseDistance=length(mouseOffset);
+                    if(mouseDistance<uMouseRadius){
+                        float strength=1.-(mouseDistance/uMouseRadius);
+                        pos+=normalize(mouseOffset)*strength*.1;
+                    }
+                    
+                    // Scroll influence
+                    pos.y+=uScroll*.01;
+                    
+                    targetPos=pos;
+                }
+                else{
+                    pos=texture2D(positionsC,vUv).xyz;
+                    float angle=uTime*uFrequency;
+                    pos.x+=sin(angle+pos.y*2.)*.02;
+                    pos.y+=cos(angle+pos.x*2.)*.02;
+                    pos.z+=sin(angle*.7)*.02;
+                    
+                    // Mouse interaction
+                    vec3 mouseOffset=pos-uMouse;
+                    float mouseDistance=length(mouseOffset);
+                    if(mouseDistance<uMouseRadius){
+                        float strength=1.-(mouseDistance/uMouseRadius);
+                        pos+=normalize(mouseOffset)*strength*.1;
+                    }
+                    
+                    // Scroll influence
+                    pos.y+=uScroll*.01;
+                    
+                    targetPos=pos;
                 }
                 
-                gl_FragColor=vec4(finalPos,1.);
+                // Smoothly transition from previous position to current target position  // Smooth interpolation based on time
+                
+                gl_FragColor=vec4(targetPos,1.);
+            }
+        
+    
+
+
+
+
+
+
+
+        void main(){
+                // Get positions from all three states
+                vec3 posA=texture2D(positionsA,vUv).xyz;
+                vec3 posB=texture2D(positionsB,vUv).xyz;
+                vec3 posC=texture2D(positionsC,vUv).xyz;
+                
+                // Initialize target position
+                vec3 targetPos;
+                
+                // Sphere state (posA)
+                vec3 spherePos=posA;
+                float time=uTime*.3;
+                float radius=max(1.,uScroll);
+                spherePos+=curlNoise(spherePos*uFrequency)*1.5;
+                
+                // Mouse interaction for sphere
+                vec3 mouseDirection=spherePos-uMouse;
+                float mouseDistance=length(mouseDirection);
+                float mouseInfluence=smoothstep(uMouseRadius,0.,mouseDistance);
+                vec3 mouseRepulsion=normalize(mouseDirection)*mouseInfluence*2.;
+                spherePos+=mouseRepulsion;
+                spherePos=normalize(spherePos)*radius;
+                spherePos+=curlNoise(spherePos+vec3(3.))*.2;
+                spherePos+=vec3(snoise(spherePos+time))*.1;
+                
+                // Brain state (posB) animation
+                vec3 brainPos=posB;
+                float brainAngle=uTime*uFrequency;
+                brainPos.x+=sin(brainAngle+brainPos.y*2.)*.02;
+                brainPos.y+=cos(brainAngle+brainPos.x*2.)*.02;
+                brainPos.z+=sin(brainAngle*.7)*.02;
+                
+                // Human head state (posC) animation
+                vec3 humanPos=posC;
+                float humanAngle=uTime*uFrequency;
+                humanPos.x+=sin(humanAngle+humanPos.y*2.)*.02;
+                humanPos.y+=cos(humanAngle+humanPos.x*2.)*.02;
+                humanPos.z+=sin(humanAngle*.7)*.02;
+                
+                // Smooth transitions between states based on scroll position
+                float t1=smoothstep(4.,5.,uScroll);// Transition from sphere to brain
+                float t2=smoothstep(7.,8.,uScroll);// Transition from brain to human
+                
+                // First transition: Sphere to Brain
+                vec3 firstTransition=mix(spherePos,brainPos,t1);
+                
+                // Second transition: Brain to Human
+                vec3 secondTransition=mix(brainPos,humanPos,t2);
+                
+                // Final position mixing
+                targetPos=mix(firstTransition,secondTransition,step(7.,uScroll));
+                
+                // Apply common mouse interaction to final position
+                vec3 mouseOffset=targetPos-uMouse;
+                float finalMouseDistance=length(mouseOffset);
+                if(finalMouseDistance<uMouseRadius){
+                    float strength=1.-(finalMouseDistance/uMouseRadius);
+                    targetPos+=normalize(mouseOffset)*strength*.1;
+                }
+                
+                // Output final position
+                gl_FragColor=vec4(targetPos,1.);
             }

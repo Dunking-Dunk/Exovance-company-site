@@ -11,6 +11,9 @@ import AnimatedParagraph from "@/components/ui/animated-paragraph";
 import Vision from "@/components/page/Vision";
 import Abstract from "@/components/page/Abstract";
 import Service from "@/components/page/Service";
+import ScrollTextAnimation from "@/components/global/Marquee";
+import ContactPage from "@/components/page/Contact";
+import Footer from "@/components/global/Footer";
 
 const Background = dynamic(() => import("@/components/canva/backgroundHero").then((mod: any) => mod.BackgroundHero), {
   ssr: false
@@ -73,6 +76,15 @@ export default function Home() {
 
       {/* Services */}
       <Service />
+
+      {/* scroll text carousel */}
+      <ScrollTextAnimation />
+
+      {/* contact */}
+      <ContactPage/>
+
+      {/* footer */}
+      <Footer/>
 
       {/* particle */}
       {/* @ts-ignore */}

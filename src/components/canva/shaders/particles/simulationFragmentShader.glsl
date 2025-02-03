@@ -9,6 +9,9 @@ uniform float uFrequency;
 uniform vec3 uMouse;
 uniform float uMouseRadius;
 uniform float uScroll;
+uniform float uTransitionProgress;
+uniform float uRadiusScale;
+uniform float uCurrentPosition;
 
 varying vec2 vUv;
 
@@ -208,51 +211,70 @@ float snoise(vec3 v){
             
             void main(){
                 vec3 pos;
-                
-                // Interpolate between previous and current positions
                 vec3 targetPos;
+                vec4 posA = texture2D(positionsA, vUv);
+                vec4 posB = texture2D(positionsB, vUv);
+                vec4 posC = texture2D(positionsC, vUv);
                 
-                // Use different position data based on the scroll value
-                
-                pos=texture2D(positionsA,vUv).xyz;
-                float time=uTime*.3;
-                
-                // Spherical coordinates
-                float radius=uScroll;
-                float theta=atan(pos.y,pos.x)+uTime*.2;
-                float phi=acos(pos.z/radius)+sin(uTime*.1)*.2;
-                
-                // Convert back to Cartesian coordinates
-                vec3 spherePos;
-                spherePos+=curlNoise(pos*uFrequency)*1.5;
-                
-                // Mouse interaction
-                vec3 mouseDirection=pos-uMouse;
-                float mouseDistance=length(mouseDirection);
-                float mouseInfluence=smoothstep(uMouseRadius,0.,mouseDistance);
-                
-                // Push particles away from mouse
-                vec3 mouseRepulsion=normalize(mouseDirection)*mouseInfluence*2.;
-                
-                // Mix between current and sphere positions
-                targetPos=mix(pos,spherePos,.1);
-                
-                // Add mouse repulsion
-                targetPos+=mouseRepulsion;
-                
-                // Normalize to maintain sphere surface
-                targetPos=normalize(targetPos)*radius;
-                targetPos+=curlNoise(targetPos+3.)*.2;
-                targetPos+=cnoise(targetPos+time)*.1;
-                
-                // Ensure particles are pushed away from the sphere's surface
-                float distanceFromCenter=length(targetPos);
-                if(distanceFromCenter<1.){
-                    targetPos=normalize(targetPos)*(1.+(1.-distanceFromCenter)*mouseInfluence);
+                // Calculate Position A with all effects
+                vec3 positionAWithEffects;
+                {
+                    vec3 tempPos = posA.xyz;
+                    float time = uTime * 0.3;
+                    float radius = uRadiusScale;
+                    
+                    vec3 spherePos = curlNoise(tempPos * uFrequency) * 1.5;
+                    vec3 mouseDirection = tempPos - uMouse;
+                    float mouseDistance = length(mouseDirection);
+                    float mouseInfluence = smoothstep(uMouseRadius, 0., mouseDistance);
+                    vec3 mouseRepulsion = normalize(mouseDirection) * mouseInfluence * 2.;
+                    
+                    vec3 tempTarget = mix(tempPos, spherePos, 0.1);
+                    tempTarget += mouseRepulsion;
+                    tempTarget = normalize(tempTarget) * radius;
+                    
+                    // Enhanced effects for Position A
+                    float effectStrength = radius < 1.1 ? 0.3 : 0.2;
+                    tempTarget += curlNoise(tempTarget + 3.) * effectStrength;
+                    tempTarget += cnoise(tempTarget + time) * (effectStrength * 0.5);
+                    
+                    float distanceFromCenter = length(tempTarget);
+                    if(distanceFromCenter < 1.) {
+                        tempTarget = normalize(tempTarget) * (1. + (1. - distanceFromCenter) * mouseInfluence);
+                    }
+                    
+                    positionAWithEffects = tempTarget;
                 }
                 
-                // Smoothly transition from previous position to current target position  // Smooth interpolation based on time
-                
-                gl_FragColor=vec4(targetPos,1.);
+                // Position A with original animation
+                if (uCurrentPosition == 0.0) {
+                    pos = positionAWithEffects;
+                    
+                    // Add extra turbulence when radius is close to 1
+                    if (uRadiusScale < 1.1) {
+                        pos += curlNoise(pos * (uFrequency * 1.5) + uTime * 0.2) * 0.15;
+                    }
+                }
+                // Transition A to B
+                else if (uCurrentPosition == 1.0) {
+                    vec3 positionB = posB.xyz;
+                    pos = mix(positionAWithEffects, positionB, uTransitionProgress);
+                    pos += curlNoise(pos * uFrequency + uTime * 0.1) * mix(0.1, 0.05, uTransitionProgress);
+                }
+                // Transition B to C
+                else if (uCurrentPosition == 2.0) {
+                    vec3 positionB = posB.xyz;
+                    vec3 positionC = posC.xyz;
+                    pos = mix(positionB, positionC, uTransitionProgress);
+                    pos += curlNoise(pos * uFrequency + uTime * 0.1) * 0.05;
+                }
+                // Transition C back to A
+                else if (uCurrentPosition == 3.0) {
+                    vec3 positionC = posC.xyz;
+                    pos = mix(positionC, positionAWithEffects, uTransitionProgress);
+                    // Gradually increase the curl noise as we transition back to A
+                    pos += curlNoise(pos * uFrequency + uTime * 0.1) * mix(0.05, 0.1, uTransitionProgress);
+                }
+
+                gl_FragColor = vec4(pos, 1.0);
             }
-            
