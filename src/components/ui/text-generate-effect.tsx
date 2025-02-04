@@ -20,7 +20,8 @@ export const TextGenerateEffect = ({
 
   useEffect(() => {
     inView(
-      'span', (element) => {
+      "span",
+      (element) => {
         animate(
           element,
           {
@@ -45,8 +46,8 @@ export const TextGenerateEffect = ({
           } else {
             return (
               <motion.span
-                key={word + idx}
-                className="text-customGrayLight opacity-0"
+                key={word + idx + Math.random()}
+                className="opacity-0"
                 style={{
                   filter: filter ? "blur(10px)" : "none",
                 }}
@@ -62,9 +63,9 @@ export const TextGenerateEffect = ({
   };
 
   return (
-    <div className={cn("font-bold", className)}>
+    <div className={cn( className)}>
       <div className="mt-4">
-        <div className=" text-customGrayLight text-8xl font-semibold leading-snug tracking-wide">
+        <div className="leading-snug tracking-wide">
           {renderWords()}
         </div>
       </div>

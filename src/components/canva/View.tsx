@@ -16,7 +16,7 @@ export const Common = ({ color }: { color?: string }) => (
 
 const View = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & {
     children: React.ReactNode
-    orbit?: boolean
+    orbit?: boolean;
 }>(({ children, orbit, ...props }, ref) => {
     const localRef: any = useRef(null)
     useImperativeHandle(ref, () => localRef.current)

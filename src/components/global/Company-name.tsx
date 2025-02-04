@@ -7,7 +7,11 @@ type Props = {
 
 const CompanyName = (props: Props) => {
     return (
-        <h1 className={cn(props.className, "font-medium tracking-widest text-customGrayLight")}><span className="gap-1 inline-flex mr-2"><span className="bg-customGrayLight text-black rounded-lg mx-1">E</span><span className="bg-customGrayLight text-black rounded-lg mx-1">X</span><span className="rounded-lg bg-customGrayLight text-black">O</span> </span>VANCE</h1>
+        <div className='relative'>
+            <div className='absolute bg-customGrayDark -z-10 top-[10%] left-0 bottom-[15%] right-[62.5%] ' />
+            <h1 className={cn(props.className, "font-semibold  text-customGrayDark")}><span className='text-customBlack'>EXO</span>VANCE</h1>
+        </div>
+
     )
 }
 

@@ -1,31 +1,35 @@
 @import url('https://fonts.googleapis.com/css2?family=Exo:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playwrite+US+Trad:wght@100..400&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* :root {
-  --background: #ffffff;
-  --foreground: #171717;
-} */
-
-/* @media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --custom-black: #a7a7a7;
+    --custom-gray-light: #cbcbcb;
+    --custom-gray: #030303;
+    --custom-gray-dark: #838383;
+    --custom-gray-darker: #606060;
+    --custom-black-alt: #5C5C5C;
   }
-} */
 
-:root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  .dark {
+    --custom-black: #000000;
+    --custom-gray-light: #F2F4F4;
+    --custom-gray: #D3D3D4;
+    --custom-gray-dark: #B4B5B4;
+    --custom-gray-darker: #959695;
+    --custom-black-alt: #5C5C5C;
+  }
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: var(--custom-gray);
   font-family: "Exo", serif;
 }
+
 
 @layer utilities {
   .text-balance {
@@ -42,4 +46,11 @@ body {
 ::-webkit-scrollbar-thumb {
   background-color: white;
   border-radius: 100px;
+}
+
+.playwrite-us-trad {
+  font-family: "Playwrite US Trad", serif;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  font-style: normal;
 }

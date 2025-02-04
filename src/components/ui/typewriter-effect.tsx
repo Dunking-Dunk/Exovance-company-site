@@ -149,8 +149,9 @@ export const TypewriterEffectSmooth = ({
                 whileInView={{
                     width: "fit-content",
                 }}
+                viewport={{ once: true }}
                 transition={{
-                    duration: 2,
+                    duration: 1,
                     ease: "linear",
                     delay: 1,
                 }}
@@ -166,13 +167,15 @@ export const TypewriterEffectSmooth = ({
             </motion.div>
             <motion.span
                 initial={{
+                    width: "0%",
                     opacity: 0,
                 }}
                 animate={{
+                    width:'0.001px',
                     opacity: 1,
                 }}
                 transition={{
-                    duration: 0.8,
+                    duration: 0.7,
 
                     repeat: Infinity,
                     repeatType: "reverse",
