@@ -158,7 +158,7 @@ const Abstract = () => {
           transition={{ duration: 0.8, delay: 0.8, ease: "easeInOut" }}
           className="text-customGray text-right text-5xl md:text-7xl font-bold tracking-wider font-exo2"
         >
-          <TextGenerateEffect words="FUTURISTIC WORLD" duration={2}/>
+          <TextGenerateEffect words="FUTURISTIC WORLD" duration={4}/>
         </motion.h1>
       </div>
 
@@ -167,7 +167,7 @@ const Abstract = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 1, ease: "easeOut" }}
-        className="text-customGrayDarker absolute left-[10%] bottom-[20%] mt-8 mx-auto text-sm"
+        className="text-customGrayDarker absolute left-[10%] bottom-[15%] mt-8 mx-auto text-sm"
       >
         Innovate. Automate. Elevate. Cutting-edge AI, web, and <br /> mobile solutions to shape the future.
       </motion.p>

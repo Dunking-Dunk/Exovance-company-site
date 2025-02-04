@@ -26,7 +26,7 @@ const MarqueeScrollText = () => {
     return (
         <div
             ref={containerRef}
-            className="relative z-10 w-full pt-24 flex flex-col items-center justify-center overflow-hidden service__outro"
+            className="relative z-10 w-full mt-24 flex flex-col items-center justify-center overflow-hidden"
         >
 
             <motion.div

@@ -15,12 +15,7 @@ const Header = (props: Props) => {
                 <div>
                     <CompanyName className='text-2xl' />
                 </div>
-                <ul className='flex items-center text-customGrayLight gap-x-12 font-normal text-base border-[1px] border-customGrayDark px-10 py-2 rounded-xl h-10' >
-                    <FollowerPointerCard><Link href={'/'} >About</Link></FollowerPointerCard>
-                    <FollowerPointerCard><Link href={'/'}>Services</Link></FollowerPointerCard>
-                    <FollowerPointerCard><Link href={'/'}>Team</Link></FollowerPointerCard>
-                    <FollowerPointerCard><Link href={'/'}>Contact</Link></FollowerPointerCard>
-                </ul>
+              
                 <div className='flex flex-col gap-y-2'>
                     <div className='flex gap-x-4 items-center'>
                         <h6 className='text-customGrayLight'>STABILITY</h6>

@@ -11,7 +11,8 @@ import { useGSAP } from "@gsap/react";
 gsap.registerPlugin(ScrollTrigger)
 gsap.registerPlugin(useGSAP);
 
-const Scene = dynamic(() => import('@/components/canva/Scene'), { ssr: false })
+const 
+Scene = dynamic(() => import('@/components/canva/Scene'), { ssr: false })
 
 type Props = {
     children: React.ReactNode

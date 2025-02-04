@@ -20,7 +20,7 @@ extend({ SimulationMaterial: SimulationMaterial });
 
 export const Particles = () => {
     const { theme } = useTheme()
-    const size = 128;
+    const size = 264;
     const points = useRef();
     const simulationMaterialRef = useRef();
     

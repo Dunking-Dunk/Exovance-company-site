@@ -7,13 +7,13 @@ import { Spotlight } from "@/components/ui/spotlight";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import GlitchText from "@/components/ui/glitch-text";
 import Arrow from "@/components/ui/arrow";
-import AnimatedParagraph from "@/components/ui/animated-paragraph";
 import Vision from "@/components/page/Vision";
 import Abstract from "@/components/page/Abstract";
 import Service from "@/components/page/Service";
 import ScrollTextAnimation from "@/components/global/Marquee";
 import ContactPage from "@/components/page/Contact";
 import Footer from "@/components/global/Footer";
+import About from "@/components/page/About";
 
 const Background = dynamic(() => import("@/components/canva/backgroundHero").then((mod: any) => mod.BackgroundHero), {
   ssr: false
@@ -61,13 +61,8 @@ export default function Home() {
       </section>
 
       {/* About Us */}
-      <section className="z-10 px-48 py-8 space-y-6 grid grid-rows-2 h-screen w-full antialiased">
-        <div className="flex items-center">
-          <TextGenerateEffect words="INNOVATE <br/> THE UNSEEN" duration={3} className="text-customGray text-9xl font-semibold" />
-        </div>
-        <AnimatedParagraph />
-      </section>
-
+      <About/>
+ 
       {/* Vision*/}
       <Vision />
 

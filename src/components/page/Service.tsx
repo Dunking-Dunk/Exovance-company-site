@@ -23,12 +23,10 @@ const Card = ({ title, description, index }: {
                     }))} />
                     <p className=" text-xl text-customGrayDark w-2/3 ">{description}</p>
                 </div>
-                <div className="flex-1 aspect-[16/9] rounded-lg overflow-hidden">
-                    <img
-                        src={`/assets/card-${index + 1}.jpeg`}
-                        alt={title}
-                        className="w-full h-full object-cover"
-                    />
+                <div className="flex-1 aspect-[16/9] rounded-lg overflow-hidden ">
+                <video       className="w-full h-full object-cover z-20" autoPlay muted loop  >
+      <source src={`/video/analytics.mp4`} type="video/mp4"/>
+     </video>
                 </div>
             </div>
         </div>
@@ -68,7 +66,7 @@ const Service = (props: Props) => {
 
 
             gsap.to(cardInner, {
-                y: `-${(cards.length - index) * 10}vh`,
+                y: `-${(cards.length - index) * 14}vh`,
                 ease: "none",
                 scrollTrigger: {
                     trigger: card,
@@ -87,14 +85,15 @@ const Service = (props: Props) => {
     }, [])
 
     return (
-        <div className=' w-full h-full'>
+        <>
             <div className='w-full h-full service__intro' />
             <div className='w-full h-full relative px-20' ref={container}>
                 {
                     services.map(({ title, description }, index) => <Card title={title} description={description} index={index} />)
                 }
             </div>
-        </div>
+            <div className='service__outro w-full h-60'/>
+        </>
     )
 }
 
