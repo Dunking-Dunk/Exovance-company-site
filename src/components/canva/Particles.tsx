@@ -43,7 +43,6 @@ export const Particles = () => {
                 scrub: 1,
                 onUpdate: (self) => {
                     const progress = self.progress;
-
                     // Section 1: Position A with increasing radius (0-0.15)
                     if (progress < 0.20) {
                         positionState.current.currentPosition = 'A';
@@ -236,7 +235,6 @@ export const Particles = () => {
                     />
                 </bufferGeometry>
                 <shaderMaterial
-                    blending={THREE.AdditiveBlending}
                     depthWrite={false}
                     fragmentShader={fragmentShader}
                     vertexShader={vertexShader}

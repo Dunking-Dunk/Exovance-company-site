@@ -12,7 +12,7 @@ export default function Scene({ ...props }) {
                 state.gl.toneMapping = THREE.AgXToneMapping;
                 state.gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             }}
-            dpr={[1, 2]}
+            dpr={[0.5, 1.5]}
             performance={{ min: 0.5 }}
         >
             <r3.Out />

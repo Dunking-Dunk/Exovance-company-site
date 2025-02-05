@@ -10,3 +10,4 @@
     "prefer-const": "warn",
     "next/no-img-element": "off"
   }
+}

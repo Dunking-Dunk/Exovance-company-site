@@ -6,6 +6,11 @@ import simulationFragmentShader from '!!raw-loader!./simulationFragmentShader.gl
 import * as THREE from "three";
 import { useGLTF } from '@react-three/drei';
 
+
+useGLTF.preload('/brain_3d.glb')
+useGLTF.preload('/human_head.glb')
+useGLTF.preload('/spider_robot.glb')
+
 const getRandomData = (width, height) => {
     const length = width * height * 4;
     const data = new Float32Array(length);
@@ -95,10 +100,6 @@ const robotVertices = () => {
 };
 
 
-useGLTF.preload('/brain_3d.glb')
-useGLTF.preload('/human_head.glb')
-useGLTF.preload('/spider_robot.glb')
-
 class SimulationMaterial extends THREE.ShaderMaterial {
     constructor(size) {
         // Initial sphere positions
@@ -112,7 +113,7 @@ class SimulationMaterial extends THREE.ShaderMaterial {
         positionsTexture.needsUpdate = true;
 
         // Brain model positions
-        const brainPositions = normalizeAndResizeVertices(brainVertices(), size, 2);
+        const brainPositions = normalizeAndResizeVertices(brainVertices(), size, 2 );
         const positionsBrainTexture = new THREE.DataTexture(
             brainPositions,
             size,

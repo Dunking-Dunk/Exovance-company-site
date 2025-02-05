@@ -5,9 +5,10 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import { useTheme } from 'next-themes'
 
-export function BackgroundHero(props: any) {
-    const { nodes }: { nodes: any } = useGLTF('/lost_orb_in_the_mountains-transformed.glb')
+export const BackgroundHero = (props: any) => {
     const { theme } = useTheme()
+    useGLTF.preload('/lost_orb_in_the_mountains-transformed.glb') 
+    const { nodes }: { nodes: any } = useGLTF('/lost_orb_in_the_mountains-transformed.glb')
 
     // Create a custom shader material
     const gradientMaterial1 = new THREE.ShaderMaterial({
@@ -19,7 +20,7 @@ export function BackgroundHero(props: any) {
         fragmentShader: `varying vec3 vPosition;
         void main() {
             float gradient = smoothstep(-0.3, -0.6, vPosition.y);
-            vec3 color = mix(vec3(${theme === 'light' ? '0.95, 0.95, 0.95' : '0.0, 0.0, 0.0'}), vec3(${theme === 'light' ? '0.85, 0.85, 0.85' : '0.1, 0.1, 0.1'}), gradient);
+            vec3 color = mix(vec3(${theme === 'light' ? ' 0.9490196078431372, 0.9568627450980393, 0.9568627450980393 ' : '0.0, 0.0, 0.0'}), vec3(${theme === 'light' ? '0.85, 0.85, 0.85' : '0.1, 0.1, 0.1'}), gradient);
             gl_FragColor = vec4(color, 1.0);
         }`,
     });
@@ -54,7 +55,7 @@ export function BackgroundHero(props: any) {
     });
 
     return (
-        <group {...props} dispose={null}>
+        <group {...props} dispose={null} >
             <mesh
                 geometry={nodes.mountain.geometry}
                 material={gradientMaterial1}
@@ -86,5 +87,3 @@ export function BackgroundHero(props: any) {
         </group>
     )
 }
-
-useGLTF.preload('/lost_orb_in_the_mountains-transformed.glb')

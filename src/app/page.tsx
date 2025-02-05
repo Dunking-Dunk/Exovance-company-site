@@ -21,7 +21,7 @@ const Background = dynamic(() => import("@/components/canva/backgroundHero").the
 const View = dynamic(() => import("@/components/canva/View").then((mod: any) => mod.View), {
   ssr: false,
   loading: () => (
-    <div className='absolute inset-0 z-10 h-full w-full flex-col items-center justify-center'>
+    <div className='absolute inset-0 z-10 h-full w-full flex items-center justify-center'>
       <svg className='-ml-1 mr-3 h-5 w-5 animate-spin text-black' fill='none' viewBox='0 0 24 24'>
         <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
         <path
@@ -61,11 +61,11 @@ export default function Home() {
         
         <TextGenerateEffect words="SCROLL TO DISCOVER" duration={3} className="font-base text-2xl text-customGrayDarker absolute bottom-28" />
         {/* @ts-ignore */}
-        <View className="absolute inset-0 z-[0]">
+        <View className="absolute inset-0 z-[0] ">
           <Background />
         </View>
       </section>
-
+      
       {/* About Us */}
       <About/>
  
@@ -89,7 +89,7 @@ export default function Home() {
 
       {/* particle */}
       {/* @ts-ignore */}
-      <View className="fixed inset-0 -z-10">
+      <View className="fixed inset-0 z-0">
         <Common />
         <Particles />
       </View>
