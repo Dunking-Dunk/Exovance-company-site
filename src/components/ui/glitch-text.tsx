@@ -10,11 +10,16 @@ interface GlitchTextProps {
     duration?: number;
     glitchIntensity?: number;
     delay?: number;
+    repeat?: boolean;
 }
 
 const generateRandomChar = () => {
-    const chars = '0123456789';
+    const chars = '01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+-=[]{}|;:,.<>?/~`';
     return chars[Math.floor(Math.random() * chars.length)];
+}
+
+const getRandomDelay = () => {
+    return Math.random() * 3 + 3; // Random delay between 20-23 seconds
 }
 
 const glitchVariants: any = {
@@ -48,16 +53,26 @@ const GlitchText = ({
     className = "",
     duration = 2,
     glitchIntensity = 0.3,
-    delay = 0
+    delay = 0,
+    repeat = false
 }: GlitchTextProps) => {
-    const [displayText, setDisplayText] = useState(Array(text.length).fill('0').join(''));
-    const [isGlitching, setIsGlitching] = useState(true);
+    const [mounted, setMounted] = useState(false);
+    const [displayText, setDisplayText] = useState(text);
+    const [isGlitching, setIsGlitching] = useState(false);
 
     const ref = React.useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "0px 0px -50px 0px" });
+    const isInView = useInView(ref, { once: !repeat, margin: "0px 0px -50px 0px" });
 
     useEffect(() => {
-        if (!isInView) return;
+        setMounted(true);
+        if (mounted) {
+            setIsGlitching(true);
+            setDisplayText(Array(text.length).fill('').map(generateRandomChar).join(''));
+        }
+    }, [mounted]);
+
+    useEffect(() => {
+        if (!isInView || !mounted) return;
 
         let interval: NodeJS.Timeout;
         let startTime = Date.now();
@@ -72,6 +87,16 @@ const GlitchText = ({
                 setDisplayText(text);
                 setIsGlitching(false);
                 clearInterval(interval);
+
+                if (repeat) {
+                    const nextDelay = getRandomDelay();
+                    setTimeout(() => {
+                        setIsGlitching(true);
+                        setDisplayText(Array(text.length).fill('').map(generateRandomChar).join(''));
+                        startTime = Date.now();
+                        interval = setInterval(updateText, 50);
+                    }, nextDelay * 1000);
+                }
                 return;
             }
 
@@ -93,10 +118,16 @@ const GlitchText = ({
             clearTimeout(timeoutId);
             clearInterval(interval);
         };
-    }, [isInView, text, duration, glitchIntensity, delay]);
+    }, [isInView, text, duration, glitchIntensity, delay, repeat, mounted]);
 
     return (
-        <motion.div ref={ref} className={cn('relative', className)} initial={{ opacity: 0 }} animate={isInView ? "visible" : {}} variants={glitchVariants}>
+        <motion.div 
+            ref={ref} 
+            className={cn('relative', className)} 
+            initial={{ opacity: 0 }} 
+            animate={isInView ? "visible" : {}} 
+            variants={glitchVariants}
+        >
             <motion.div
                 animate={isGlitching ? "glitch" : "visible"}
                 className="relative inline-block"
@@ -104,11 +135,11 @@ const GlitchText = ({
                 <span className="relative z-10">
                     {displayText}
                 </span>
-                {isGlitching && (
+                {isGlitching && mounted && (
                     <>
                         <motion.span
                             key="glitch-top"
-                            className="absolute top-0 left-0 w-full text-customGrayDarker opacity-50 mix-blend-screen"
+                            className="absolute top-0 left-0 w-full text-red-800 opacity-50 mix-blend-screen"
                             style={{ clipPath: 'inset(0 0 50% 0)' }}
                             animate={{ x: [-2, 1, -1, 2, 0] }}
                             transition={{ duration: 0.2, repeat: Infinity, repeatType: "reverse" }}
@@ -117,7 +148,7 @@ const GlitchText = ({
                         </motion.span>
                         <motion.span
                             key="glitch-bottom"
-                            className="absolute top-0 left-0 w-full text-customGrayLight opacity-50 mix-blend-screen"
+                            className="absolute top-0 left-0 w-full text-blue-800 opacity-50 mix-blend-screen"
                             style={{ clipPath: 'inset(50% 0 0 0)' }}
                             animate={{ x: [2, -1, 1, -2, 0] }}
                             transition={{ duration: 0.2, repeat: Infinity, repeatType: "reverse" }}

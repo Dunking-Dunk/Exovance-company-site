@@ -56,7 +56,13 @@ export default function Home() {
         <div className="absolute -bottom-[25px] right-[60px] -rotate-[40deg]">
           <Arrow />
         </div>
-        <GlitchText text="UNKNOWN" className="absolute md:top-[25%] top-[20%] right-[23%]  text-3xl font-light text-customGrayDarker" duration={2} />
+        <GlitchText 
+          text="UNKNOWN" 
+          className="absolute md:top-[25%] top-[20%] right-[23%] text-3xl font-light text-customGrayDarker" 
+          duration={2} 
+          glitchIntensity={0.5}
+          repeat={true}
+        />
         </div>
         
         <TextGenerateEffect words="SCROLL TO DISCOVER" duration={3} className="font-base text-2xl text-customGrayDarker absolute bottom-28" />
