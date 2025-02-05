@@ -3,7 +3,6 @@
 import { forwardRef, Suspense, useImperativeHandle, useRef } from 'react'
 import { OrbitControls, PerspectiveCamera, View as ViewImpl } from '@react-three/drei'
 import { Three } from '@/lib/components/Three'
-import LoadingScreen from '../global/loading-screen'
 
 export const Common = ({ color }: { color?: string }) => (
     <Suspense fallback={null}>
@@ -24,7 +23,6 @@ const View = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & {
 
     return (
         <>
-        <LoadingScreen/>
             <div ref={localRef} {...props} />
             <Three>
                 <ViewImpl track={localRef}>

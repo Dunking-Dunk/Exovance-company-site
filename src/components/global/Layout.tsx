@@ -1,12 +1,13 @@
 "use client"
 
 import dynamic from 'next/dynamic'
-import React, { useRef } from 'react'
+import React, {  useRef } from 'react'
 import Header from './Header'
 import { ReactLenis } from 'lenis/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from "@gsap/react";
+import LoadingScreen from './loading-screen'
 
 gsap.registerPlugin(ScrollTrigger)
 gsap.registerPlugin(useGSAP);
@@ -19,7 +20,7 @@ type Props = {
 }
 
 const Layout = ({ children }: Props) => {
-
+    
     const ref = useRef<HTMLDivElement | null>(null)
     return (
         <ReactLenis root options={{ wheelMultiplier: 1, touchMultiplier: 2, smoothWheel: true }}>
@@ -50,6 +51,7 @@ const Layout = ({ children }: Props) => {
                     eventSource={ref}
                     eventPrefix='client'
                 />
+                        <LoadingScreen/>
             </div >
         </ReactLenis >
     )

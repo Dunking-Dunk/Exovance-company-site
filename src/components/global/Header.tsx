@@ -13,9 +13,11 @@ const Header = (props: Props) => {
         <div className='fixed w-full top-0 z-50'>
             <div className='flex justify-between w-full md:px-36 px-2 md:py-8 py-4'>
                 <div>
+                    <Link href={'/'}>
                     <CompanyName className='text-2xl' />
+                    </Link>
+    
                 </div>
-              
                 <div className='flex flex-col gap-y-2'>
                     <div className='flex gap-x-4 items-center'>
                         <h6 className='text-customGrayLight'>STABILITY</h6>

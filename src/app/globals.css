@@ -64,3 +64,12 @@ body {
   font-weight: 200;
   font-style: normal;
 }
+
+
+
+.revealer svg circle {
+  background-color: var(--custom-black);
+  fill: var(--custom-black);
+  stroke: var(--custom-gray);
+  stroke-width: 5px;
+}
