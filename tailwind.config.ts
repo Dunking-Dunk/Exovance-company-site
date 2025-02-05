@@ -38,10 +38,12 @@ const config: Config = {
         },
         spotlight: {
           '0%': {
+            // @ts-ignore
             opacity: 0,
             transform: 'translate(-72%, -62%) scale(0.5)'
           },
           '100%': {
+               // @ts-ignore
             opacity: 1,
             transform: 'translate(-50%,-40%) scale(1)'
           }

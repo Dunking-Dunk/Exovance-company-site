@@ -11,6 +11,6 @@ export const getVariableColor = (variableName: string) => {
   return getComputedStyle(root).getPropertyValue(variableName);
 };
 
-const damp = (current: number, target: number, lambda: number, dt: number) => {
+export const damp = (current: number, target: number, lambda: number, dt: number) => {
   return THREE.MathUtils.damp(current, target, lambda, dt);
 };
