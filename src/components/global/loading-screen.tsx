@@ -33,7 +33,7 @@ const LoadingScreen = ({ onLoadingComplete }: Props) => {
                 const xPosition = -900 + i * 180;
                 tl.to(".count", {
                     x: xPosition,
-                    duration: 0.50,
+                    duration: 0.85,
                     ease: "power4.inOut",
                     onStart: () => {
                         gsap.to(".count-wrapper", {
