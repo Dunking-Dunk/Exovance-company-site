@@ -20,7 +20,6 @@ type Props = {
 }
 
 const Layout = ({ children }: Props) => {
-    
     const ref = useRef<HTMLDivElement | null>(null)
     return (
         <ReactLenis root options={{ wheelMultiplier: 1, touchMultiplier: 2, smoothWheel: true }}>
