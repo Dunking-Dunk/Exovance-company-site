@@ -22,7 +22,7 @@ const Layout = ({ children }: Props) => {
 
     const ref = useRef<HTMLDivElement | null>(null)
     return (
-        <ReactLenis root>
+        <ReactLenis root options={{ wheelMultiplier: 1, touchMultiplier: 2, smoothWheel: true }}>
             <div
                 ref={ref}
                 style={{
@@ -30,7 +30,8 @@ const Layout = ({ children }: Props) => {
                     width: '100%',
                     height: '100%',
                     overflow: 'auto',
-                    touchAction: 'auto'
+                    touchAction: 'pan-y',
+                    WebkitOverflowScrolling: 'touch'
                 }}
                 className='bg-customBlack'
 

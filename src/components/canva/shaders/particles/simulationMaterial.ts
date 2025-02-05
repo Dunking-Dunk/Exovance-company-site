@@ -21,10 +21,9 @@ const getRandomData = (width, height) => {
     return data;
 };
 
-const normalizeAndResizeVertices = (vertices, size) => {
+const normalizeAndResizeVertices = (vertices, size, scale) => {
     const normalizedData = new Float32Array(size * size * 4);
     const vertexCount = vertices.length / 3;
-    const scale = 2.0; // Adjust scale factor as needed
 
     for (let i = 0; i < size * size; i++) {
         const sourceIdx = (i % vertexCount) * 3;
@@ -42,6 +41,7 @@ const normalizeAndResizeVertices = (vertices, size) => {
 
 const brainVertices = () => {
     const { nodes } = useGLTF('/brain_3d.glb');
+
     if (!nodes.Object_4) return new Float32Array();
     const positions = nodes.Object_4.geometry.attributes.position.array;
     return positions;
@@ -49,13 +49,55 @@ const brainVertices = () => {
 
 const humanVertices = () => {
     const { nodes } = useGLTF('/human_head.glb');
+
     if (!nodes.Object_4) return new Float32Array();
     const positions = nodes.Object_4.geometry.attributes.position.array;
     return positions;
 };
 
+
+const robotVertices = () => {
+    const { nodes } = useGLTF('/spider_robot.glb');
+
+    let allVertices = [];
+    const collectVertices = (object) => {
+        for (let i of object) {
+            if (i.geometry && i.geometry.attributes.position.array) {
+                const positions = Array.from(i.geometry.attributes.position.array);
+                allVertices.push(...positions);
+            }
+    
+            if (i.children) {
+                collectVertices(i.children)
+            }else break
+
+        }
+      
+     
+    };
+
+    if (nodes.Sketchfab_model) {
+        if (nodes.Sketchfab_model.children) {
+          
+                collectVertices(nodes.Sketchfab_model.children)
+        }
+    }
+    
+
+    // Start traversal from the root node
+    // if (nodes) {
+    //         for (let i in nodes) {
+    //             collectVertices(nodes[i]);
+    //         }
+    // }
+
+    return allVertices.length > 0 ? new Float32Array(allVertices) : new Float32Array();
+};
+
+
 useGLTF.preload('/brain_3d.glb')
 useGLTF.preload('/human_head.glb')
+useGLTF.preload('/spider_robot.glb')
 
 class SimulationMaterial extends THREE.ShaderMaterial {
     constructor(size) {
@@ -70,7 +112,7 @@ class SimulationMaterial extends THREE.ShaderMaterial {
         positionsTexture.needsUpdate = true;
 
         // Brain model positions
-        const brainPositions = normalizeAndResizeVertices(brainVertices(), size);
+        const brainPositions = normalizeAndResizeVertices(brainVertices(), size, 2);
         const positionsBrainTexture = new THREE.DataTexture(
             brainPositions,
             size,
@@ -81,7 +123,7 @@ class SimulationMaterial extends THREE.ShaderMaterial {
         positionsBrainTexture.needsUpdate = true;
 
         // Human head model positions
-        const humanPositions = normalizeAndResizeVertices(humanVertices(), size);
+        const humanPositions = normalizeAndResizeVertices(humanVertices(), size, 1);
         const positionsHumanTexture = new THREE.DataTexture(
             humanPositions,
             size,
@@ -91,11 +133,23 @@ class SimulationMaterial extends THREE.ShaderMaterial {
         );
         positionsHumanTexture.needsUpdate = true;
 
+        // Robot model positions
+        const robotPositions = normalizeAndResizeVertices(robotVertices(), size, 1.);
+        const positionsRobotTexture = new THREE.DataTexture(
+            robotPositions,
+            size,
+            size,
+            THREE.RGBAFormat,
+            THREE.FloatType
+        );
+        positionsRobotTexture.needsUpdate = true;
+
         super({
             uniforms: {
                 positionsA: { value: positionsTexture },
                 positionsB: { value: positionsBrainTexture },
                 positionsC: { value: positionsHumanTexture },
+                positionsD: { value: positionsRobotTexture },
                 uTime: { value: 0 },
                 uFrequency: { value: 0.25 },
                 uMouse: { value: new THREE.Vector3(0, 0, 0) },
@@ -103,7 +157,7 @@ class SimulationMaterial extends THREE.ShaderMaterial {
                 uScroll: { value: 0 },
                 uTransitionProgress: { value: 0 },
                 uRadiusScale: { value: 1 },
-                uCurrentPosition: { value: 0 } // 0: A, 1: A-B transition, 2: B-C transition
+                uCurrentPosition: { value: 0 } // 0: A, 1: A-B transition, 2: B-C transition, 3: C-D transition
             },
             vertexShader: simulationVertexShader,
             fragmentShader: simulationFragmentShader,

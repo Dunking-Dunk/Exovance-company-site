@@ -3,9 +3,11 @@
 import React from 'react'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
+import { useTheme } from 'next-themes'
 
 export function BackgroundHero(props: any) {
     const { nodes }: { nodes: any } = useGLTF('/lost_orb_in_the_mountains-transformed.glb')
+    const { theme } = useTheme()
 
     // Create a custom shader material
     const gradientMaterial1 = new THREE.ShaderMaterial({
@@ -17,7 +19,7 @@ export function BackgroundHero(props: any) {
         fragmentShader: `varying vec3 vPosition;
         void main() {
             float gradient = smoothstep(-0.3, -0.6, vPosition.y);
-            vec3 color = mix(vec3(0.0), vec3(0.1), gradient);
+            vec3 color = mix(vec3(${theme === 'light' ? '0.95, 0.95, 0.95' : '0.0, 0.0, 0.0'}), vec3(${theme === 'light' ? '0.85, 0.85, 0.85' : '0.1, 0.1, 0.1'}), gradient);
             gl_FragColor = vec4(color, 1.0);
         }`,
     });
@@ -31,7 +33,7 @@ export function BackgroundHero(props: any) {
         fragmentShader: `varying vec3 vPosition;
         void main() {
             float gradient = smoothstep(0.1, -0.5, vPosition.y);
-            vec3 color = mix(vec3(0.0), vec3(0.1), gradient);
+            vec3 color = mix(vec3(${theme === 'light' ? '0.95, 0.95, 0.95' : '0.0, 0.0, 0.0'}), vec3(${theme === 'light' ? '0.85, 0.85, 0.85' : '0.1, 0.1, 0.1'}), gradient);
             gl_FragColor = vec4(color, 1.0);
         }`,
     });
@@ -46,11 +48,10 @@ export function BackgroundHero(props: any) {
         fragmentShader: `varying vec3 vPosition;
         void main() {
             float gradient = smoothstep(0.2,-0.2, vPosition.y);
-            vec3 color = mix(vec3(0.0), vec3(0.1), gradient);
+            vec3 color = mix(vec3(${theme === 'light' ? '0.95, 0.95, 0.95' : '0.0, 0.0, 0.0'}), vec3(${theme === 'light' ? '0.85, 0.85, 0.85' : '0.1, 0.1, 0.1'}), gradient);
             gl_FragColor = vec4(color, 1.0);
         }`,
     });
-
 
     return (
         <group {...props} dispose={null}>

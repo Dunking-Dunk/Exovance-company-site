@@ -11,7 +11,7 @@ type Props = {}
 const Header = (props: Props) => {
     return (
         <div className='fixed w-full top-0 z-50'>
-            <div className='flex justify-between w-full px-36 py-8'>
+            <div className='flex justify-between w-full md:px-36 px-2 md:py-8 py-4'>
                 <div>
                     <CompanyName className='text-2xl' />
                 </div>
@@ -20,7 +20,7 @@ const Header = (props: Props) => {
                     <div className='flex gap-x-4 items-center'>
                         <h6 className='text-customGrayLight'>STABILITY</h6>
                         <Circle color='green' />
-                        <ModeToggle />
+                        <ModeToggle/>
                     </div>
                     <WaveStatus />
                 </div>

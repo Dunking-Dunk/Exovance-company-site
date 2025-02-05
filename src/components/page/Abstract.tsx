@@ -28,7 +28,7 @@ const Abstract = () => {
       text: "INNOVATE",
       scrollRange: [0.3, 0.7],
       outputRange: [-100, 50],
-      top: "50%",
+      top: "70%",
       left: "15%",
       delay: 0.5,
       duration: 2.8,
@@ -39,7 +39,7 @@ const Abstract = () => {
       scrollRange: [0.25, 0.75],
       outputRange: [-100, 50],
       top: "20%",
-      right: "20%",
+      right: "10%",
       delay: 0.8,
       duration: 3.0,
       spring: { stiffness: 80, damping: 25 }
@@ -68,7 +68,7 @@ const Abstract = () => {
       text: "DISRUPT",
       scrollRange: [0.4, 0.6],
       outputRange: [-80, 70],
-      top: "55%",
+      top: "85%",
       right: "15%",
       delay: 0.9,
       duration: 3.1,
@@ -78,8 +78,8 @@ const Abstract = () => {
       text: "EVOLVE",
       scrollRange: [0.2, 0.8],
       outputRange: [-85, 65],
-      top: "20%",
-      left: "30%",
+      top: "60%",
+      left: "10%",
       delay: 1.1,
       duration: 3.3,
       spring: { stiffness: 85, damping: 18 }
@@ -87,7 +87,7 @@ const Abstract = () => {
   ];
 
   return (
-    <div className="relative h-screen overflow-hidden flex items-center justify-center px-8 md:px-16 lg:px-80 py-60" ref={container}>
+    <div className="relative h-screen overflow-hidden flex items-center justify-center px-4 md:px-16 lg:px-80 md:py-60 py-10" ref={container}>
       {tagVariants.map(({ text, scrollRange, outputRange, top, left, right, delay, duration, spring }, index) => {
         const x = useTransform(scrollYProgress, scrollRange, outputRange);
         const opacity = useTransform(scrollYProgress,
@@ -115,8 +115,8 @@ const Abstract = () => {
               duration
             }}
           >
-            <div className="group cursor-pointer">
-              <span className="bg-customGray text-customBlack px-4 py-1 rounded-sm text-sm font-semibold
+            <div className="group cursor-pointer z-0">
+              <span className="bg-customGray text-customBlack md:px-4 px-2 md:py-1 rounded-sm text-sm font-semibold
                            transition-all duration-300 ease-in-out
                            hover:bg-gray-800 hover:text-gray-200
                            group-hover:shadow-lg">

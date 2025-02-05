@@ -16,7 +16,7 @@ const Arrow = () => (
     <motion.line
       x1="10"
       y1="7.5"
-      x2="190"
+      x2="70"
       y2="7.5"
       stroke="rgb(161, 161, 170)"
       strokeWidth="3"
@@ -31,7 +31,7 @@ const Arrow = () => (
       fill="rgb(161, 161, 170)"
       initial={{ scale: 0.7 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 2, delay: 1, repeat: Infinity }}
+      transition={{ duration: 2, delay: 1, repeat: Infinity, repeatType: "reverse" }}
     />
   </motion.svg>
 );

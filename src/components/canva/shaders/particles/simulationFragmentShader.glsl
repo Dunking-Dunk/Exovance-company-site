@@ -4,6 +4,7 @@
 uniform sampler2D positionsA;
 uniform sampler2D positionsB;
 uniform sampler2D positionsC;
+uniform sampler2D positionsD;
 uniform float uTime;
 uniform float uFrequency;
 uniform vec3 uMouse;
@@ -211,10 +212,10 @@ float snoise(vec3 v){
             
             void main(){
                 vec3 pos;
-                vec3 targetPos;
                 vec4 posA = texture2D(positionsA, vUv);
                 vec4 posB = texture2D(positionsB, vUv);
                 vec4 posC = texture2D(positionsC, vUv);
+                vec4 posD = texture2D(positionsD, vUv);
                 
                 // Calculate Position A with all effects
                 vec3 positionAWithEffects;
@@ -268,12 +269,67 @@ float snoise(vec3 v){
                     pos = mix(positionB, positionC, uTransitionProgress);
                     pos += curlNoise(pos * uFrequency + uTime * 0.1) * 0.05;
                 }
-                // Transition C back to A
+                // Transition C to D (Robot)
                 else if (uCurrentPosition == 3.0) {
                     vec3 positionC = posC.xyz;
-                    pos = mix(positionC, positionAWithEffects, uTransitionProgress);
-                    // Gradually increase the curl noise as we transition back to A
-                    pos += curlNoise(pos * uFrequency + uTime * 0.1) * mix(0.05, 0.1, uTransitionProgress);
+                    vec3 positionD = posD.xyz;
+                    pos = mix(positionC, positionD, uTransitionProgress);
+                    // Add minimal movement during transition
+                    float transitionNoise = snoise(pos + uTime * 0.1) * (1.0 - uTransitionProgress) * 0.02;
+                     pos += curlNoise(pos * uFrequency + uTime * 0.1) * 0.05;
+                   pos += vec3(transitionNoise);
+                }
+                // Robot State
+                else if (uCurrentPosition == 4.0) {
+                    pos = posD.xyz;
+                    // Add very subtle movement to maintain some life
+                    float staticNoise = snoise(pos + uTime * 0.05) * 0.01;
+                    pos += vec3(staticNoise);
+                }
+                // Transition D to Semi-sphere
+                else if (uCurrentPosition == 5.0) {
+                    float theta = vUv.x * 2.0 * PI;
+                    float phi = vUv.y * PI * 0.5; // Half PI for semi-sphere
+                    float r = 5.; // Large radius
+                    
+                    // Create semi-sphere facing right by swapping axes and adding offset
+                    vec3 spherePos = vec3(
+                        r * cos(phi) - 3.0, // X axis offset to right
+                        r * sin(phi) * sin(theta),
+                        r * sin(phi) * cos(theta)
+                    );
+                    
+                    // Transition from robot to sphere
+                    pos = mix(posD.xyz, spherePos, uTransitionProgress);
+                    
+                    // Add smooth movement during transition
+                    vec3 noise = curlNoise(pos * 0.5 + uTime * 0.1);
+                    pos += noise * (1.0 - uTransitionProgress) * 0.1;
+                }
+                // Semi-sphere to A
+                else if (uCurrentPosition == 6.0) {
+                    float theta = vUv.x * 2.0 * PI;
+                    float phi = vUv.y * PI * 0.5;
+                    float r = 5. * (1.0 - uTransitionProgress); // Shrinking radius
+                    
+                    // Maintain right-facing orientation and position while transitioning
+                    vec3 spherePos = vec3(
+                        r * cos(phi) - 3.0 * (1.0 - uTransitionProgress), // Gradually remove offset during transition
+                        r * sin(phi) * sin(theta),
+                        r * sin(phi) * cos(theta)
+                    );
+
+                    // Mix between sphere and position A
+                    pos = mix(spherePos, positionAWithEffects, uTransitionProgress);
+               
+                    // Add dynamic movement
+                    vec3 noise = curlNoise(pos * uFrequency + uTime * 0.1);
+                    pos += noise * mix(0.1, 0.05, uTransitionProgress);
+                }
+                // Transition back to A
+                else if (uCurrentPosition == 7.0) {
+                    pos = mix(posD.xyz, positionAWithEffects, uTransitionProgress);
+                    pos += curlNoise(pos * uFrequency + uTime * 0.1) * mix(0.08, 0.1, uTransitionProgress);
                 }
 
                 gl_FragColor = vec4(pos, 1.0);

@@ -47,7 +47,7 @@ const WaveStatus = () => {
     });
 
     return (
-        <svg width="250" height="70" viewBox="0 0 350 80" xmlns="http://www.w3.org/2000/svg" stroke="var(--custom-gray)" fill="none" strokeWidth="3" overflow={'hidden'}>
+        <svg width="230" height="70" viewBox="20 0 320 80" xmlns="http://www.w3.org/2000/svg" stroke="var(--custom-gray)" fill="none" strokeWidth="3" overflow={'hidden'}>
             <defs>
                 <clipPath id="clipWave">
                     <rect x="25" y="5" width="280" height="70" rx="25" ry="25" />

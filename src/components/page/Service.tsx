@@ -16,24 +16,26 @@ const Card = ({ title, description, index }: {
 }) => {
     return (
         <div className={`relative service__card`} id={`card-${index + 1}`}>
-            <div className="relative flex w-full h-full p-8 gap-16 will-change-transform service__card__inner bg-customBlack  border-b-2 border-b-customGray">
-                <div className="flex-[3] space-y-6">
-                    <TypewriterEffectSmooth className="text-7xl font-bold text-customGray " words={title.split(' ').map((x) => ({
-                        text: x
-                    }))} />
-                    <p className=" text-xl text-customGrayDark w-2/3 ">{description}</p>
+            <div className="relative flex flex-col md:flex-row w-full h-full py-4 md:p-8 md:gap-16 gap-6 will-change-transform service__card__inner bg-customBlack border-b-2 border-b-customGray">
+                <div className="mg:flex-[3] flex-[2] space-y-2 md:space-y-6">
+                    <TypewriterEffectSmooth 
+          
+                        words={title.split(' ').map((x) => ({
+                            text: x,
+                            className: 'text-2xl md:text-5xl lg:text-7xl font-bold text-customGray'
+                        }))} 
+                    />
+                    <p className="text-sm md:text-xl text-customGrayDark w-full md:w-2/3">{description}</p>
                 </div>
-                <div className="flex-1 aspect-[16/9] rounded-lg overflow-hidden ">
-                <video       className="w-full h-full object-cover z-20" autoPlay muted loop  >
-      <source src={`/video/analytics.mp4`} type="video/mp4"/>
-     </video>
+                <div className="md:flex-1 flex-[2] aspect-[16/9] rounded-lg overflow-hidden">
+                    <video className="w-full h-full object-cover z-20" autoPlay muted loop>
+                        <source src={`/video/analytics.mp4`} type="video/mp4"/>
+                    </video>
                 </div>
             </div>
         </div>
     );
 };
-
-
 
 const Service = (props: Props) => {
     const container = useRef(null)
@@ -43,7 +45,7 @@ const Service = (props: Props) => {
 
         ScrollTrigger.create({
             trigger: cards[0],
-            start: "top 50%",
+            start: "top 35%",
             endTrigger: cards[cards.length - 1],
             end: "top 30%",
             pin: '.service__intro',
@@ -54,23 +56,21 @@ const Service = (props: Props) => {
             const isLastCard = index === cards.length - 1;
             const cardInner = card.querySelector(".service__card__inner");
 
-
             ScrollTrigger.create({
                 trigger: card,
-                start: "top 50%",
+                start: "top 35%",
                 endTrigger: ".service__outro",
                 end: "top 65%",
                 pin: true,
                 pinSpacing: false,
             });
 
-
             gsap.to(cardInner, {
-                y: `-${(cards.length - index) * 14}vh`,
+                y: `-${(cards.length - index) * (window.innerWidth < 768 ? 8 : 12)}vh`, // Adjust animation for mobile
                 ease: "none",
                 scrollTrigger: {
                     trigger: card,
-                    start: "top 50%",
+                    start: "top 35%",
                     endTrigger: ".service__outro",
                     end: "top 65%",
                     scrub: true,
@@ -87,12 +87,14 @@ const Service = (props: Props) => {
     return (
         <>
             <div className='w-full h-full service__intro' />
-            <div className='w-full h-full relative px-20' ref={container}>
+            <div className='w-full h-full relative px-4 sm:px-8 md:px-20' ref={container}>
                 {
-                    services.map(({ title, description }, index) => <Card title={title} description={description} index={index} />)
+                    services.map(({ title, description }, index) => (
+                        <Card key={index} title={title} description={description} index={index} />
+                    ))
                 }
             </div>
-            <div className='service__outro w-full h-60'/>
+            <div className='service__outro w-full h-40 md:h-60'/>
         </>
     )
 }

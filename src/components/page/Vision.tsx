@@ -29,7 +29,7 @@ const Vision = () => {
                     ease: "power2.inOut",
                     inertia: false
                 },
-                anticipatePin: 2
+                anticipatePin: 1
             }
         });
 
@@ -102,30 +102,30 @@ const Vision = () => {
 
     return (
         <div ref={containerRef} className="w-full h-screen overflow-hidden relative z-10">
-              <p className="absolute top-1/3 left-[15%] text-xl text-customGrayDark">Indian Tamil Nadu <br />Based start-up</p>
-              <p className=" absolute top-1/4 right-[15%] text-xl text-customGrayDark">We define the <br />  future</p>
-              <p className=" absolute top-3/4 left-[15%] text-xl text-customGrayDark">UNFAZED</p>
-            <section className="pin-section absolute top-0 left-0 w-full h-full  flex items-center justify-center" data-section="0">
+              <p className="absolute top-1/3 left-[5%] md:left-[15%] text-base md:text-xl text-customGrayDark">Indian Tamil Nadu <br />Based start-up</p>
+              <p className="absolute top-1/4 right-[5%] md:right-[15%] text-base md:text-xl text-customGrayDark">We define the <br />  future</p>
+              <p className="absolute top-3/4 left-[5%] md:left-[15%] text-base md:text-xl text-customGrayDark">UNFAZED</p>
+            <section className="pin-section absolute top-0 left-0 w-full h-full flex items-center justify-center" data-section="0">
                 <span className="overflow-hidden relative">
-                    <h3 className="text-9xl font-bold text-customGrayDark pin-section-text">IMAGINE</h3>
+                    <h3 className="text-5xl md:text-7xl lg:text-9xl font-bold text-customGrayDark pin-section-text">IMAGINE</h3>
                 </span>
-                <p className="section-description font-normal absolute bottom-[20%] right-[20%] text-xl text-customGrayDark w-48">
+                <p className="section-description font-normal absolute bottom-[15%] md:bottom-[20%] right-[5%] md:right-[20%] text-base md:text-xl text-customGrayDark w-36 md:w-48">
                     Represents creativity and visionary thinking.
                 </p>
             </section>
             <section className="pin-section absolute top-0 left-0 w-full h-full flex items-center justify-center" data-section="1">
                 <span className="overflow-hidden relative">
-                    <h3 className="text-9xl font-bold text-customGrayDark pin-section-text">INVENT</h3>
+                    <h3 className="text-5xl md:text-7xl lg:text-9xl font-bold text-customGrayDark pin-section-text">INVENT</h3>
                 </span>
-                <p className="section-description font-normal absolute bottom-[20%] right-[20%] text-xl text-customGrayDark w-48">
+                <p className="section-description font-normal absolute bottom-[15%] md:bottom-[20%] right-[5%] md:right-[20%] text-base md:text-xl text-customGrayDark w-36 md:w-48">
                     Reflects building something entirely new
                 </p>
             </section>
             <section className="pin-section absolute top-0 left-0 w-full h-full flex items-center justify-center" data-section="2">
                 <span className="overflow-hidden relative">
-                    <h3 className="text-9xl font-bold text-customGrayDark pin-section-text">EXOVANCE</h3>
+                    <h3 className="text-5xl md:text-7xl lg:text-9xl font-bold text-customGrayDark pin-section-text">EXOVANCE</h3>
                 </span>
-                <p className="section-description font-normal absolute bottom-[20%] right-[20%] text-xl text-customGrayDark w-48">
+                <p className="section-description font-normal absolute bottom-[15%] md:bottom-[20%] right-[5%] md:right-[20%] text-base md:text-xl text-customGrayDark w-36 md:w-48">
                     Highlights improving and pushing boundaries.
                 </p>
             </section>

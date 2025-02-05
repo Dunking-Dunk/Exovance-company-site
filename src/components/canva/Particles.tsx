@@ -20,10 +20,10 @@ extend({ SimulationMaterial: SimulationMaterial });
 
 export const Particles = () => {
     const { theme } = useTheme()
-    const size = 264;
+    const size = 200;
     const points = useRef();
     const simulationMaterialRef = useRef();
-    
+
     // Add state for position transitions
     const positionState = useRef({
         currentPosition: 'A',
@@ -43,54 +43,63 @@ export const Particles = () => {
                 scrub: 1,
                 onUpdate: (self) => {
                     const progress = self.progress;
-                    
-                    // Section 1: Position A with increasing radius (0-0.20)
+
+                    // Section 1: Position A with increasing radius (0-0.15)
                     if (progress < 0.20) {
                         positionState.current.currentPosition = 'A';
                         positionState.current.radiusScale = 1 + (progress * 10);
                         positionState.current.transitionProgress = 0;
                     }
-                    // Section 2: Transition A to B (0.20-0.30)
+                    // First Vision Section - Transition to and stay at Position B (0.20-0.30)
                     else if (progress < 0.30) {
                         positionState.current.currentPosition = 'A-B';
-                        positionState.current.transitionProgress = (progress - 0.20) / (0.30 - 0.20);
+                        // First 30% of the section is transition, rest stays at B
+                        const sectionProgress = (progress - 0.20) / (0.30 - 0.20);
+                        positionState.current.transitionProgress = Math.min(1, sectionProgress * 3);
+                        positionState.current.radiusScale = 5;
                     }
-                    // Section 3: Transition B to C (0.30-0.40)
+                    // Second Vision Section - Transition to and stay at Position C (0.30-0.40)
                     else if (progress < 0.40) {
                         positionState.current.currentPosition = 'B-C';
-                        positionState.current.transitionProgress = (progress - 0.30) / (0.40 - 0.30);
-                    }
-                    // Section 4: Transition C back to A (0.40-0.50)
-                    else if (progress < 0.50) {
-                        positionState.current.currentPosition = 'C-A';
-                        positionState.current.transitionProgress = (progress - 0.40) / (0.50 - 0.40);
-                        // Start with a small radius when transitioning back
+                        // First 30% of the section is transition, rest stays at C
+                        const sectionProgress = (progress - 0.30) / (0.40 - 0.30);
+                        positionState.current.transitionProgress = Math.min(1, sectionProgress * 3);
                         positionState.current.radiusScale = 1;
                     }
-                    // Section 5: Position A with increasing radius (0.50-0.90)
-                    else if (progress < 0.86) {
-                        positionState.current.currentPosition = 'A';
-                        // Scale radius from 1 to 11 in this section
-                        positionState.current.radiusScale = 1 + ((progress - 0.50) * 22.5);
-                        positionState.current.transitionProgress = 0;
+                    // Third Vision Section - Transition to and stay at Position D (0.40-0.55)
+                    else if (progress < 0.55) {
+                        positionState.current.currentPosition = 'C-D';
+                        // First 30% of the section is transition, rest stays at D
+                        const sectionProgress = (progress - 0.40) / (0.55 - 0.40);
+                        positionState.current.transitionProgress = Math.min(1, sectionProgress * 3);
+                        positionState.current.radiusScale = 1;
                     }
-                    // Section 6: Final transition back to Position A with radius 1 (0.90-1.0)
+                    // Transition D to Semi-sphere (0.55-0.80)
+                    else if (progress < 0.80) {
+                        positionState.current.currentPosition = 'D-S';
+                        const sectionProgress = (progress - 0.55) / (0.80 - 0.55);
+                        positionState.current.transitionProgress = sectionProgress;
+                        positionState.current.radiusScale = 1;
+                    }
+                    // Semi-sphere to A (0.80-1.0)
                     else {
-                        positionState.current.currentPosition = 'A';
-                        // Smoothly transition radius back to 1
-                        const finalProgress = (progress - 0.86) / 0.1;
-                        positionState.current.radiusScale = 11 * (1 - finalProgress) + 1;
-                        positionState.current.transitionProgress = 0;
+                        positionState.current.currentPosition = 'S-A';
+                        const finalProgress = (progress - 0.80) / (0.95 - 0.80);
+                        positionState.current.transitionProgress = finalProgress;
+                        positionState.current.radiusScale = 1;
                     }
 
                     if (simulationMaterialRef.current) {
                         simulationMaterialRef.current.uniforms.uTransitionProgress.value = positionState.current.transitionProgress;
                         simulationMaterialRef.current.uniforms.uRadiusScale.value = positionState.current.radiusScale;
-                        simulationMaterialRef.current.uniforms.uCurrentPosition.value = 
+                        simulationMaterialRef.current.uniforms.uCurrentPosition.value =
                             positionState.current.currentPosition === 'A' ? 0 :
                             positionState.current.currentPosition === 'A-B' ? 1 :
                             positionState.current.currentPosition === 'B-C' ? 2 :
-                            positionState.current.currentPosition === 'C-A' ? 3 : 0;
+                            positionState.current.currentPosition === 'C-D' ? 3 :
+                            positionState.current.currentPosition === 'D' ? 4 :
+                            positionState.current.currentPosition === 'D-S' ? 5 :
+                            positionState.current.currentPosition === 'S-A' ? 6 : 0;
                     }
                 }
             }

@@ -176,12 +176,11 @@ export const TypewriterEffectSmooth = ({
                 }}
                 transition={{
                     duration: 0.7,
-
                     repeat: Infinity,
                   
                 }}
                 className={cn(
-                    "block rounded-sm w-[4px] h-4 sm:h-6 xl:h-12 bg-customGrayDarker",
+                    "block rounded-sm w-[4px] h-10 sm:h-6 xl:h-16 bg-customGrayDarker",
                     cursorClassName
                 )}
             ></motion.span>
