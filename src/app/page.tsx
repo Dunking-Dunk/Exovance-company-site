@@ -13,7 +13,6 @@ import ScrollTextAnimation from "@/components/global/Marquee";
 import ContactPage from "@/components/page/Contact";
 import Footer from "@/components/global/Footer";
 import About from "@/components/page/About";  
-import CompanyName3D from "@/components/canva/Company-name-3d";
 
 const Background = dynamic(() => import("@/components/canva/backgroundHero").then((mod: any) => mod.BackgroundHero), {
   ssr: false

@@ -28,7 +28,7 @@ const WaveStatus = () => {
 
     useMotionValueEvent(scrollY, "change", (current: any) => {
         const diff = current - scrollY.getPrevious();
-        if (diff < 2 && diff > -2) {
+        if (diff < 0.5 && diff > -0.5) {
             setScrollDirection("none");
         } else {
             setScrollDirection(diff > 0 ? "down" : "up");

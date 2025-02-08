@@ -35,6 +35,10 @@
   }
 }
 
+* {
+  transition: background-color  1s ease;
+}
+
 body {
   color: var(--custom-gray);
   font-family: "Exo", serif;

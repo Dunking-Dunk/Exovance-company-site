@@ -29,6 +29,7 @@ const View = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & {
                     {children}
                     {orbit && <OrbitControls />}
                 </ViewImpl>
+
             </Three>
         </>
     )
