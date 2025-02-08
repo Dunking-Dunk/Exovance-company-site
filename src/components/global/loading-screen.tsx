@@ -20,56 +20,125 @@ const LoadingScreen = ({ onLoadingComplete }: Props) => {
         const stepDistance = finalPosition / 6;
         const tl = gsap.timeline();
 
-        // Only start animation when progress is complete
-        if (progress === 100 && !active) {
+        // Define progress thresholds for each animation
+        const thresholds = [20, 40, 60, 80, 90, 100];
+        
+        // Initial position when loading starts
+        if (progress > 0 && progress <= thresholds[0]) {
             tl.to(".count", {
                 x: -900,
                 duration: 0.85,
-                delay: 0.5,
                 ease: "power4.inOut"
             });
+        }
+        
+        // Animate based on progress thresholds
+        if (progress > thresholds[0] && progress <= thresholds[1]) {
+            tl.to(".count", {
+                x: -720, // -900 + (1 * 180)
+                duration: 0.85,
+                ease: "power4.inOut",
+                onStart: () => {
+                    gsap.to(".count-wrapper", {
+                        x: stepDistance * 1,
+                        duration: 0.85,
+                        ease: "power4.inOut",
+                    });
+                }
+            });
+        }
+        
+        if (progress > thresholds[1] && progress <= thresholds[2]) {
+            tl.to(".count", {
+                x: -540, // -900 + (2 * 180)
+                duration: 0.85,
+                ease: "power4.inOut",
+                onStart: () => {
+                    gsap.to(".count-wrapper", {
+                        x: stepDistance * 2,
+                        duration: 0.85,
+                        ease: "power4.inOut",
+                    });
+                }
+            });
+        }
+        
+        if (progress > thresholds[2] && progress <= thresholds[3]) {
+            tl.to(".count", {
+                x: -360, // -900 + (3 * 180)
+                duration: 0.85,
+                ease: "power4.inOut",
+                onStart: () => {
+                    gsap.to(".count-wrapper", {
+                        x: stepDistance * 3,
+                        duration: 0.85,
+                        ease: "power4.inOut",
+                    });
+                }
+            });
+        }
+        
+        if (progress > thresholds[3] && progress <= thresholds[4]) {
+            tl.to(".count", {
+                x: -180, // -900 + (4 * 180)
+                duration: 0.85,
+                ease: "power4.inOut",
+                onStart: () => {
+                    gsap.to(".count-wrapper", {
+                        x: stepDistance * 4,
+                        duration: 0.85,
+                        ease: "power4.inOut",
+                    });
+                }
+            });
+        }
+        
+        // Final animation when loading is complete
+        if (progress > thresholds[4]) {
+            tl.to(".count", {
+                x: 0, // -900 + (5 * 180)
+                duration: 0.85,
+                ease: "power4.inOut",
+                onStart: () => {
+                    gsap.to(".count-wrapper", {
+                        x: stepDistance * 5,
+                        duration: 0.85,
+                        ease: "power4.inOut",
+                    });
+                }
+            });
 
-            for (let i = 1; i < 6; i++) {
-                const xPosition = -900 + i * 180;
-                tl.to(".count", {
-                    x: xPosition,
-                    duration: 0.85,
-                    ease: "power4.inOut",
-                    onStart: () => {
-                        gsap.to(".count-wrapper", {
-                            x: stepDistance * i,
-                            duration: 0.85,
-                            ease: "power4.inOut",
-                        });
-                    }
+            if (progress === 100) {
+                gsap.set(".revealer svg", { scale: 0 });
+                const delays = [0.5, 1, 1.5];
+
+                document.querySelectorAll(".revealer svg").forEach((el, i) => {
+                    gsap.to(el, {
+                        scale: 45,
+                        duration: 1.5,
+                        ease: "power3.out",
+                        delay: delays[i],
+                        onComplete: () => {
+                            if (onLoadingComplete) onLoadingComplete();
+                            const tl = gsap.timeline();
+
+                            tl.to(el, {
+                                opacity: 0,
+                                duration: 0.8,
+                                ease: "power2.inOut",
+                            })
+                            tl.to('.loader', {
+                                opacity: 0,
+                                duration: 0.3,
+                                ease: "power4.Out",
+                                onComplete: () => {
+                                    document.querySelector(".loader")?.remove();
+                                }
+                            }, '-=0.7')
+                        }
+                    });
                 });
             }
-
-            gsap.set(".revealer svg", { scale: 0 });
-
-            const delays = [6, 6.5, 7];
-
-            document.querySelectorAll(".revealer svg").forEach((el, i) => {
-                gsap.to(el, {
-                    scale: 45,
-                    duration: 1.5,
-                    ease: "power3.out",
-                    delay: delays[i],
-                    onComplete: () => {
-                        if (i === delays.length - 1) {
-                            if (onLoadingComplete) onLoadingComplete();
-                            document.querySelector(".loader")?.remove();
-                            gsap.fromTo('body', {
-                                autoAlpha: 0,
-                            }, {
-                                autoAlpha: 1,
-                                duration: 1,
-                                ease: "power3.out"
-                            })
-                        }
-                    }
-                });
-            });
         }
 
     }, [progress, active, onLoadingComplete]);
@@ -105,7 +174,7 @@ const LoadingScreen = ({ onLoadingComplete }: Props) => {
                 </div>
             </div>
 
-            {[1, 2, 3].map((num) => (
+            {[1].map((num) => (
                 <div key={num} className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 revealer revealer-${num}`}>
                     <svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="scale-0">
                         <circle cx="100" cy="100" r="50" className="bg-customGray stroke-customBlack stroke-[3]"/>

@@ -69,7 +69,8 @@ body {
 
 .revealer svg circle {
   background-color: var(--custom-black);
-  fill: var(--custom-black);
-  stroke: var(--custom-gray);
-  stroke-width: 5px;
+  fill: var(--custom-gray);
+  stroke: var(--custom-black);
+  stroke-width: 3px;
 }
+

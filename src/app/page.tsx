@@ -12,7 +12,8 @@ import Service from "@/components/page/Service";
 import ScrollTextAnimation from "@/components/global/Marquee";
 import ContactPage from "@/components/page/Contact";
 import Footer from "@/components/global/Footer";
-import About from "@/components/page/About";
+import About from "@/components/page/About";  
+import CompanyName3D from "@/components/canva/Company-name-3d";
 
 const Background = dynamic(() => import("@/components/canva/backgroundHero").then((mod: any) => mod.BackgroundHero), {
   ssr: false
@@ -46,10 +47,10 @@ export default function Home() {
 
   return (
     <div className="w-full h-full relative" >
-      <div className="absolute inset-0 z-[0] bg-gradient-to-b dark:from-zinc-900 from-zinc-100 dark:from-40% from-40% dark:via-gray-50/10 via-gray-600/10 dark:to-transparent to-transparent h-screen" />
+      <div className="absolute inset-0 z-[0] bg-gradient-to-b dark:from-zinc-900 from-zinc-100 dark:from-40% from-40% dark:via-gray-50/10 via-gray-600/10 dark:to-transparent to-transparent h-dvh" />
 
       {/* Hero Page */}
-      <section className="relative z-10 h-screen  w-full  flex flex-col items-center justify-center antialiased bg-grid-white/[0.02]  overflow-hidden">
+      <section className="relative z-10 h-dvh  w-full  flex flex-col items-center justify-center antialiased bg-grid-white/[0.02]  overflow-hidden">
         <Spotlight />
         <CompanyName className="md:text-9xl text-6xl" />
         <div className="absolute top-[28%] md:right-[28%] right-[5%]">
@@ -68,6 +69,7 @@ export default function Home() {
         <TextGenerateEffect words="SCROLL TO DISCOVER" duration={3} className="font-base text-2xl text-customGrayDarker absolute bottom-28" />
         {/* @ts-ignore */}
         <View className="absolute inset-0 z-[0] ">
+        {/* <CompanyName3D/> */}
           <Background />
         </View>
       </section>

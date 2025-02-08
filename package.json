@@ -15,6 +15,7 @@
     "@radix-ui/react-slot": "^1.1.1",
     "@react-three/drei": "^9.121.3",
     "@react-three/fiber": "^8.17.12",
+    "@react-three/postprocessing": "^2.19.1",
     "babel-plugin-glsl": "^1.0.0",
     "babel-plugin-macros": "^3.1.0",
     "class-variance-authority": "^0.7.1",
@@ -38,6 +39,7 @@
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.172.0",
+    "troika-three-text": "^0.52.3",
     "tunnel-rat": "^0.1.2"
   },
   "devDependencies": {

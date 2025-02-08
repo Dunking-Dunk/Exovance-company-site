@@ -225,10 +225,16 @@ float snoise(vec3 v){
                     float radius = uRadiusScale;
                     
                     vec3 spherePos = curlNoise(tempPos * uFrequency) * 1.5;
-                    vec3 mouseDirection = tempPos - uMouse;
-                    float mouseDistance = length(mouseDirection);
-                    float mouseInfluence = smoothstep(uMouseRadius, 0., mouseDistance);
-                    vec3 mouseRepulsion = normalize(mouseDirection) * mouseInfluence * 2.;
+                    
+                    // Mouse repulsion logic
+                    vec2 mouse = vec2(uMouse.x, uMouse.y) * 5.;
+                    float dist = length(tempPos.xy - mouse);
+                    vec2 dir = normalize(tempPos.xy - mouse);
+                    
+                    // Apply repulsion force and scale Z based on distance
+                    vec3 mouseRepulsion = vec3(0.0);
+                    mouseRepulsion.xy = dir * 0.5 * smoothstep(uMouseRadius, 0., dist);
+                    mouseRepulsion.z = smoothstep(uMouseRadius, 0., dist);
                     
                     vec3 tempTarget = mix(tempPos, spherePos, 0.1);
                     tempTarget += mouseRepulsion;
@@ -241,7 +247,7 @@ float snoise(vec3 v){
                     
                     float distanceFromCenter = length(tempTarget);
                     if(distanceFromCenter < 1.) {
-                        tempTarget = normalize(tempTarget) * (1. + (1. - distanceFromCenter) * mouseInfluence);
+                        tempTarget = normalize(tempTarget) * (1. + (1. - distanceFromCenter) * smoothstep(uMouseRadius, 0., dist));
                     }
                     
                     positionAWithEffects = tempTarget;

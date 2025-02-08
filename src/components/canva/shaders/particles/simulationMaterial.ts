@@ -154,7 +154,7 @@ class SimulationMaterial extends THREE.ShaderMaterial {
                 uTime: { value: 0 },
                 uFrequency: { value: 0.25 },
                 uMouse: { value: new THREE.Vector3(0, 0, 0) },
-                uMouseRadius: { value: 0.25 },
+                uMouseRadius: { value: 0.3 },
                 uScroll: { value: 0 },
                 uTransitionProgress: { value: 0 },
                 uRadiusScale: { value: 1 },
