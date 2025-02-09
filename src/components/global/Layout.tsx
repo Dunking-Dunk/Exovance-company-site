@@ -1,8 +1,9 @@
 "use client"
 
 import dynamic from 'next/dynamic'
-import React, {  useRef } from 'react'
+import React, { useRef } from 'react'
 import Header from './Header'
+import AnimatedCursor from './AnimatedCursor'
 import { ReactLenis } from 'lenis/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -12,8 +13,8 @@ import LoadingScreen from './loading-screen'
 gsap.registerPlugin(ScrollTrigger)
 gsap.registerPlugin(useGSAP);
 
-const 
-Scene = dynamic(() => import('@/components/canva/Scene'), { ssr: false })
+const
+    Scene = dynamic(() => import('@/components/canva/Scene'), { ssr: false })
 
 type Props = {
     children: React.ReactNode
@@ -37,6 +38,7 @@ const Layout = ({ children }: Props) => {
 
             >
                 <Header />
+                <AnimatedCursor />
                 {children}
                 <Scene
                     style={{
@@ -50,7 +52,7 @@ const Layout = ({ children }: Props) => {
                     eventSource={ref}
                     eventPrefix='client'
                 />
-                        <LoadingScreen/>
+                <LoadingScreen />
             </div >
         </ReactLenis >
     )

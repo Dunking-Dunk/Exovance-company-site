@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/provider/theme-provider";
 
 export const metadata: Metadata = {
   title: "Exovance",
-  description: "Frontier",
+  description: "EXOVANCE, we are pioneers and innovators in the field of technology and innovation We are based in India and dedicated to technology and innovation.",
 };
 
 export default function RootLayout({

@@ -25,18 +25,19 @@ const ContactMarquee = () => {
     };
 
     return (
-        <div className="relative h-[100vh] z-10 text-customGray overflow-hidden">
-               <div className="absolute inset-0 z-[0] bg-gradient-to-b dark:from-transparent from-zinc-100/50 dark:from-40% dark:via-gray-50/10 dark:to-40%  h-screen" />
-                <View className="absolute inset-0 z-[0]">
-          <BackgroundHero />
-        </View>
+        <div className="relative h-[100vh] z-20 text-customGray overflow-hidden">
+            <div className="absolute inset-0 z-0 bg-gradient-to-b dark:from-transparent from-zinc-100/50 dark:from-40% dark:via-gray-50/10 dark:to-40%  h-screen" />
+            <div className='absolute z-0 inset-0  w-full h-full' style={{ background: 'linear-gradient(90deg, var(--custom-black) 0%, rgba(255,246,247,0) 50%, var(--custom-black) 100%)' }} />
+            <View className="absolute inset-0 z-[0]">
+                <BackgroundHero />
+            </View>
             <div
                 ref={containerRef}
-                className="relative z-10 w-full h-screen flex flex-col items-center justify-center"
+                className="relative w-full h-screen flex flex-col items-center justify-center"
             >
                 {/* Marquee text container */}
-                <div className="absolute z-10 md:top-1/2 md:-translate-y-1/2 top-[25%]  w-full overflow-hidden">
-                    <motion.div 
+                <div className="absolute -z-10 md:top-1/2 md:-translate-y-1/2 top-[25%]  w-full overflow-hidden">
+                    <motion.div
                         className="flex whitespace-nowrap"
                         variants={marqueeVariants}
                         animate="animate"
@@ -69,24 +70,22 @@ const ContactMarquee = () => {
                             transition={{ duration: 2, ease: "easeInOut" }}
                         />
 
-                    
+
                     </svg>
 
                     {/* Email text */}
                     <motion.a
-                        href="mailto:exovance@gmail.com"
-                        className="absolute font-bold text-customGrayLight border-b-2 bottom-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 md:text-5xl text-2xl tracking-widest hover:text-gray-300 transition-colors z-20"
+                        href="mailto:exovancelab@gmail.com"
+                        className="absolute font-bold text-customGrayLight border-b-2 bottom-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 md:text-5xl text-2xl tracking-widest  z-20 cursor-hover"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.8, delay: 0.4 }}
                     >
-                        exovance@gmail.com
+                        exovancelab@gmail.com
                     </motion.a>
                 </div>
 
                 {/* Gradient overlays for fade effect */}
-                <div className='absolute z-20 inset-0  w-full h-full' style={{ background: 'linear-gradient(90deg, var(--custom-black) 0%, rgba(255,246,247,0) 50%, var(--custom-black) 100%)' }} />
-
             </div>
         </div>
     );

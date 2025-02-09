@@ -7,9 +7,9 @@ import * as THREE from "three";
 import { useGLTF } from '@react-three/drei';
 
 
-useGLTF.preload('/brain_3d.glb')
-useGLTF.preload('/human_head.glb')
-useGLTF.preload('/spider_robot.glb')
+useGLTF.preload('/3d/brain_3d.glb')
+useGLTF.preload('/3d/human_head.glb')
+useGLTF.preload('/3d/spider_robot.glb')
 
 const getRandomData = (width, height) => {
     const length = width * height * 4;
@@ -45,7 +45,7 @@ const normalizeAndResizeVertices = (vertices, size, scale) => {
 };
 
 const brainVertices = () => {
-    const { nodes } = useGLTF('/brain_3d.glb');
+    const { nodes } = useGLTF('/3d/brain_3d.glb');
 
     if (!nodes.Object_4) return new Float32Array();
     const positions = nodes.Object_4.geometry.attributes.position.array;
@@ -53,7 +53,7 @@ const brainVertices = () => {
 };
 
 const humanVertices = () => {
-    const { nodes } = useGLTF('/human_head.glb');
+    const { nodes } = useGLTF('/3d/human_head.glb');
 
     if (!nodes.Object_4) return new Float32Array();
     const positions = nodes.Object_4.geometry.attributes.position.array;
@@ -62,7 +62,7 @@ const humanVertices = () => {
 
 
 const robotVertices = () => {
-    const { nodes } = useGLTF('/spider_robot.glb');
+    const { nodes } = useGLTF('/3d/spider_robot.glb');
 
     let allVertices = [];
     const collectVertices = (object) => {
@@ -71,23 +71,23 @@ const robotVertices = () => {
                 const positions = Array.from(i.geometry.attributes.position.array);
                 allVertices.push(...positions);
             }
-    
+
             if (i.children) {
                 collectVertices(i.children)
-            }else break
+            } else break
 
         }
-      
-     
+
+
     };
 
     if (nodes.Sketchfab_model) {
         if (nodes.Sketchfab_model.children) {
-          
-                collectVertices(nodes.Sketchfab_model.children)
+
+            collectVertices(nodes.Sketchfab_model.children)
         }
     }
-    
+
 
     // Start traversal from the root node
     // if (nodes) {
@@ -113,7 +113,7 @@ class SimulationMaterial extends THREE.ShaderMaterial {
         positionsTexture.needsUpdate = true;
 
         // Brain model positions
-        const brainPositions = normalizeAndResizeVertices(brainVertices(), size, 2 );
+        const brainPositions = normalizeAndResizeVertices(brainVertices(), size, 2);
         const positionsBrainTexture = new THREE.DataTexture(
             brainPositions,
             size,

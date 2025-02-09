@@ -7,8 +7,8 @@ import { useTheme } from 'next-themes'
 
 export const BackgroundHero = (props: any) => {
     const { theme } = useTheme()
-    useGLTF.preload('/lost_orb_in_the_mountains-transformed.glb') 
-    const { nodes }: { nodes: any } = useGLTF('/lost_orb_in_the_mountains-transformed.glb')
+    useGLTF.preload('/3d/lost_orb_in_the_mountains-transformed.glb')
+    const { nodes }: { nodes: any } = useGLTF('/3d/lost_orb_in_the_mountains-transformed.glb')
 
     // Create a custom shader material
     const gradientMaterial1 = new THREE.ShaderMaterial({
