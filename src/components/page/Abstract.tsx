@@ -87,7 +87,7 @@ const Abstract = () => {
   ];
 
   return (
-    <div className="relative h-screen overflow-hidden flex items-center justify-center px-4 md:px-16 lg:px-80 md:py-60 py-10" ref={container}>
+    <div className="relative h-[100dvh]  overflow-hidden flex items-center justify-center px-4 md:px-16 lg:px-80 md:py-60 py-10" ref={container}>
       {tagVariants.map(({ text, scrollRange, outputRange, top, left, right, delay, duration, spring }, index) => {
         const x = useTransform(scrollYProgress, scrollRange, outputRange);
         const opacity = useTransform(scrollYProgress,
@@ -135,8 +135,8 @@ const Abstract = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-customGray text-5xl md:text-7xl font-bold leading-tight tracking-wider font-exo2"
         >
-          <TextGenerateEffect words="PIONEERING INTELLIGENT"  duration={2}/>
-       
+          <TextGenerateEffect words="PIONEERING INTELLIGENT" duration={2} />
+
         </motion.h1>
 
         <div className="relative my-4 text-center">
@@ -158,7 +158,7 @@ const Abstract = () => {
           transition={{ duration: 0.8, delay: 0.8, ease: "easeInOut" }}
           className="text-customGray text-right text-5xl md:text-7xl font-bold tracking-wider font-exo2"
         >
-          <TextGenerateEffect words="FUTURISTIC WORLD" duration={4}/>
+          <TextGenerateEffect words="FUTURISTIC WORLD" duration={4} />
         </motion.h1>
       </div>
 

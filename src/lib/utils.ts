@@ -14,3 +14,15 @@ export const getVariableColor = (variableName: string) => {
 export const damp = (current: number, target: number, lambda: number, dt: number) => {
   return THREE.MathUtils.damp(current, target, lambda, dt);
 };
+
+export function debounce(func: Function, wait: number) {
+  let timeout: NodeJS.Timeout;
+  return function executedFunction(...args: any[]) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}

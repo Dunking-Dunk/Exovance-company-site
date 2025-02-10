@@ -1,7 +1,7 @@
 "use client"
 
 import dynamic from 'next/dynamic'
-import React, { useRef } from 'react'
+import React, { useRef, useEffect } from 'react'
 import Header from './Header'
 import AnimatedCursor from './AnimatedCursor'
 import { ReactLenis } from 'lenis/react'
@@ -9,6 +9,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from "@gsap/react";
 import LoadingScreen from './loading-screen'
+import { debounce } from '@/lib/utils'
 
 gsap.registerPlugin(ScrollTrigger)
 gsap.registerPlugin(useGSAP);
@@ -22,24 +23,78 @@ type Props = {
 
 const Layout = ({ children }: Props) => {
     const ref = useRef<HTMLDivElement | null>(null)
+    const lenisRef = useRef<any>(null)
+
+    useEffect(() => {
+        // Set initial viewport height
+        const setAppHeight = () => {
+            document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
+        };
+
+        window.addEventListener('resize', setAppHeight);
+        setAppHeight();
+
+        // ScrollTrigger setup with correct proxy
+        ScrollTrigger.scrollerProxy(ref.current, {
+            scrollTop(value: any) {
+                if (arguments.length) {
+                    window.scrollTo(0, value);
+                }
+                return window.pageYOffset;
+            },
+            getBoundingClientRect() {
+                return {
+                    top: 0,
+                    left: 0,
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                };
+            }
+        });
+
+        // Refresh ScrollTrigger on resize
+        const debouncedRefresh = debounce(() => {
+            ScrollTrigger.refresh();
+        }, 200);
+
+        window.addEventListener('resize', debouncedRefresh);
+
+        return () => {
+            window.removeEventListener('resize', setAppHeight);
+            window.removeEventListener('resize', debouncedRefresh);
+            ScrollTrigger.clearScrollMemory();
+            ScrollTrigger.clearMatchMedia();
+        };
+    }, []);
+
     return (
-        <ReactLenis root options={{ wheelMultiplier: 1, touchMultiplier: 2, smoothWheel: true }}>
+        <ReactLenis
+            ref={lenisRef}
+            root
+            options={{
+                wheelMultiplier: 1,
+                touchMultiplier: 1,
+                smoothWheel: true,
+                syncTouch: true
+            }}
+        >
             <div
                 ref={ref}
                 style={{
                     position: 'relative',
                     width: '100%',
-                    height: '100%',
+                    minHeight: 'var(--app-height)',
                     overflow: 'auto',
                     touchAction: 'pan-y',
-                    WebkitOverflowScrolling: 'touch'
+                    WebkitOverflowScrolling: 'touch',
+                    WebkitTextSizeAdjust: '100%',
                 }}
                 className='bg-customBlack'
-
             >
                 <Header />
                 <AnimatedCursor />
                 {children}
+
                 <Scene
                     style={{
                         position: 'fixed',
@@ -53,8 +108,8 @@ const Layout = ({ children }: Props) => {
                     eventPrefix='client'
                 />
                 <LoadingScreen />
-            </div >
-        </ReactLenis >
+            </div>
+        </ReactLenis>
     )
 }
 
