@@ -9,7 +9,7 @@ import { TypewriterEffectSmooth } from '../ui/typewriter-effect';
 
 type Props = {}
 
-const Card = ({ title, description, index, video}: {
+const Card = ({ title, description, index, video }: {
     title: string;
     description: string;
     index: number;
@@ -18,18 +18,18 @@ const Card = ({ title, description, index, video}: {
     return (
         <div className={`relative service__card`} id={`card-${index + 1}`}>
             <div className="relative flex flex-col md:flex-row w-full h-full py-4 md:py-8 md:gap-16 gap-6 will-change-transform service__card__inner bg-customBlack border-b-2 border-b-customGray">
-                <div className="mg:flex-[3] flex-[2] space-y-2 md:space-y-6">
-                    <TypewriterEffectSmooth 
+                <div className="mg:flex-[3] flex-[2] space-y-2 md:space-y-6 z-10">
+                    <TypewriterEffectSmooth
                         words={title.split(' ').map((x) => ({
                             text: x,
                             className: 'text-2xl md:text-4xl lg:text-7xl font-bold text-customGray'
-                        }))} 
+                        }))}
                     />
                     <p className="text-sm md:text-xl text-customGrayDark w-full md:w-2/3">{description}</p>
                 </div>
-                <div className="md:flex-1 flex-[2] aspect-[16/9] rounded-lg overflow-hidden">
+                <div className="md:flex-1 flex-[2] aspect-[16/9] rounded-lg overflow-hidden z-20 ">
                     <video className="w-full h-full object-cover z-20" autoPlay muted loop>
-                        <source src={`/video/${video}.mp4`} type="video/mp4"/>
+                        <source src={`/video/${video}.mp4`} type="video/mp4" />
                     </video>
                 </div>
             </div>
@@ -94,7 +94,7 @@ const Service = (props: Props) => {
                     ))
                 }
             </div>
-            <div className='service__outro w-full h-40 md:h-60'/>
+            <div className='service__outro w-full h-40 md:h-60' />
         </>
     )
 }

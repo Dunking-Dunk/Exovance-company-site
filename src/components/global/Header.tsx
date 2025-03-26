@@ -7,10 +7,11 @@ import { ModeToggle } from './Toggle-Mode'
 import WaveStatus from '../ui/wave-status'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import GlitchText from '../ui/glitch-text'
+import { useTheme } from 'next-themes'
 
 const Header = () => {
     const { scrollYProgress } = useScroll();
-
+    const { setTheme, theme } = useTheme()
     // Transform scroll progress to color values
     const circleColor = useTransform(
         scrollYProgress,
@@ -26,15 +27,13 @@ const Header = () => {
 
     return (
         <div className='fixed w-full top-0 z-50'>
-            <div className='flex justify-between w-full md:px-36 px-2 md:py-8 py-4'>
-                <div>
-                    <Link href={'/'}>
-                        <CompanyName className='text-2xl' />
-                    </Link>
+            <div className='flex md:justify-between justify-center w-full md:px-36 px-2 py-8'>
+                <div onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className='cursor-pointer'>
+                    <CompanyName className='md:text-2xl text-3xl' />
                 </div>
-                <div className='flex flex-col gap-y-2'>
+                <div className='md:flex hidden flex-col gap-y-2 items-center'>
                     <div className='flex gap-x-4 items-center'>
-                        <GlitchText className='text-customGrayLight' text='STABILITY'
+                        <GlitchText className='text-customGrayLight w-28' text='STABILITY'
                             duration={2}
                             glitchIntensity={0.5}
                             repeat={true}
