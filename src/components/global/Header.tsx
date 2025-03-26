@@ -33,7 +33,7 @@ const Header = () => {
                 </div>
                 <div className='md:flex hidden flex-col gap-y-2 items-center'>
                     <div className='flex gap-x-4 items-center'>
-                        <GlitchText className='text-customGrayLight w-28' text='STABILITY'
+                        <GlitchText className='text-customGrayLight w-20' text='STABILITY'
                             duration={2}
                             glitchIntensity={0.5}
                             repeat={true}
