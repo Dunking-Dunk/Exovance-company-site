@@ -46,18 +46,28 @@ const Footer = () => {
                     <div className="flex flex-col items-center sm:items-end space-y-4 sm:space-y-6 justify-between h-full ">
                         {/* Navigation Links */}
                         <nav className="flex text-lg sm:text-2xl items-center space-x-4 sm:space-x-8">
-                            <Link
+                            {/* <Link
                                 href="/team"
                                 className="hover:text-customGrayLight transition-colors"
                             >
                                 TEAM
-                            </Link>
-                            <Link
+                            </Link> */}
+                            {/* <Link
                                 href="/contact"
                                 className="hover:text-customGrayLight transition-colors"
                             >
                                 CONTACT US
-                            </Link>
+                            </Link> */}
+                            <motion.a
+                                href="mailto:exovancelab@gmail.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-customGrayLight transition-colors"
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                CONTACT US
+                            </motion.a>
                         </nav>
                         <h5 className="text-3xl sm:text-4xl font-semibold" >EXOVANCE</h5>
                     </div>
