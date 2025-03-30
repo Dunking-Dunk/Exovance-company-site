@@ -15,7 +15,7 @@ gsap.registerPlugin(ScrollTrigger)
 gsap.registerPlugin(useGSAP);
 
 const
-    Scene = dynamic(() => import('@/components/canva/Scene'), { ssr: false })
+    Scene: any = dynamic(() => import('@/components/canva/Scene'), { ssr: false })
 
 type Props = {
     children: React.ReactNode
@@ -95,7 +95,18 @@ const Layout = ({ children }: Props) => {
                 <AnimatedCursor />
                 {children}
 
-                <Scene />
+                <Scene
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100vw',
+                        height: '100vh',
+                        pointerEvents: 'none',
+                    }}
+                    eventSource={ref}
+                    eventPrefix='client'
+                />
                 <LoadingScreen />
             </div>
         </ReactLenis>
