@@ -11,12 +11,12 @@ const Scene = memo(({ ...props }) => {
         <Canvas {...props}
             onCreated={(state) => {
                 state.gl.toneMapping = THREE.AgXToneMapping;
-                state.gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                state.gl.setPixelRatio(Math.min(window.devicePixelRatio, 0.8));
             }}
-            dpr={[0.5, 1.5]}
+            dpr={[0.5, 1]}
             performance={{ min: 1 }}
             gl={{
-                antialias: true,
+                antialias: false,
                 alpha: true,
                 powerPreference: "high-performance",
                 stencil: false,
