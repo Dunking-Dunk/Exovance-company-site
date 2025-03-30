@@ -5,9 +5,11 @@
 #define NOISE_NORM2.85373472095314
 #define NOISE_OFFSET vec3(0.,19.1,33.4)
 #define NOISE_OFFSET2 vec3(47.2,0.,0.)
-#define MOUSE_INFLUENCE.5
+#define MOUSE_INFLUENCE.8
 #define SPHERE_RADIUS 1.
 #define TRANSITION_SPEED.3
+#define MORPH_SPEED.2
+#define MORPH_PATTERNS 4.
 
 uniform sampler2D positionsA;
 uniform sampler2D positionsB;
@@ -128,7 +130,59 @@ float snoise(vec3 v){
                 return normalize(vec3(x,y,z)*5.);
             }
             
-            // Optimized position calculation for Position A
+            // Add new morphing pattern functions
+            vec3 morphToTorus(vec3 pos,float time,float radius){
+                float theta=atan(pos.y,pos.x);
+                float phi=acos(pos.z/radius);
+                float r=radius*.5;
+                float R=radius;
+                
+                vec3 torusPos=vec3(
+                    (R+r*cos(phi))*cos(theta),
+                    (R+r*cos(phi))*sin(theta),
+                    r*sin(phi)
+                );
+                
+                return torusPos;
+            }
+            
+            vec3 morphToCube(vec3 pos,float time,float radius){
+                vec3 cubePos=pos;
+                float dist=length(pos);
+                float scale=radius/max(abs(pos.x),max(abs(pos.y),abs(pos.z)));
+                cubePos*=scale;
+                
+                // Add rounded corners
+                float cornerRadius=.2;
+                vec3 cornerOffset=vec3(
+                    smoothstep(1.-cornerRadius,1.,abs(pos.x)),
+                    smoothstep(1.-cornerRadius,1.,abs(pos.y)),
+                    smoothstep(1.-cornerRadius,1.,abs(pos.z))
+                );
+                
+                cubePos=mix(cubePos,normalize(cubePos)*radius,cornerOffset.x*cornerOffset.y*cornerOffset.z);
+                return cubePos;
+            }
+            
+            vec3 morphToOctahedron(vec3 pos,float time,float radius){
+                vec3 octPos=pos;
+                float dist=length(pos);
+                float scale=radius/(abs(pos.x)+abs(pos.y)+abs(pos.z));
+                octPos*=scale;
+                
+                // Add smooth edges
+                float edgeRadius=.1;
+                vec3 edgeOffset=vec3(
+                    smoothstep(1.-edgeRadius,1.,abs(pos.x)+abs(pos.y)),
+                    smoothstep(1.-edgeRadius,1.,abs(pos.y)+abs(pos.z)),
+                    smoothstep(1.-edgeRadius,1.,abs(pos.z)+abs(pos.x))
+                );
+                
+                octPos=mix(octPos,normalize(octPos)*radius,edgeOffset.x*edgeOffset.y*edgeOffset.z);
+                return octPos;
+            }
+            
+            // Enhanced position calculation with multiple morphing patterns
             vec3 calculatePositionA(vec3 tempPos,float time,float radius){
                 // Pre-calculate common values
                 vec3 spherePos=curlNoise(tempPos*uFrequency)*1.5;
@@ -136,29 +190,56 @@ float snoise(vec3 v){
                 float dist=length(tempPos.xy-mouse);
                 vec2 dir=normalize(tempPos.xy-mouse);
                 
-                // Calculate mouse repulsion with reduced operations
+                // Enhanced mouse interaction
                 vec3 mouseRepulsion=vec3(0.);
                 float smoothDist=smoothstep(uMouseRadius,0.,dist);
                 mouseRepulsion.xy=dir*MOUSE_INFLUENCE*smoothDist;
                 mouseRepulsion.z=smoothDist;
                 
-                // Calculate target position
+                // Calculate base target position
                 vec3 tempTarget=mix(tempPos,spherePos,.1);
                 tempTarget+=mouseRepulsion;
                 tempTarget=normalize(tempTarget)*radius;
                 
-                // Apply effects with optimized strength calculation
-                float effectStrength=radius<1.1?.3:.2;
-                tempTarget+=curlNoise(tempTarget+3.)*effectStrength;
-                tempTarget+=snoise(tempTarget+time)*(effectStrength*.5);
+                // Calculate morphing patterns
+                float morphTime=time*MORPH_SPEED;
+                float patternIndex=mod(morphTime/5.,MORPH_PATTERNS);
                 
-                // Apply distance-based scaling
-                float distanceFromCenter=length(tempTarget);
-                if(distanceFromCenter<1.){
-                    tempTarget=normalize(tempTarget)*(1.+(1.-distanceFromCenter)*smoothDist);
+                // Smooth transitions between morphing patterns
+                vec3 morphTarget;
+                if(patternIndex<1.){
+                    morphTarget=tempTarget;
+                }else if(patternIndex<2.){
+                    float t=patternIndex-1.;
+                    morphTarget=mix(tempTarget,morphToTorus(tempTarget,time,radius),t);
+                }else if(patternIndex<3.){
+                    float t=patternIndex-2.;
+                    morphTarget=mix(morphToTorus(tempTarget,time,radius),morphToCube(tempTarget,time,radius),t);
+                }else{
+                    float t=patternIndex-3.;
+                    morphTarget=mix(morphToCube(tempTarget,time,radius),morphToOctahedron(tempTarget,time,radius),t);
                 }
                 
-                return tempTarget;
+                // Add dynamic noise effects
+                float noiseScale=.3;
+                vec3 noiseOffset=curlNoise(morphTarget+time*.5)*noiseScale;
+                float noiseStrength=snoise(morphTarget+time*.2);
+                
+                // Apply final effects
+                float effectStrength=radius<1.1?.3:.2;
+                vec3 finalPos=morphTarget;
+                finalPos+=curlNoise(finalPos+3.)*effectStrength;
+                finalPos+=snoise(finalPos+time)*(effectStrength*.5);
+                finalPos+=noiseOffset*noiseStrength;
+                
+                // Apply distance-based scaling with enhanced mouse interaction
+                float distanceFromCenter=length(finalPos);
+                if(distanceFromCenter<1.){
+                    float mouseInfluence=smoothstep(uMouseRadius,0.,dist);
+                    finalPos=normalize(finalPos)*(1.+(1.-distanceFromCenter)*mouseInfluence);
+                }
+                
+                return finalPos;
             }
             
             // Optimized sphere position calculation

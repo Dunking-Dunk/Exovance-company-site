@@ -45,6 +45,7 @@ html {
   padding: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  cursor: none;
 }
 
 body {

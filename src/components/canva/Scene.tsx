@@ -6,6 +6,7 @@ import { r3 } from '@/lib/tunnel'
 import * as THREE from 'three'
 import { memo } from 'react'
 
+
 const Scene = memo(({ ...props }) => {
     return (
         <Canvas {...props}
@@ -24,6 +25,7 @@ const Scene = memo(({ ...props }) => {
             }}
             camera={{ position: [0, 0, 5], fov: 75 }}
         >
+
             <r3.Out />
             <Preload all />
         </Canvas>

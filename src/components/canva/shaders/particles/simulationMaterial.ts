@@ -10,6 +10,7 @@ import { useGLTF } from '@react-three/drei';
 useGLTF.preload('/3d/brain_3d.glb')
 useGLTF.preload('/3d/human_head.glb')
 useGLTF.preload('/3d/spider_robot.glb')
+useGLTF.preload('/3d/vertebral.glb')
 
 const getRandomData = (width, height) => {
     const length = width * height * 4;
@@ -99,6 +100,29 @@ const robotVertices = () => {
     return allVertices.length > 0 ? new Float32Array(allVertices) : new Float32Array();
 };
 
+const vertebralVertices = () => {
+    const { nodes } = useGLTF('/3d/vertebral.glb');
+    let allVertices = [];
+
+    if (nodes.Object_2) {
+        const positions = Array.from(nodes.Object_2.geometry.attributes.position.array);
+        allVertices.push(...positions);
+    }
+    if (nodes.Object_3) {
+        const positions = Array.from(nodes.Object_3.geometry.attributes.position.array);
+        allVertices.push(...positions);
+    }
+    if (nodes.Object_4) {
+        const positions = Array.from(nodes.Object_4.geometry.attributes.position.array);
+        allVertices.push(...positions);
+    }
+    if (nodes.Object_5) {
+        const positions = Array.from(nodes.Object_5.geometry.attributes.position.array);
+        allVertices.push(...positions);
+    }
+
+    return allVertices.length > 0 ? new Float32Array(allVertices) : new Float32Array();
+};
 
 class SimulationMaterial extends THREE.ShaderMaterial {
     constructor(size) {
@@ -145,12 +169,24 @@ class SimulationMaterial extends THREE.ShaderMaterial {
         );
         positionsRobotTexture.needsUpdate = true;
 
+        // Vertebral model positions
+        const vertebralPositions = normalizeAndResizeVertices(vertebralVertices(), size, 0.5);
+        const positionsVertebralTexture = new THREE.DataTexture(
+            vertebralPositions,
+            size,
+            size,
+            THREE.RGBAFormat,
+            THREE.FloatType
+        );
+        positionsVertebralTexture.needsUpdate = true;
+
         super({
             uniforms: {
                 positionsA: { value: positionsTexture },
                 positionsB: { value: positionsBrainTexture },
                 positionsC: { value: positionsHumanTexture },
                 positionsD: { value: positionsRobotTexture },
+                positionsE: { value: positionsVertebralTexture },
                 uTime: { value: 0 },
                 uFrequency: { value: 0.25 },
                 uMouse: { value: new THREE.Vector3(0, 0, 0) },

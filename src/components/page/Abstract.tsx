@@ -87,7 +87,7 @@ const Abstract = () => {
   ];
 
   return (
-    <div className="relative h-[100dvh]  overflow-hidden flex items-center justify-center px-4 md:px-16 lg:px-80 md:py-60 py-10" ref={container}>
+    <div className="relative h-[100dvh] z-10 overflow-hidden flex items-center justify-center px-4 md:px-16 lg:px-80 md:py-60 py-10" ref={container}>
       {tagVariants.map(({ text, scrollRange, outputRange, top, left, right, delay, duration, spring }, index) => {
         const x = useTransform(scrollYProgress, scrollRange, outputRange);
         const opacity = useTransform(scrollYProgress,

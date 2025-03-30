@@ -1,7 +1,6 @@
 "use client"
 
 import dynamic from "next/dynamic";
-import CompanyName from "@/components/global/Company-name";
 import { Spotlight } from "@/components/ui/spotlight";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import GlitchText from "@/components/ui/glitch-text";
@@ -13,6 +12,10 @@ import ScrollTextAnimation from "@/components/global/Marquee";
 import ContactPage from "@/components/page/Contact";
 import Footer from "@/components/global/Footer";
 import About from "@/components/page/About";
+import Works from "@/components/page/Works";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+
 
 const Background = dynamic(() => import("@/components/canva/backgroundHero").then((mod: any) => mod.BackgroundHero), {
   ssr: false
@@ -51,7 +54,13 @@ export default function Home() {
       {/* Hero Page */}
       <section className="relative z-10 h-[100dvh]  w-full  flex flex-col items-center justify-center antialiased bg-grid-white/[0.02]  overflow-hidden">
         <Spotlight />
-        <CompanyName className="md:text-9xl text-6xl" />
+        <h1 className={cn(
+          "font-regular tracking-widest text-customGrayDark cursor-hover md:text-9xl text-6xl",
+          "before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-customGrayDark/20 before:to-transparent",
+          "before:animate-pulse before:opacity-50 before:blur-sm"
+        )}>
+          EXOVANCE
+        </h1>
         <div className="absolute top-[28%] md:right-[28%] right-[5%]">
           <div className="absolute -bottom-[25px] right-[60px] -rotate-[40deg]">
             <Arrow />
@@ -65,7 +74,40 @@ export default function Home() {
           />
         </div>
 
-        <TextGenerateEffect words="SCROLL TO DISCOVER" duration={3} className="font-base text-2xl text-customGrayDarker absolute bottom-28" />
+        <div className="absolute bottom-28 flex flex-col items-center space-y-4">
+          <TextGenerateEffect
+            words="SCROLL TO DISCOVER"
+            duration={3}
+            className="font-base text-2xl text-customGrayDarker"
+          />
+          <motion.div
+            animate={{
+              y: [0, 10, 0],
+              opacity: [0.5, 1, 0.5]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="w-6 h-6"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-full h-full text-customGrayDarker"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3"
+              />
+            </svg>
+          </motion.div>
+        </div>
         {/* @ts-ignore */}
         <View className="absolute inset-0 z-[0] ">
           {/* <CompanyName3D/> */}
@@ -82,6 +124,10 @@ export default function Home() {
       {/* Abstract */}
       <Abstract />
 
+
+      {/* Works */}
+      {/* <Works /> */}
+
       {/* Services */}
       <Service />
 
@@ -96,7 +142,7 @@ export default function Home() {
 
       {/* particle */}
       {/* @ts-ignore */}
-      <View className="fixed inset-0 z-0">
+      <View className="fixed inset-0 ">
         <Common />
         <Particles />
       </View>
