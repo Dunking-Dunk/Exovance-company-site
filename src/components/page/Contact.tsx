@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { View } from '../canva/View';
 import { BackgroundHero } from '../canva/backgroundHero';
 import { useTheme } from 'next-themes';
+import { DotBackground } from '../ui/dot-background';
 
 const ContactMarquee = () => {
     const containerRef = React.useRef(null);
@@ -28,6 +29,7 @@ const ContactMarquee = () => {
         <div className="relative h-[100dvh] z-20 text-customGray overflow-hidden">
             <div className="absolute inset-0 z-0 bg-gradient-to-b dark:from-transparent from-zinc-100/50 dark:from-40% dark:via-gray-50/10 dark:to-40%  h-screen" />
             <div className='absolute z-0 inset-0  w-full h-full' style={{ background: 'linear-gradient(90deg, var(--custom-black) 0%, rgba(255,246,247,0) 50%, var(--custom-black) 100%)' }} />
+            <DotBackground />
             <View className="absolute inset-0 z-[0]">
                 <BackgroundHero />
             </View>

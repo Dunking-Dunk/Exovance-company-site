@@ -1,5 +1,13 @@
 #define PI 3.1415926538
 #define HALF_PI 1.5707963267948966
+#define NOISE_SCALE 289.
+#define NOISE_NORM 1.79284291400159
+#define NOISE_NORM2.85373472095314
+#define NOISE_OFFSET vec3(0.,19.1,33.4)
+#define NOISE_OFFSET2 vec3(47.2,0.,0.)
+#define MOUSE_INFLUENCE.5
+#define SPHERE_RADIUS 1.
+#define TRANSITION_SPEED.3
 
 uniform sampler2D positionsA;
 uniform sampler2D positionsB;
@@ -16,47 +24,52 @@ uniform float uCurrentPosition;
 
 varying vec2 vUv;
 
-// Curl noise functions
-
+// Optimized noise functions with reduced calculations
 vec4 permute(vec4 x){
-    return mod(((x*34.)+1.)*x,289.);
+    return mod(((x*34.)+1.)*x,NOISE_SCALE);
 }
 
+vec3 mod289(vec3 x){
+    return x-floor(x*(1./NOISE_SCALE))*NOISE_SCALE;
+}
+
+vec4 mod289(vec4 x){
+    return x-floor(x*(1./NOISE_SCALE))*NOISE_SCALE;
+}
+
+vec4 taylorInvSqrt(vec4 r){
+    return NOISE_NORM-NOISE_NORM2*r;
+}
+
+// Optimized Simplex noise with reduced calculations
 float snoise(vec3 v){
     const vec2 C=vec2(1./6.,1./3.);
     const vec4 D=vec4(0.,.5,1.,2.);
     
-    // First corner
     vec3 i=floor(v+dot(v,C.yyy));
     vec3 x0=v-i+dot(i,C.xxx);
     
-    // Other corners
     vec3 g=step(x0.yzx,x0.xyz);
     vec3 l=1.-g;
     vec3 i1=min(g.xyz,l.zxy);
     vec3 i2=max(g.xyz,l.zxy);
     
-    //  x0 = x0 - 0. + 0.0 * C
-    vec3 x1=x0-i1+1.*C.xxx;
-    vec3 x2=x0-i2+2.*C.xxx;
-    vec3 x3=x0-1.+3.*C.xxx;
+    vec3 x1=x0-i1+C.xxx;
+    vec3 x2=x0-i2+C.yyy;
+    vec3 x3=x0-D.yyy;
     
-    // Permutations
-    i=mod(i,289.);
+    i=mod289(i);
     vec4 p=permute(permute(permute(
                 i.z+vec4(0.,i1.z,i2.z,1.))
                 +i.y+vec4(0.,i1.y,i2.y,1.))
                 +i.x+vec4(0.,i1.x,i2.x,1.));
                 
-                // Gradients: 7x7 points over a square, mapped onto an octahedron.
-                // The ring size 17*17 = 289 is close to a multiple of 49 (7*7).
-                float n_=1./7.;// N=7
+                float n_=1./7.;
                 vec3 ns=n_*D.wyz-D.xzx;
                 
-                vec4 j=p-49.*floor(p*ns.z*ns.z);//  mod(p,N*N)
-                
+                vec4 j=p-49.*floor(p*ns.z*ns.z);
                 vec4 x_=floor(j*ns.z);
-                vec4 y_=floor(j-7.*x_);// mod(j,N)
+                vec4 y_=floor(j-7.*x_);
                 
                 vec4 x=x_*ns.x+ns.yyyy;
                 vec4 y=y_*ns.x+ns.yyyy;
@@ -77,266 +90,148 @@ float snoise(vec3 v){
                 vec3 p2=vec3(a1.xy,h.z);
                 vec3 p3=vec3(a1.zw,h.w);
                 
-                // Normalise gradients
-                vec4 norm=1.79284291400159-.85373472095314*
-                vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3));
+                vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
                 p0*=norm.x;
                 p1*=norm.y;
                 p2*=norm.z;
                 p3*=norm.w;
                 
-                // Mix final noise value
                 vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);
                 m=m*m;
-                return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),
-                dot(p2,x2),dot(p3,x3)));
+                return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
             }
             
-            vec3 snoiseVec3(vec3 x){
-                float s=snoise(vec3(x));
-                float s1=snoise(vec3(x.y-19.1,x.z+33.4,x.x+47.2));
-                float s2=snoise(vec3(x.z+74.2,x.x-124.5,x.y+99.4));
-                vec3 c=vec3(s,s1,s2);
-                return c;
-            }
-            
+            // Optimized curl noise with reduced calculations
             vec3 curlNoise(vec3 p){
                 const float e=.1;
                 vec3 dx=vec3(e,0.,0.);
                 vec3 dy=vec3(0.,e,0.);
                 vec3 dz=vec3(0.,0.,e);
                 
-                vec3 p_x0=snoiseVec3(p-dx);
-                vec3 p_x1=snoiseVec3(p+dx);
-                vec3 p_y0=snoiseVec3(p-dy);
-                vec3 p_y1=snoiseVec3(p+dy);
-                vec3 p_z0=snoiseVec3(p-dz);
-                vec3 p_z1=snoiseVec3(p+dz);
+                // Pre-calculate noise offsets
+                vec3 offset1=p+NOISE_OFFSET;
+                vec3 offset2=p+NOISE_OFFSET2;
                 
+                // Calculate noise values with reduced operations
+                vec3 p_x0=vec3(snoise(p-dx),snoise(offset1-dx),snoise(offset2-dx));
+                vec3 p_x1=vec3(snoise(p+dx),snoise(offset1+dx),snoise(offset2+dx));
+                vec3 p_y0=vec3(snoise(p-dy),snoise(offset1-dy),snoise(offset2-dy));
+                vec3 p_y1=vec3(snoise(p+dy),snoise(offset1+dy),snoise(offset2+dy));
+                vec3 p_z0=vec3(snoise(p-dz),snoise(offset1-dz),snoise(offset2-dz));
+                vec3 p_z1=vec3(snoise(p+dz),snoise(offset1+dz),snoise(offset2+dz));
+                
+                // Calculate curl components
                 float x=p_y1.z-p_y0.z-p_z1.y+p_z0.y;
                 float y=p_z1.x-p_z0.x-p_x1.z+p_x0.z;
                 float z=p_x1.y-p_x0.y-p_y1.x+p_y0.x;
                 
-                const float divisor=1./(2.*e);
-                return normalize(vec3(x,y,z)*divisor);
+                return normalize(vec3(x,y,z)*5.);
             }
             
-            vec3 mod289(vec3 x)
-            {
-                return x-floor(x*(1./289.))*289.;
+            // Optimized position calculation for Position A
+            vec3 calculatePositionA(vec3 tempPos,float time,float radius){
+                // Pre-calculate common values
+                vec3 spherePos=curlNoise(tempPos*uFrequency)*1.5;
+                vec2 mouse=vec2(uMouse.x,uMouse.y)*5.;
+                float dist=length(tempPos.xy-mouse);
+                vec2 dir=normalize(tempPos.xy-mouse);
+                
+                // Calculate mouse repulsion with reduced operations
+                vec3 mouseRepulsion=vec3(0.);
+                float smoothDist=smoothstep(uMouseRadius,0.,dist);
+                mouseRepulsion.xy=dir*MOUSE_INFLUENCE*smoothDist;
+                mouseRepulsion.z=smoothDist;
+                
+                // Calculate target position
+                vec3 tempTarget=mix(tempPos,spherePos,.1);
+                tempTarget+=mouseRepulsion;
+                tempTarget=normalize(tempTarget)*radius;
+                
+                // Apply effects with optimized strength calculation
+                float effectStrength=radius<1.1?.3:.2;
+                tempTarget+=curlNoise(tempTarget+3.)*effectStrength;
+                tempTarget+=snoise(tempTarget+time)*(effectStrength*.5);
+                
+                // Apply distance-based scaling
+                float distanceFromCenter=length(tempTarget);
+                if(distanceFromCenter<1.){
+                    tempTarget=normalize(tempTarget)*(1.+(1.-distanceFromCenter)*smoothDist);
+                }
+                
+                return tempTarget;
             }
             
-            vec4 mod289(vec4 x)
-            {
-                return x-floor(x*(1./289.))*289.;
-            }
-            
-            vec4 taylorInvSqrt(vec4 r)
-            {
-                return 1.79284291400159-.85373472095314*r;
-            }
-            
-            vec3 fade(vec3 t){
-                return t*t*t*(t*(t*6.-15.)+10.);
-            }
-            
-            // Classic Perlin noise
-            float cnoise(vec3 P)
-            {
-                vec3 Pi0=floor(P);// Integer part for indexing
-                vec3 Pi1=Pi0+vec3(1.);// Integer part + 1
-                Pi0=mod289(Pi0);
-                Pi1=mod289(Pi1);
-                vec3 Pf0=fract(P);// Fractional part for interpolation
-                vec3 Pf1=Pf0-vec3(1.);// Fractional part - 1.0
-                vec4 ix=vec4(Pi0.x,Pi1.x,Pi0.x,Pi1.x);
-                vec4 iy=vec4(Pi0.yy,Pi1.yy);
-                vec4 iz0=Pi0.zzzz;
-                vec4 iz1=Pi1.zzzz;
+            // Optimized sphere position calculation
+            vec3 calculateSpherePosition(float theta,float phi,float r){
+                float sinPhi=sin(phi);
+                float cosPhi=cos(phi);
+                float sinTheta=sin(theta);
+                float cosTheta=cos(theta);
                 
-                vec4 ixy=permute(permute(ix)+iy);
-                vec4 ixy0=permute(ixy+iz0);
-                vec4 ixy1=permute(ixy+iz1);
-                
-                vec4 gx0=ixy0*(1./7.);
-                vec4 gy0=fract(floor(gx0)*(1./7.))-.5;
-                gx0=fract(gx0);
-                vec4 gz0=vec4(.5)-abs(gx0)-abs(gy0);
-                vec4 sz0=step(gz0,vec4(0.));
-                gx0-=sz0*(step(0.,gx0)-.5);
-                gy0-=sz0*(step(0.,gy0)-.5);
-                
-                vec4 gx1=ixy1*(1./7.);
-                vec4 gy1=fract(floor(gx1)*(1./7.))-.5;
-                gx1=fract(gx1);
-                vec4 gz1=vec4(.5)-abs(gx1)-abs(gy1);
-                vec4 sz1=step(gz1,vec4(0.));
-                gx1-=sz1*(step(0.,gx1)-.5);
-                gy1-=sz1*(step(0.,gy1)-.5);
-                
-                vec3 g000=vec3(gx0.x,gy0.x,gz0.x);
-                vec3 g100=vec3(gx0.y,gy0.y,gz0.y);
-                vec3 g010=vec3(gx0.z,gy0.z,gz0.z);
-                vec3 g110=vec3(gx0.w,gy0.w,gz0.w);
-                vec3 g001=vec3(gx1.x,gy1.x,gz1.x);
-                vec3 g101=vec3(gx1.y,gy1.y,gz1.y);
-                vec3 g011=vec3(gx1.z,gy1.z,gz1.z);
-                vec3 g111=vec3(gx1.w,gy1.w,gz1.w);
-                
-                vec4 norm0=taylorInvSqrt(vec4(dot(g000,g000),dot(g010,g010),dot(g100,g100),dot(g110,g110)));
-                g000*=norm0.x;
-                g010*=norm0.y;
-                g100*=norm0.z;
-                g110*=norm0.w;
-                vec4 norm1=taylorInvSqrt(vec4(dot(g001,g001),dot(g011,g011),dot(g101,g101),dot(g111,g111)));
-                g001*=norm1.x;
-                g011*=norm1.y;
-                g101*=norm1.z;
-                g111*=norm1.w;
-                
-                float n000=dot(g000,Pf0);
-                float n100=dot(g100,vec3(Pf1.x,Pf0.yz));
-                float n010=dot(g010,vec3(Pf0.x,Pf1.y,Pf0.z));
-                float n110=dot(g110,vec3(Pf1.xy,Pf0.z));
-                float n001=dot(g001,vec3(Pf0.xy,Pf1.z));
-                float n101=dot(g101,vec3(Pf1.x,Pf0.y,Pf1.z));
-                float n011=dot(g011,vec3(Pf0.x,Pf1.yz));
-                float n111=dot(g111,Pf1);
-                
-                vec3 fade_xyz=fade(Pf0);
-                vec4 n_z=mix(vec4(n000,n100,n010,n110),vec4(n001,n101,n011,n111),fade_xyz.z);
-                vec2 n_yz=mix(n_z.xy,n_z.zw,fade_xyz.y);
-                float n_xyz=mix(n_yz.x,n_yz.y,fade_xyz.x);
-                return 2.2*n_xyz;
+                return vec3(
+                    r*cosPhi-3.,
+                    r*sinPhi*sinTheta,
+                    r*sinPhi*cosTheta
+                );
             }
             
             void main(){
+                // Pre-calculate common values
+                vec4 posA=texture2D(positionsA,vUv);
+                vec4 posB=texture2D(positionsB,vUv);
+                vec4 posC=texture2D(positionsC,vUv);
+                vec4 posD=texture2D(positionsD,vUv);
+                
+                vec3 positionAWithEffects=calculatePositionA(posA.xyz,uTime*TRANSITION_SPEED,uRadiusScale);
                 vec3 pos;
-                vec4 posA = texture2D(positionsA, vUv);
-                vec4 posB = texture2D(positionsB, vUv);
-                vec4 posC = texture2D(positionsC, vUv);
-                vec4 posD = texture2D(positionsD, vUv);
                 
-                // Calculate Position A with all effects
-                vec3 positionAWithEffects;
-                {
-                    vec3 tempPos = posA.xyz;
-                    float time = uTime * 0.3;
-                    float radius = uRadiusScale;
-                    
-                    vec3 spherePos = curlNoise(tempPos * uFrequency) * 1.5;
-                    
-                    // Mouse repulsion logic
-                    vec2 mouse = vec2(uMouse.x, uMouse.y) * 5.;
-                    float dist = length(tempPos.xy - mouse);
-                    vec2 dir = normalize(tempPos.xy - mouse);
-                    
-                    // Apply repulsion force and scale Z based on distance
-                    vec3 mouseRepulsion = vec3(0.0);
-                    mouseRepulsion.xy = dir * 0.5 * smoothstep(uMouseRadius, 0., dist);
-                    mouseRepulsion.z = smoothstep(uMouseRadius, 0., dist);
-                    
-                    vec3 tempTarget = mix(tempPos, spherePos, 0.1);
-                    tempTarget += mouseRepulsion;
-                    tempTarget = normalize(tempTarget) * radius;
-                    
-                    // Enhanced effects for Position A
-                    float effectStrength = radius < 1.1 ? 0.3 : 0.2;
-                    tempTarget += curlNoise(tempTarget + 3.) * effectStrength;
-                    tempTarget += cnoise(tempTarget + time) * (effectStrength * 0.5);
-                    
-                    float distanceFromCenter = length(tempTarget);
-                    if(distanceFromCenter < 1.) {
-                        tempTarget = normalize(tempTarget) * (1. + (1. - distanceFromCenter) * smoothstep(uMouseRadius, 0., dist));
+                // Optimized position transitions
+                if(uCurrentPosition==0.){
+                    pos=positionAWithEffects;
+                    if(uRadiusScale<1.1){
+                        pos+=curlNoise(pos*(uFrequency*1.5)+uTime*.2)*.15;
                     }
+                }else if(uCurrentPosition==1.){
+                    pos=mix(positionAWithEffects,posB.xyz,uTransitionProgress);
+                    pos+=curlNoise(pos*uFrequency+uTime*.1)*mix(.1,.05,uTransitionProgress);
+                }else if(uCurrentPosition==2.){
+                    pos=mix(posB.xyz,posC.xyz,uTransitionProgress);
+                    pos+=curlNoise(pos*uFrequency+uTime*.1)*.05;
+                }else if(uCurrentPosition==3.){
+                    pos=mix(posC.xyz,posD.xyz,uTransitionProgress);
+                    float transitionNoise=snoise(pos+uTime*.1)*(1.-uTransitionProgress)*.02;
+                    pos+=curlNoise(pos*uFrequency+uTime*.1)*.05;
+                    pos+=vec3(transitionNoise);
+                }else if(uCurrentPosition==4.){
+                    pos=posD.xyz;
+                    float staticNoise=snoise(pos+uTime*.05)*.01;
+                    pos+=vec3(staticNoise);
+                }else if(uCurrentPosition==5.){
+                    float theta=vUv.x*2.*PI;
+                    float phi=vUv.y*HALF_PI;
+                    float r=5.;
                     
-                    positionAWithEffects = tempTarget;
+                    vec3 spherePos=calculateSpherePosition(theta,phi,r);
+                    pos=mix(posD.xyz,spherePos,uTransitionProgress);
+                    
+                    vec3 noise=curlNoise(pos*.5+uTime*.1);
+                    pos+=noise*(1.-uTransitionProgress)*.1;
+                }else if(uCurrentPosition==6.){
+                    float theta=vUv.x*2.*PI;
+                    float phi=vUv.y*HALF_PI;
+                    float r=5.*(1.-uTransitionProgress);
+                    
+                    vec3 spherePos=calculateSpherePosition(theta,phi,r);
+                    spherePos.x+=3.*uTransitionProgress;
+                    
+                    pos=mix(spherePos,positionAWithEffects,uTransitionProgress);
+                    
+                    vec3 noise=curlNoise(pos*uFrequency+uTime*.1);
+                    pos+=noise*mix(.1,.05,uTransitionProgress);
+                }else if(uCurrentPosition==7.){
+                    pos=mix(posD.xyz,positionAWithEffects,uTransitionProgress);
+                    pos+=curlNoise(pos*uFrequency+uTime*.1)*mix(.08,.1,uTransitionProgress);
                 }
                 
-                // Position A with original animation
-                if (uCurrentPosition == 0.0) {
-                    pos = positionAWithEffects;
-                    
-                    // Add extra turbulence when radius is close to 1
-                    if (uRadiusScale < 1.1) {
-                        pos += curlNoise(pos * (uFrequency * 1.5) + uTime * 0.2) * 0.15;
-                    }
-                }
-                // Transition A to B
-                else if (uCurrentPosition == 1.0) {
-                    vec3 positionB = posB.xyz;
-                    pos = mix(positionAWithEffects, positionB, uTransitionProgress);
-                    pos += curlNoise(pos * uFrequency + uTime * 0.1) * mix(0.1, 0.05, uTransitionProgress);
-                }
-                // Transition B to C
-                else if (uCurrentPosition == 2.0) {
-                    vec3 positionB = posB.xyz;
-                    vec3 positionC = posC.xyz;
-                    pos = mix(positionB, positionC, uTransitionProgress);
-                    pos += curlNoise(pos * uFrequency + uTime * 0.1) * 0.05;
-                }
-                // Transition C to D (Robot)
-                else if (uCurrentPosition == 3.0) {
-                    vec3 positionC = posC.xyz;
-                    vec3 positionD = posD.xyz;
-                    pos = mix(positionC, positionD, uTransitionProgress);
-                    // Add minimal movement during transition
-                    float transitionNoise = snoise(pos + uTime * 0.1) * (1.0 - uTransitionProgress) * 0.02;
-                     pos += curlNoise(pos * uFrequency + uTime * 0.1) * 0.05;
-                   pos += vec3(transitionNoise);
-                }
-                // Robot State
-                else if (uCurrentPosition == 4.0) {
-                    pos = posD.xyz;
-                    // Add very subtle movement to maintain some life
-                    float staticNoise = snoise(pos + uTime * 0.05) * 0.01;
-                    pos += vec3(staticNoise);
-                }
-                // Transition D to Semi-sphere
-                else if (uCurrentPosition == 5.0) {
-                    float theta = vUv.x * 2.0 * PI;
-                    float phi = vUv.y * PI * 0.5; // Half PI for semi-sphere
-                    float r = 5.; // Large radius
-                    
-                    // Create semi-sphere facing right by swapping axes and adding offset
-                    vec3 spherePos = vec3(
-                        r * cos(phi) - 3.0, // X axis offset to right
-                        r * sin(phi) * sin(theta),
-                        r * sin(phi) * cos(theta)
-                    );
-                    
-                    // Transition from robot to sphere
-                    pos = mix(posD.xyz, spherePos, uTransitionProgress);
-                    
-                    // Add smooth movement during transition
-                    vec3 noise = curlNoise(pos * 0.5 + uTime * 0.1);
-                    pos += noise * (1.0 - uTransitionProgress) * 0.1;
-                }
-                // Semi-sphere to A
-                else if (uCurrentPosition == 6.0) {
-                    float theta = vUv.x * 2.0 * PI;
-                    float phi = vUv.y * PI * 0.5;
-                    float r = 5. * (1.0 - uTransitionProgress); // Shrinking radius
-                    
-                    // Maintain right-facing orientation and position while transitioning
-                    vec3 spherePos = vec3(
-                        r * cos(phi) - 3.0 * (1.0 - uTransitionProgress), // Gradually remove offset during transition
-                        r * sin(phi) * sin(theta),
-                        r * sin(phi) * cos(theta)
-                    );
-
-                    // Mix between sphere and position A
-                    pos = mix(spherePos, positionAWithEffects, uTransitionProgress);
-               
-                    // Add dynamic movement
-                    vec3 noise = curlNoise(pos * uFrequency + uTime * 0.1);
-                    pos += noise * mix(0.1, 0.05, uTransitionProgress);
-                }
-                // Transition back to A
-                else if (uCurrentPosition == 7.0) {
-                    pos = mix(posD.xyz, positionAWithEffects, uTransitionProgress);
-                    pos += curlNoise(pos * uFrequency + uTime * 0.1) * mix(0.08, 0.1, uTransitionProgress);
-                }
-
-                gl_FragColor = vec4(pos, 1.0);
+                gl_FragColor=vec4(pos,1.);
             }

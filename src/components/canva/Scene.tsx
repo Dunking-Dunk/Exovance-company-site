@@ -4,19 +4,32 @@ import { Canvas } from "@react-three/fiber"
 import { Preload } from "@react-three/drei"
 import { r3 } from '@/lib/tunnel'
 import * as THREE from 'three'
+import { memo } from 'react'
 
-export default function Scene({ ...props }) {
+const Scene = memo(({ ...props }) => {
     return (
         <Canvas {...props}
             onCreated={(state) => {
                 state.gl.toneMapping = THREE.AgXToneMapping;
                 state.gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             }}
-            dpr={[1, 2]}
-            performance={{ min: 0.5 }}
+            dpr={[0.5, 1.5]}
+            performance={{ min: 1 }}
+            gl={{
+                antialias: true,
+                alpha: true,
+                powerPreference: "high-performance",
+                stencil: false,
+                depth: true
+            }}
+            camera={{ position: [0, 0, 5], fov: 75 }}
         >
             <r3.Out />
             <Preload all />
         </Canvas>
     )
-}
+})
+
+Scene.displayName = 'Scene'
+
+export default Scene

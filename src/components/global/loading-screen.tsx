@@ -22,7 +22,7 @@ const LoadingScreen = ({ onLoadingComplete }: Props) => {
 
         // Define progress thresholds for each animation
         const thresholds = [20, 40, 60, 80, 90, 100];
-        
+
         // Initial position when loading starts
         if (progress > 0 && progress <= thresholds[0]) {
             tl.to(".count", {
@@ -31,7 +31,7 @@ const LoadingScreen = ({ onLoadingComplete }: Props) => {
                 ease: "power4.inOut"
             });
         }
-        
+
         // Animate based on progress thresholds
         if (progress > thresholds[0] && progress <= thresholds[1]) {
             tl.to(".count", {
@@ -47,7 +47,7 @@ const LoadingScreen = ({ onLoadingComplete }: Props) => {
                 }
             });
         }
-        
+
         if (progress > thresholds[1] && progress <= thresholds[2]) {
             tl.to(".count", {
                 x: -540, // -900 + (2 * 180)
@@ -62,7 +62,7 @@ const LoadingScreen = ({ onLoadingComplete }: Props) => {
                 }
             });
         }
-        
+
         if (progress > thresholds[2] && progress <= thresholds[3]) {
             tl.to(".count", {
                 x: -360, // -900 + (3 * 180)
@@ -77,7 +77,7 @@ const LoadingScreen = ({ onLoadingComplete }: Props) => {
                 }
             });
         }
-        
+
         if (progress > thresholds[3] && progress <= thresholds[4]) {
             tl.to(".count", {
                 x: -180, // -900 + (4 * 180)
@@ -92,7 +92,7 @@ const LoadingScreen = ({ onLoadingComplete }: Props) => {
                 }
             });
         }
-        
+
         // Final animation when loading is complete
         if (progress > thresholds[4]) {
             tl.to(".count", {
@@ -177,7 +177,7 @@ const LoadingScreen = ({ onLoadingComplete }: Props) => {
             {[1].map((num) => (
                 <div key={num} className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 revealer revealer-${num}`}>
                     <svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="scale-0">
-                        <circle cx="100" cy="100" r="50" className="bg-customGray stroke-customBlack stroke-[3]"/>
+                        <circle cx="100" cy="100" r="50" className="bg-customGray stroke-customBlack stroke-[3]" />
                     </svg>
                 </div>
             ))}

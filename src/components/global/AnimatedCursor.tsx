@@ -1,29 +1,25 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, memo } from 'react';
 import gsap from 'gsap';
 import { useTheme } from 'next-themes';
 
-const AnimatedCursor: React.FC = () => {
+const AnimatedCursor: React.FC = memo(() => {
   const cursorRef = useRef<HTMLDivElement>(null);
   const posRef = useRef({ x: 0, y: 0 });
   const velocityRef = useRef({ x: 0, y: 0 });
   const prevTimeRef = useRef(performance.now());
   const { theme } = useTheme();
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobileRef = useRef(false);
 
   useEffect(() => {
     // Check if device is mobile
-    const checkMobile = () => {
-      setIsMobile(window.matchMedia('(max-width: 768px)').matches);
-    };
+    isMobileRef.current = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-    // Initial check
-    checkMobile();
-
-    // Add listener for window resize
-    window.addEventListener('resize', checkMobile);
-
-    // If mobile, don't initialize cursor
-    if (isMobile) return;
+    if (isMobileRef.current) {
+      if (cursorRef.current) {
+        cursorRef.current.style.display = 'none';
+      }
+      return;
+    }
 
     const cursor = cursorRef.current;
     if (!cursor) return;
@@ -144,12 +140,11 @@ const AnimatedCursor: React.FC = () => {
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseover', onMouseEnter);
       document.removeEventListener('mouseout', onMouseLeave);
-      window.removeEventListener('resize', checkMobile);
     };
-  }, [isMobile]);
+  }, []);
 
   // Don't render anything on mobile
-  if (isMobile) return null;
+  if (isMobileRef.current) return null;
 
   return (
     <div
@@ -167,10 +162,12 @@ const AnimatedCursor: React.FC = () => {
         willChange: 'transform, filter',
         transition: 'background-color 0.3s ease',
         filter: 'invert(0)',
-        display: isMobile ? 'none' : 'block' // Additional safety measure
+        display: isMobileRef.current ? 'none' : 'block' // Additional safety measure
       }}
     />
   );
-};
+});
+
+AnimatedCursor.displayName = 'AnimatedCursor';
 
 export default AnimatedCursor;
