@@ -88,7 +88,7 @@ const About = () => {
                                 whileHover={{ scale: 1.02, x: 10 }}
                                 transition={{ type: "spring", stiffness: 300 }}
                             >
-                                Founded in 2023, EXOVANCE emerged from a vision to push the boundaries of what's possible in technology. Our journey began with a small team of passionate innovators who believed in the power of cutting-edge solutions.
+                                Founded in 2025, EXOVANCE emerged from a vision to push the boundaries of what's possible in technology. Our journey began with a small team of passionate innovators who believed in the power of cutting-edge solutions.
                             </motion.p>
                             <motion.p
                                 whileHover={{ scale: 1.02, x: 10 }}
