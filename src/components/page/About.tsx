@@ -74,7 +74,7 @@ const About = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.7 }}
-                            className="text-3xl md:text-4xl font-bold text-white"
+                            className="text-3xl md:text-4xl font-bold dark:text-white text-black"
                         >
                             Our Story
                         </motion.h2>
