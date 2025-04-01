@@ -88,19 +88,13 @@ const About = () => {
                                 whileHover={{ scale: 1.02, x: 10 }}
                                 transition={{ type: "spring", stiffness: 300 }}
                             >
-                                Founded in 2025, EXOVANCE emerged from a vision to push the boundaries of what's possible in technology. Our journey began with a small team of passionate innovators who believed in the power of cutting-edge solutions.
+                                Founded in 2025, EXOVANCE is driven by a mission to redefine the limits of technology. What began as a small team of visionaries has evolved into a powerhouse of innovation, crafting intelligent solutions in AI, web development, and beyond.
                             </motion.p>
                             <motion.p
                                 whileHover={{ scale: 1.02, x: 10 }}
                                 transition={{ type: "spring", stiffness: 300 }}
                             >
-                                Today, we're proud to be at the forefront of technological innovation, serving clients across various industries with our expertise in AI, web development, and mobile solutions.
-                            </motion.p>
-                            <motion.p
-                                whileHover={{ scale: 1.02, x: 10 }}
-                                transition={{ type: "spring", stiffness: 300 }}
-                            >
-                                Our goal is to develop <span className="font-bold dark:text-white text-black">advanced</span> and <span className="font-bold dark:text-white text-black">unknown technologies</span> that can <span className="font-bold dark:text-white text-black">transform</span> the world.
+                                We're just getting started—this is only the beginning of a transformative journey
                             </motion.p>
                         </motion.div>
                     </motion.div>

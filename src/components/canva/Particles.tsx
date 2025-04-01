@@ -34,7 +34,6 @@ export const Particles = () => {
         targetY: 0,
     });
 
-    // Set initial particle color based on theme
     useEffect(() => {
         if (points.current?.material) {
             points.current.material.uniforms.uColor.value = theme === 'dark'
