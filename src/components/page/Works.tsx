@@ -1,7 +1,6 @@
 import dynamic from 'next/dynamic'
 import React, { useRef, useEffect } from 'react'
 import { Vertebral } from '../canva/Vertebral'
-import { InfoCard } from '../canva/InfoCard'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -67,47 +66,14 @@ const AnimatedCamera = () => {
     )
 }
 
-const AnimatedCard = ({ index }: { index: number }) => {
-    const cardRef = useRef<any>(null)
-
-    useEffect(() => {
-        if (cardRef.current) {
-            // Create a static circular arrangement
-            const radius = 6 // Fixed radius for all cards
-            const totalCards = 6
-            const offsetAngle = (index * 2 * Math.PI) / totalCards // Even distribution
-
-            // Calculate static positions in a circle
-            const x = Math.cos(offsetAngle) * radius
-            const y = Math.sin(offsetAngle) * radius * 0.5 // Flatten the circle vertically
-            const z = Math.sin(offsetAngle) * radius
-
-            // Add slight vertical offset based on index
-            const verticalOffset = (index % 2) * 0.5 // Alternate heights
-
-            cardRef.current.position.set(x, y + verticalOffset, -1)
-            cardRef.current.lookAt(0, 0, 0)
-        }
-    }, [index])
-
-    return (
-        <InfoCard
-            ref={cardRef}
-            position={[0, 0, 0]}
-            scale={[0.4, 0.2, 0.8]}
-        />
-    )
-}
 
 const Works = () => {
     return (
         <div className='h-[200dvh] relative works-container'>
+            {/* @ts-ignore */}
             <View className='absolute inset-0 -top-[120vh] h-[300dvh] w-full'>
                 <AnimatedCamera />
                 <Vertebral />
-                {[0, 1, 2, 3, 4, 5].map((index) => (
-                    <AnimatedCard key={index} index={index} />
-                ))}
             </View>
         </div>
     )
