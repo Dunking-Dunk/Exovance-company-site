@@ -146,7 +146,6 @@ export default function Home() {
         <Common />
         <Particles />
       </View>
-
     </div>
   );
 }

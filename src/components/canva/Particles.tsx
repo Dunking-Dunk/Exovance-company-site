@@ -34,6 +34,15 @@ export const Particles = () => {
         targetY: 0,
     });
 
+    // Set initial particle color based on theme
+    useEffect(() => {
+        if (points.current?.material) {
+            points.current.material.uniforms.uColor.value = theme === 'dark'
+                ? new THREE.Vector3(.9804, .9373, .9373)
+                : new THREE.Vector3(0.0, 0.0, 0.0);
+        }
+    }, [theme]);
+
     // Memoize scroll transform
     const { scrollYProgress } = useScroll();
     const distance = useTransform(scrollYProgress, [0, 1], [1, 10]);
