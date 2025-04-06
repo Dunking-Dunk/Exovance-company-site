@@ -7,6 +7,8 @@
 #define TIME_AMPLITUDE.1
 #define GLOW_INTENSITY.3
 #define PULSE_SPEED 2.
+#define MOUSE_INFLUENCE.8
+#define MOUSE_RADIUS.3
 
 uniform sampler2D uPositions;
 uniform float uTime;
@@ -23,12 +25,14 @@ vec3 calculatePosition(vec3 pos){
     // Base position
     vec3 finalPos=pos;
     
-    // Enhanced mouse interaction with smooth transition
-    float mouseInfluence=.5;
-    vec3 mousePos=uMouse*mouseInfluence;
+    // Enhanced mouse interaction with smooth transition and improved radius
+    vec3 mousePos=uMouse*MOUSE_INFLUENCE;
     float mouseDist=length(finalPos-mousePos);
-    float mouseEffect=smoothstep(2.,0.,mouseDist);
-    finalPos+=mousePos*(1.-uTransitionProgress)*mouseEffect;
+    float mouseEffect=smoothstep(MOUSE_RADIUS,0.,mouseDist);
+    
+    // Apply mouse repulsion with improved falloff
+    vec3 mouseDir=normalize(finalPos-mousePos);
+    finalPos+=mouseDir*mouseEffect*(1.-uTransitionProgress);
     
     // Apply scroll-based scaling with smooth transition
     finalPos*=uRadiusScale;

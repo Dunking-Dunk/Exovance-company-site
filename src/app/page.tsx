@@ -45,6 +45,10 @@ const Particles = dynamic(() => import("@/components/canva/Particles").then((mod
   ssr: false
 })
 
+const TransparentPlane = dynamic(() => import("@/components/canva/TransparentPlane").then((mod: any) => mod.TransparentPlane), {
+  ssr: false
+})
+
 export default function Home() {
 
   return (
@@ -146,6 +150,10 @@ export default function Home() {
         <Common />
         <Particles />
       </View>
+      {/* @ts-ignore */}
+      {/* <View className="fixed inset-0 z-[50] pointer-events-none">
+        <TransparentPlane />
+      </View> */}
     </div>
   );
 }

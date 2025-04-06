@@ -16,12 +16,10 @@ const getRandomData = (width, height) => {
     const length = width * height * 4;
     const data = new Float32Array(length);
     for (let i = 0; i < length; i += 4) {
-        const theta = Math.random() * Math.PI * 2;
-        const phi = 2 * Math.PI * Math.random();
-        const r = 0.5 + 0.5 * Math.random();
-        data[i] = r * Math.sin(theta) * Math.cos(phi);
-        data[i + 1] = r * Math.sin(theta) * Math.sin(phi);
-        data[i + 2] = r * Math.cos(theta);
+        // Simple random distribution in unit cube
+        data[i] = (Math.random() - 0.5) * 2;
+        data[i + 1] = (Math.random() - 0.5) * 2;
+        data[i + 2] = (Math.random() - 0.5) * 2;
         data[i + 3] = 1.0;
     }
     return data;
@@ -190,6 +188,8 @@ class SimulationMaterial extends THREE.ShaderMaterial {
                 uTime: { value: 0 },
                 uFrequency: { value: 0.25 },
                 uMouse: { value: new THREE.Vector3(0, 0, 0) },
+                uPrevMouse: { value: new THREE.Vector3(0, 0, 0) },
+                uMouseActive: { value: 0 },
                 uMouseRadius: { value: 0.3 },
                 uScroll: { value: 0 },
                 uTransitionProgress: { value: 0 },

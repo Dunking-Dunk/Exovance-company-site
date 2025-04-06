@@ -34,6 +34,14 @@ export const Particles = () => {
         targetY: 0,
     });
 
+    // Track previous mouse position and activity time
+    const prevMouse = useRef(new THREE.Vector3());
+    const mouseActive = useRef(0);
+    const lastMouseMove = useRef(0);
+
+    // Add ref for canvas element
+    const canvasRef = useRef(null);
+
     useEffect(() => {
         if (points.current?.material) {
             points.current.material.uniforms.uColor.value = theme === 'dark'
@@ -82,10 +90,26 @@ export const Particles = () => {
 
     const mouse = useRef(new THREE.Vector3());
 
-    // Memoize mouse position update handler
+    // Fixed mouse position update handler with activity tracking
     const updateMousePosition = useCallback((e: MouseEvent) => {
-        mousePosition.current.targetX = (e.clientX / window.innerWidth) * 2 - 1;
-        mousePosition.current.targetY = -(e.clientY / window.innerHeight) * 2 + 1;
+        // Simply use window dimensions since Three.js canvas is typically fullscreen
+        const x = (e.clientX / window.innerWidth) * 2 - 1;
+        const y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+        // Track significant mouse movement
+        const prevX = mousePosition.current.targetX;
+        const prevY = mousePosition.current.targetY;
+        const moveDist = Math.sqrt((x - prevX) * (x - prevX) + (y - prevY) * (y - prevY));
+
+        // If mouse moved significantly, update activity time
+        if (moveDist > 0.02) {
+            mouseActive.current = Date.now() / 1000;
+            lastMouseMove.current = Date.now() / 1000;
+        }
+
+        // Apply smoother interpolation for mouse movement
+        mousePosition.current.targetX += (x - mousePosition.current.targetX) * 0.2;
+        mousePosition.current.targetY += (y - mousePosition.current.targetY) * 0.2;
     }, []);
 
     // Optimize scroll trigger setup
@@ -150,20 +174,26 @@ export const Particles = () => {
         };
     }, []);
 
-    // Mouse event effect
+    // Mouse event effect with correct element reference
     useEffect(() => {
         window.addEventListener('mousemove', updateMousePosition);
         return () => window.removeEventListener('mousemove', updateMousePosition);
     }, [updateMousePosition]);
 
-    // Optimize frame updates
+    // Optimize frame updates with improved mouse handling
     useFrame((state) => {
         const { gl, clock } = state;
+        const elapsedTime = clock.getElapsedTime();
 
-        // Smooth mouse movement
-        mousePosition.current.x += (mousePosition.current.targetX - mousePosition.current.x) * 0.1;
-        mousePosition.current.y += (mousePosition.current.targetY - mousePosition.current.y) * 0.1;
+        // Save previous mouse position
+        prevMouse.current.set(mouse.current.x, mouse.current.y, 0);
 
+        // Enhanced mouse movement smoothing
+        mousePosition.current.x += (mousePosition.current.targetX - mousePosition.current.x) * 0.15;
+        mousePosition.current.y += (mousePosition.current.targetY - mousePosition.current.y) * 0.15;
+
+        // Map mouse position to world space without additional scaling
+        // The mouse coordinates are already properly normalized
         mouse.current.set(
             mousePosition.current.x,
             mousePosition.current.y,
@@ -182,9 +212,11 @@ export const Particles = () => {
         );
         simulationMaterialRef.current.uniforms.uScroll.value = dampedScroll;
 
-        // Update uniforms
+        // Update uniforms with scaled mouse position and activity
         simulationMaterialRef.current.uniforms.uMouse.value = mouse.current;
-        simulationMaterialRef.current.uniforms.uTime.value = clock.getElapsedTime();
+        simulationMaterialRef.current.uniforms.uPrevMouse.value = prevMouse.current;
+        simulationMaterialRef.current.uniforms.uMouseActive.value = mouseActive.current;
+        simulationMaterialRef.current.uniforms.uTime.value = elapsedTime;
 
         // Render FBO
         gl.setRenderTarget(renderTarget);
