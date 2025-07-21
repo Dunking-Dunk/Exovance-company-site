@@ -92,7 +92,7 @@ const Layout = ({ children }: Props) => {
                 className='bg-customBlack'
             >
                 <Header />
-                {/* <AnimatedCursor /> */}
+                <AnimatedCursor />
                 {children}
 
                 <Scene

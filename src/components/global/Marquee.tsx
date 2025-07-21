@@ -5,7 +5,7 @@ import { useTheme } from 'next-themes';
 const MarqueeScrollText = () => {
     const containerRef = React.useRef(null);
     const { theme } = useTheme()
- 
+
     const { scrollYProgress } = useScroll({
         target: containerRef,
         offset: ["start end", "end start"]
@@ -33,7 +33,7 @@ const MarqueeScrollText = () => {
 
             <motion.div
                 className="relative w-full px-4">
-                <div className='absolute z-20 inset-0  w-full h-full' style={{ background: 'linear-gradient(90deg, var(--custom-black) 0%, rgba(255,246,247,0) 50%, var(--custom-black) 100%)' }} />
+                <div className='absolute z-20 inset-0 w-full h-full dark:bg-gradient-to-r dark:from-black dark:via-transparent dark:to-black' />
                 {/* Enhanced Background curves */}
                 <svg
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-60"

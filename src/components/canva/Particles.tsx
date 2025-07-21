@@ -2,7 +2,7 @@
 
 import { OrbitControls, useFBO } from "@react-three/drei";
 import { Canvas, useFrame, extend, createPortal } from "@react-three/fiber";
-import { useMemo, useRef, useEffect, useCallback } from "react";
+import { useMemo, useRef, useEffect, useCallback, useState } from "react";
 import * as THREE from "three";
 import { useScroll } from 'motion/react'
 import { gsap } from 'gsap';
@@ -19,7 +19,7 @@ import { damp } from "three/src/math/MathUtils.js";
 extend({ SimulationMaterial: SimulationMaterial });
 
 
-const SIZE = 165;
+const SIZE = 170;
 const POSITIONS = new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0]);
 const UVS = new Float32Array([0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0]);
 
@@ -42,11 +42,16 @@ export const Particles = () => {
     // Add ref for canvas element
     const canvasRef = useRef(null);
 
+    // Smooth color transition state
+    const currentColor = useRef(new THREE.Vector3(1.0, 1.0, 1.0)); // Start with white
+    const targetColor = useRef(new THREE.Vector3(1.0, 1.0, 1.0));
+
     useEffect(() => {
-        if (points.current?.material) {
-            points.current.material.uniforms.uColor.value = theme === 'dark'
-                ? new THREE.Vector3(.9804, .9373, .9373)
-                : new THREE.Vector3(0.0, 0.0, 0.0);
+        // Set target color based on theme with smooth transition
+        if (theme === 'dark') {
+            targetColor.current.set(1.0, 1.0, 1.0); // White particles in dark mode
+        } else {
+            targetColor.current.set(0.0, 0.0, 0.0); // Black particles in light mode
         }
     }, [theme]);
 
@@ -82,7 +87,7 @@ export const Particles = () => {
     // Memoize uniforms
     const uniforms = useMemo(() => ({
         uPositions: { value: null },
-        uColor: { value: null },
+        uColor: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
         uTransitionProgress: { value: 0 },
         uRadiusScale: { value: 1 },
         uCurrentPosition: { value: 0 }
@@ -112,7 +117,7 @@ export const Particles = () => {
         mousePosition.current.targetY += (y - mousePosition.current.targetY) * 0.2;
     }, []);
 
-    // Optimize scroll trigger setup
+    // Optimize scroll trigger setup - Synced with Vision page
     useEffect(() => {
         gsap.registerPlugin(ScrollTrigger);
 
@@ -123,54 +128,86 @@ export const Particles = () => {
             let transitionProgress = 0;
             let radiusScale = 1;
 
-            if (progress < 0.20) {
+            // Vision timeline: 240% scroll with 3 sections
+            // GSAP timeline adds each section sequentially with overlaps
+            // Section 0 (IMAGINE): starts immediately 
+            // Section 1 (INVENT): starts around 33% 
+            // Section 2 (EXOVANCE): starts around 66%
+
+            if (progress < 0.30) {
+                // Sphere grows continuously until IMAGINE text becomes visible
                 currentPosition = 'A';
-                radiusScale = 1 + (progress * 10);
-            } else if (progress < 0.30) {
+                transitionProgress = 0;
+                radiusScale = 1 + (progress * 16); // Continuous growth to maximum
+
+            } else if (progress < 0.38) {
+                // Transition to Brain as IMAGINE text pops up (becomes clear from blur)
                 currentPosition = 'A-B';
-                const sectionProgress = (progress - 0.20) / (0.30 - 0.20);
-                transitionProgress = Math.min(1, sectionProgress * 3);
-                radiusScale = 5;
-            } else if (progress < 0.40) {
+                const sectionProgress = (progress - 0.30) / (0.38 - 0.30);
+                transitionProgress = Math.min(1, sectionProgress * 6); // Very fast transition
+                radiusScale = 5; // Peak size during brain formation
+
+            } else if (progress < 0.50) {
+                // Hold Brain formation while IMAGINE is fully visible
+                currentPosition = 'B';
+                transitionProgress = 1;
+                radiusScale = 2.5; // Stable brain size
+
+            } else if (progress < 0.63) {
+                // Transition to Human head as INVENT text pops up
                 currentPosition = 'B-C';
-                const sectionProgress = (progress - 0.30) / (0.40 - 0.30);
-                transitionProgress = Math.min(1, sectionProgress * 3);
-            } else if (progress < 0.55) {
+                const sectionProgress = (progress - 0.50) / (0.63 - 0.50);
+                transitionProgress = Math.min(1, sectionProgress * 6); // Very fast transition
+                radiusScale = 2.5;
+
+            } else if (progress < 0.61) {
+                // Hold Human head while INVENT is fully visible
+                currentPosition = 'C';
+                transitionProgress = 1;
+                radiusScale = 2; // Stable human head size
+
+            } else if (progress < 0.88) {
+                // Transition to Robot as EXOVANCE text pops up
                 currentPosition = 'C-D';
-                const sectionProgress = (progress - 0.40) / (0.55 - 0.40);
-                transitionProgress = Math.min(1, sectionProgress * 3);
-            } else if (progress < 0.80) {
-                currentPosition = 'D-S';
-                transitionProgress = (progress - 0.55) / (0.80 - 0.55);
+                const sectionProgress = (progress - 0.61) / (0.88 - 0.61);
+                transitionProgress = Math.min(1, sectionProgress * 6); // Very fast transition
+                radiusScale = 2;
+
             } else {
-                currentPosition = 'S-A';
-                transitionProgress = (progress - 0.80) / (0.95 - 0.80);
+                // EXOVANCE section and beyond - hold Robot formation
+                currentPosition = 'D';
+                transitionProgress = 1;
+                radiusScale = 1.5; // Final stable robot size
             }
+
+            // Debug logging to help track the animations
+            console.log(`Particles - Progress: ${progress.toFixed(3)}, Position: ${currentPosition}, Transition: ${transitionProgress.toFixed(3)}, Scale: ${radiusScale.toFixed(3)}`);
 
             simulationMaterialRef.current.uniforms.uTransitionProgress.value = transitionProgress;
             simulationMaterialRef.current.uniforms.uRadiusScale.value = radiusScale;
             simulationMaterialRef.current.uniforms.uCurrentPosition.value =
                 currentPosition === 'A' ? 0 :
                     currentPosition === 'A-B' ? 1 :
-                        currentPosition === 'B-C' ? 2 :
-                            currentPosition === 'C-D' ? 3 :
-                                currentPosition === 'D' ? 4 :
-                                    currentPosition === 'D-S' ? 5 :
-                                        currentPosition === 'S-A' ? 6 : 0;
+                        currentPosition === 'B' ? 1 :
+                            currentPosition === 'B-C' ? 2 :
+                                currentPosition === 'C' ? 2 :
+                                    currentPosition === 'C-D' ? 3 :
+                                        currentPosition === 'D' ? 3 : 0;
         };
 
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: 'body',
-                start: 'top top',
-                end: 'bottom bottom',
-                scrub: 1,
-                onUpdate: (self) => updatePositionState(self.progress)
-            }
+        // Create a separate ScrollTrigger for particles that doesn't conflict with theme switching
+        const particlesScrollTrigger = ScrollTrigger.create({
+            trigger: 'body',
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 1,
+            onUpdate: (self) => updatePositionState(self.progress),
+            id: 'particles-animation'
         });
 
         return () => {
-            tl.kill();
+            // Clean up only this specific ScrollTrigger
+            particlesScrollTrigger.kill();
         };
     }, []);
 
@@ -180,7 +217,7 @@ export const Particles = () => {
         return () => window.removeEventListener('mousemove', updateMousePosition);
     }, [updateMousePosition]);
 
-    // Optimize frame updates with improved mouse handling
+    // Optimize frame updates with improved mouse handling and smooth color transitions
     useFrame((state) => {
         const { gl, clock } = state;
         const elapsedTime = clock.getElapsedTime();
@@ -224,51 +261,57 @@ export const Particles = () => {
         gl.render(scene, camera);
         gl.setRenderTarget(null);
 
-        // Update points material
+        // Smooth color transition using lerp for eased animation
+        currentColor.current.lerp(targetColor.current, 0.05); // Slower lerp for smooth 1000ms-like transition
+
+        // Update points material with smooth color transition
         points.current.material.uniforms.uPositions.value = renderTarget.texture;
-        points.current.material.uniforms.uColor.value = theme === 'dark'
-            ? new THREE.Vector3(.9804, .9373, .9373)
-            : new THREE.Vector3(0.0, 0.0, 0.0);
+        points.current.material.uniforms.uColor.value = currentColor.current;
     });
 
-    return (
-        <>
-            {createPortal(
-                <mesh>
-                    <simulationMaterial ref={simulationMaterialRef} args={[SIZE]} />
+    try {
+        return (
+            <>
+                {createPortal(
+                    <mesh>
+                        <simulationMaterial ref={simulationMaterialRef} args={[SIZE]} />
+                        <bufferGeometry>
+                            <bufferAttribute
+                                attach="attributes-position"
+                                count={POSITIONS.length / 3}
+                                array={POSITIONS}
+                                itemSize={3}
+                            />
+                            <bufferAttribute
+                                attach="attributes-uv"
+                                count={UVS.length / 2}
+                                array={UVS}
+                                itemSize={2}
+                            />
+                        </bufferGeometry>
+                    </mesh>,
+                    scene
+                )}
+                <points ref={points}>
                     <bufferGeometry>
                         <bufferAttribute
                             attach="attributes-position"
-                            count={POSITIONS.length / 3}
-                            array={POSITIONS}
+                            count={particlesPosition.length / 3}
+                            array={particlesPosition}
                             itemSize={3}
                         />
-                        <bufferAttribute
-                            attach="attributes-uv"
-                            count={UVS.length / 2}
-                            array={UVS}
-                            itemSize={2}
-                        />
                     </bufferGeometry>
-                </mesh>,
-                scene
-            )}
-            <points ref={points}>
-                <bufferGeometry>
-                    <bufferAttribute
-                        attach="attributes-position"
-                        count={particlesPosition.length / 3}
-                        array={particlesPosition}
-                        itemSize={3}
+                    <shaderMaterial
+                        depthWrite={false}
+                        fragmentShader={fragmentShader}
+                        vertexShader={vertexShader}
+                        uniforms={uniforms}
                     />
-                </bufferGeometry>
-                <shaderMaterial
-                    depthWrite={false}
-                    fragmentShader={fragmentShader}
-                    vertexShader={vertexShader}
-                    uniforms={uniforms}
-                />
-            </points>
-        </>
-    );
+                </points>
+            </>
+        );
+    } catch (error) {
+        console.error('Particles rendering error:', error);
+        return null;
+    }
 };

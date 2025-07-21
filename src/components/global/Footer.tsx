@@ -12,7 +12,7 @@ const Footer = () => {
     return (
         <footer className="relative w-full min-h-[35vh] py-8 sm:py-10 overflow-hidden text-customGray mb-6 sm:mb-10">
             <h2 className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[25vw] sm:text-[20vw] z-10 font-semibold text-customGrayDarker opacity-50'>EXOVANCE</h2>
-            <div className='w-full h-full absolute z-10 inset-0 bg-gradient-to-r dark:from-black/20 dark:to-black/95 from-zinc-100/20 to-zinc-100 ' />
+            <div className='w-full h-full absolute z-10 inset-0 bg-gradient-to-r dark:from-black/20 dark:to-black/95' />
             <div className="absolute  inset-0 mx-28 py-10 h-full z-20">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 items-center justify-between h-full">
                     <div className='flex flex-col items-center sm:items-start justify-between h-full space-y-6 sm:space-y-0'>

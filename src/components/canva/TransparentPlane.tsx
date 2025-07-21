@@ -13,299 +13,417 @@ interface TransparentPlaneProps {
     color?: string
 }
 
-// Shader for Buffer A - Water ripple and normal map generation
-const bufferAVertexShader = `
+// Vertex shader for all passes
+const vertexShader = `
         varying vec2 vUv;
-        
         void main() {
             vUv = uv;
             gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
     `
 
-const bufferAFragmentShader = `
+// Fluid simulation shader - enhanced velocity field
+const velocityShader = `
+    uniform sampler2D uVelocity;
+    uniform sampler2D uPressure;
+    uniform vec2 uResolution;
+    uniform vec2 uMouse;
+    uniform vec2 uPrevMouse;
+    uniform float uTime;
+    uniform float uDeltaTime;
+    uniform bool uMousePressed;
         varying vec2 vUv;
-        uniform float iTime;
-    uniform float iTimeDelta;
-    uniform int iFrame;
-        uniform vec2 iResolution;
-    uniform vec4 iMouse;
-    uniform sampler2D iChannel0;
-
-    // Water ripple parameters
-    float nsize = 5.0;
-    float nstrenght = 1.0;
-    float turbInfluence = 0.025;
-    float rippleSpeed = 15.0;
-    float rippleFreq = 20.0;
-    float size = 0.6;
-    float dropSpeed = 1.0;
-    float dropSize = 0.7;
-    float pi = 3.14159265359;
-
-    float hash(float n) {
-        return fract(sin(dot(vec2(n,n), vec2(12.9898,78.233))) * 43758.5453);  
-    } 
-
-    float brush(vec2 uv, float tile) {            
-        uv *= tile;
-        float mouseRipple;
-
-        if(iMouse.z > 0.1) {     
-            vec2 mPos = iMouse.xy/iResolution.xy;
-            mPos.x *= iResolution.x/iResolution.y; 
-            mPos *= tile;
-            
-            float l = 1.0 - length(uv - mPos);
-            mouseRipple = smoothstep(size, 1.0, l);
-        } else {
-            mouseRipple = 0.0; 
-        }
-            
-        float dropRipple;
-        
-        const int iter = 10;
-        for (int i = 0; i < iter; i++) {
-            float ifloat = float(i)+1.0;
-            float phase = (ifloat/float(iter))*dropSpeed;
-            float t = iTime*dropSpeed + phase;
-            float rX = hash(floor(t)+ifloat);
-            float rY = hash(floor(t)*0.5+ifloat);
-            
-            vec2 rPos = vec2(rX,rY)*tile; 
-            rPos.x *= iResolution.x/iResolution.y; 
-            float rl = 1.0 - length(uv - rPos);
-            float fTime = fract(t);
-            float rRipple = sin(rl*rippleFreq + fTime*rippleSpeed)*0.5+0.5;
-            float rB = smoothstep((1.0 - fTime)*dropSize, 1.0, rl);
-            dropRipple += rB*rRipple*(1.0 - fTime);
-        }
-        
-        return dropRipple + mouseRipple;
-    }
-        
-    vec3 calculateNormals(vec2 uv, float tile) {
-        float offsetX = nsize/iResolution.x;
-        float offsetY = nsize/iResolution.y;
-        vec2 ovX = vec2(0.0, offsetX);
-        vec2 ovY = vec2(0.0, offsetY);
-        
-        float X = (brush(uv - ovX.yx, tile) - brush(uv + ovX.yx, tile)) * nstrenght;
-        float Y = (brush(uv - ovY.xy, tile) - brush(uv + ovY.xy, tile)) * nstrenght;
-        float Z = brush(uv, tile);
-        
-        return vec3(X,Y,Z);
-    }
 
     void main() {
-        float ratio = iResolution.x/iResolution.y;
-        vec2 uv = vUv;
-        vec2 uvR = uv;
-        uvR.x *= ratio;
+        vec2 texel = 1.0 / uResolution;
+        vec2 velocity = texture2D(uVelocity, vUv).xy;
+
+        // Mouse interaction - only when pressed and moving
+        vec2 mousePos = uMouse / uResolution;
+        vec2 prevMousePos = uPrevMouse / uResolution;
+        vec2 mouseVel = (mousePos - prevMousePos) / max(uDeltaTime, 0.001);
+
+        float dist = length(vUv - mousePos);
+        float force = exp(-dist * 50.0) * 0.3; // Small radius
         
-        vec4 tex = mix(vec4(0.0,0.0,1.0,0.0), texture2D(iChannel0, uv)*2.0-1.0, turbInfluence);
+        // Only interact when mouse is pressed AND moving
+        if (uMousePressed && dist < 0.05 && length(mouseVel) > 0.001) {
+            velocity += mouseVel * force * 3.0;
+        }
+            
+        // Reduced ambient motion with smaller patterns
+        float time1 = uTime * 0.3;
+        float time2 = uTime * 0.7;
+        float time3 = uTime * 1.1;
         
-        // Mask border to avoid artefacts
-        float maskX = sin(uv.x*pi);
-        float maskY = sin(uv.y*pi);
-        float mask = smoothstep(0.3, 0.0, maskX*maskY);
+        // Smaller wave patterns
+        vec2 wave1 = vec2(
+            sin(vUv.x * 12.0 + time1) * cos(vUv.y * 10.0 + time1 * 0.8),
+            cos(vUv.x * 10.0 + time1 * 1.2) * sin(vUv.y * 12.0 + time1)
+        ) * 0.002;
         
-        vec3 n = calculateNormals(uvR, 2.0); 
+        vec2 wave2 = vec2(
+            sin(vUv.x * 18.0 + time2 + 2.0) * cos(vUv.y * 15.0 + time2 * 0.6),
+            cos(vUv.x * 15.0 + time2 * 1.4) * sin(vUv.y * 18.0 + time2 + 1.5)
+        ) * 0.001;
         
-        gl_FragColor = mix(vec4(vec3(tex.x + n.x, tex.y + n.y, 0.0)*0.5+0.5, n.z), vec4(0.5,0.5,1.0,0.0), mask);
+        vec2 wave3 = vec2(
+            sin(vUv.x * 24.0 + time3 + 4.0) * cos(vUv.y * 20.0 + time3 * 0.4),
+            cos(vUv.x * 20.0 + time3 * 1.6) * sin(vUv.y * 24.0 + time3 + 3.0)
+        ) * 0.0005;
+        
+        // Combine waves
+        velocity += wave1 + wave2 + wave3;
+        
+        // Smaller swirling motion
+        vec2 center = vUv - 0.5;
+        float angle = atan(center.y, center.x);
+        float radius = length(center);
+        vec2 swirl = vec2(-sin(angle), cos(angle)) * radius * 0.0005 * sin(uTime * 0.5);
+        velocity += swirl;
+        
+        // Damping
+        velocity *= 0.985;
+        
+        gl_FragColor = vec4(velocity, 0.0, 1.0);
     }
 `
 
-// Shader for Buffer B - Fluid simulation
-const bufferBVertexShader = `
+// Pressure calculation shader
+const pressureShader = `
+    uniform sampler2D uVelocity;
+    uniform sampler2D uPressure;
+    uniform vec2 uResolution;
+    varying vec2 vUv;
+
+    void main() {
+        vec2 texel = 1.0 / uResolution;
+        
+        // Sample neighboring velocities
+        float left = texture2D(uVelocity, vUv - vec2(texel.x, 0.0)).x;
+        float right = texture2D(uVelocity, vUv + vec2(texel.x, 0.0)).x;
+        float top = texture2D(uVelocity, vUv + vec2(0.0, texel.y)).y;
+        float bottom = texture2D(uVelocity, vUv - vec2(0.0, texel.y)).y;
+        
+        // Calculate divergence
+        float divergence = (right - left + top - bottom) * 0.5;
+        
+        // Sample neighboring pressures
+        float leftP = texture2D(uPressure, vUv - vec2(texel.x, 0.0)).x;
+        float rightP = texture2D(uPressure, vUv + vec2(texel.x, 0.0)).x;
+        float topP = texture2D(uPressure, vUv + vec2(0.0, texel.y)).x;
+        float bottomP = texture2D(uPressure, vUv - vec2(0.0, texel.y)).x;
+        
+        // Jacobi iteration for pressure
+        float pressure = (leftP + rightP + topP + bottomP - divergence) * 0.25;
+        
+        gl_FragColor = vec4(pressure, 0.0, 0.0, 1.0);
+    }
+`
+
+// Density advection shader - black and white effects
+const densityShader = `
+    uniform sampler2D uDensity;
+    uniform sampler2D uVelocity;
+    uniform vec2 uResolution;
+    uniform vec2 uMouse;
+    uniform bool uMousePressed;
+    uniform float uTime;
+    uniform float uDeltaTime;
     varying vec2 vUv;
     
     void main() {
-        vUv = uv;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
-`
-
-const bufferBFragmentShader = `
-    varying vec2 vUv;
-    uniform float iTime;
-    uniform float iTimeDelta;
-    uniform int iFrame;
-    uniform vec2 iResolution;
-    uniform sampler2D iChannel0; // Buffer A
-    uniform sampler2D iChannel1; // Previous Buffer B
-    uniform sampler2D iChannel2; // Reset signal
-    uniform sampler2D iChannel3; // Buffer C (turbulence)
-
-    float sampleDistance = 10.0;
-    float diffusion = -1.0;
-    float turbulence = 0.3;
-
-    void main() {
-        vec2 uv = vUv;
+        vec2 texel = 1.0 / uResolution;
+        vec2 velocity = texture2D(uVelocity, vUv).xy;
         
-        vec4 baseColor = texture2D(iChannel0, uv)*2.0-1.0;
+        // Enhanced semi-Lagrangian advection
+        vec2 coord = vUv - velocity * uDeltaTime * 0.15;
+        vec4 density = texture2D(uDensity, coord);
         
-        vec2 sDist = sampleDistance/iResolution.xy;
+        // Add density only when mouse is pressed and moving
+        vec2 mousePos = uMouse / uResolution;
+        float dist = length(vUv - mousePos);
         
-        vec4 newColor = texture2D(iChannel1, uv);
-        vec2 turb = (texture2D(iChannel3, uv).xy*2.0-1.0)*turbulence;
-
-        vec4 newColor1 = texture2D(iChannel1, uv + vec2(1.0,0.0)*sDist);
-        vec4 newColor2 = texture2D(iChannel1, uv + vec2(-1.0,0.0)*sDist);
-        vec4 newColor3 = texture2D(iChannel1, uv + vec2(0.0,1.0)*sDist);
-        vec4 newColor4 = texture2D(iChannel1, uv + vec2(0.0,-1.0)*sDist);
-        
-        vec4 newColor5 = texture2D(iChannel1, uv + vec2(1.0,1.0)*sDist);
-        vec4 newColor6 = texture2D(iChannel1, uv + vec2(-1.0,1.0)*sDist);
-        vec4 newColor7 = texture2D(iChannel1, uv + vec2(1.0,-1.0)*sDist);
-        vec4 newColor8 = texture2D(iChannel1, uv + vec2(-1.0,-1.0)*sDist);
+        // Only interact when pressed and in small radius
+        if (uMousePressed && dist < 0.03) {
+            // Create fine spiral effect
+            float angle = atan(vUv.y - mousePos.y, vUv.x - mousePos.x);
+            float spiral = sin(angle * 6.0 + uTime * 12.0 + dist * 50.0);
             
-        vec2 t = newColor1.xy * 2.0 - 1.0;
-        t += newColor2.xy * 2.0 - 1.0;
-        t += newColor3.xy * 2.0 - 1.0;
-        t += newColor4.xy * 2.0 - 1.0;
-        
-        t += newColor5.xy * 2.0 - 1.0;
-        t += newColor6.xy * 2.0 - 1.0;
-        t += newColor7.xy * 2.0 - 1.0;
-        t += newColor8.xy * 2.0 - 1.0;
-        
-        t /= 8.0;
-
-        vec2 dir = vec2(t+turb)*diffusion*iTimeDelta;
-        
-        vec4 res = texture2D(iChannel1, uv + dir);
-        
-        baseColor = baseColor*0.5+0.5;
-        
-        // Reset condition on first frames
-        if(iFrame < 10) {
-            gl_FragColor = baseColor;
-        } else {
-            gl_FragColor = mix(res, baseColor, baseColor.a);
-        }
-    }
-`
-
-// Shader for Buffer C - Turbulence
-const bufferCVertexShader = `
-    varying vec2 vUv;
-    
-    void main() {
-        vUv = uv;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
-`
-
-const bufferCFragmentShader = `
-    varying vec2 vUv;
-    uniform float iTime;
-    uniform vec2 iResolution;
-    uniform sampler2D iChannel0; // Buffer A
-
-    vec2 speed = vec2(5.0,-2.0);
-    float v = 30.0;
-    float dist = 0.3;
-    float random1 = 1.0;
-    float random2 = 2.0;
-
-    float hash(float n) {
-        return fract(sin(dot(vec2(n,n), vec2(12.9898,78.233))) * 43758.5453);  
-    }  
-
-    vec2 turbulence(vec2 uv) {
-        vec2 turb;
-        turb.x = sin(uv.x);
-        turb.y = cos(uv.y);
-        
-        for(int i = 0; i < 10; i++) {
-            float ifloat = 1.0 + float(i);
-            float ifloat1 = ifloat + random1;
-            float ifloat2 = ifloat + random2; 
+            // Pulsating brightness based on time and distance
+            float brightness = (0.6 + 0.2 * spiral) * (1.0 - dist * 30.0);
+            brightness *= (0.5 + 0.3 * sin(uTime * 6.0));
             
-            float r1 = hash(ifloat1)*2.0-1.0;
-            float r2 = hash(ifloat2)*2.0-1.0;
-            
-            vec2 turb2;
-            turb2.x = sin(uv.x*(1.0 + r1*v) + turb.y*dist*ifloat + iTime*speed.x*r2);
-            turb2.y = cos(uv.y*(1.0 + r1*v) + turb.x*dist*ifloat + iTime*speed.y*r2);
-            
-            turb.x = mix(turb.x, turb2.x, 0.5);
-            turb.y = mix(turb.y, turb2.y, 0.5);
+            // Add density with fine control
+            float intensity = exp(-dist * 150.0) * brightness * 1.5;
+            density.rgb += vec3(intensity);
+            density.a += intensity * 0.6;
         }
         
-        return turb;
-    }
-
-    void main() {
-        float ratio = iResolution.x/iResolution.y;
-        vec2 uv = vUv;
-        uv.x *= ratio;
+        // Faster decay for more responsive effects
+        density.rgb *= 0.996;
+        density.a *= 0.995;
         
-        vec4 buff = texture2D(iChannel0, vUv)*2.0-1.0;
-        vec2 turb = turbulence(uv+buff.xy*0.1)*0.5+0.5;
-        
-        gl_FragColor = vec4(turb.x, turb.y, 0.0, 0.0);
+        gl_FragColor = density;
     }
 `
 
-// Final render shader
-const finalVertexShader = `
+// Final render shader with dark black and white gradient effects
+const renderShader = `
+    uniform sampler2D uDensity;
+    uniform sampler2D uVelocity;
+    uniform vec2 uResolution;
+    uniform float uTime;
+    uniform float uOpacity;
+    uniform float uThemeValue; // Use float value for smooth interpolation
     varying vec2 vUv;
     
-    void main() {
-        vUv = uv;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    // Enhanced noise function for more fluid patterns
+    vec3 hash(vec3 p) {
+        p = vec3(dot(p, vec3(127.1, 311.7, 74.7)),
+                 dot(p, vec3(269.5, 183.3, 246.1)),
+                 dot(p, vec3(113.5, 271.9, 124.6)));
+        return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
     }
-`
 
-const finalFragmentShader = `
-    varying vec2 vUv;
-    uniform float iTime;
-    uniform float opacity;
-    uniform vec2 iResolution;
-    uniform sampler2D iChannel0; // Buffer A (normals)
-    uniform sampler2D iChannel1; // Buffer B (fluid)
-    uniform sampler2D iChannel2; // Environment map
+    float noise(vec3 p) {
+        vec3 i = floor(p);
+        vec3 f = fract(p);
+        vec3 u = f * f * (3.0 - 2.0 * f);
+        
+        return mix(mix(mix(dot(hash(i + vec3(0.0, 0.0, 0.0)), f - vec3(0.0, 0.0, 0.0)),
+                          dot(hash(i + vec3(1.0, 0.0, 0.0)), f - vec3(1.0, 0.0, 0.0)), u.x),
+                      mix(dot(hash(i + vec3(0.0, 1.0, 0.0)), f - vec3(0.0, 1.0, 0.0)),
+                          dot(hash(i + vec3(1.0, 1.0, 0.0)), f - vec3(1.0, 1.0, 0.0)), u.x), u.y),
+                  mix(mix(dot(hash(i + vec3(0.0, 0.0, 1.0)), f - vec3(0.0, 0.0, 1.0)),
+                          dot(hash(i + vec3(1.0, 0.0, 1.0)), f - vec3(1.0, 0.0, 1.0)), u.x),
+                      mix(dot(hash(i + vec3(0.0, 1.0, 1.0)), f - vec3(0.0, 1.0, 1.0)),
+                          dot(hash(i + vec3(1.0, 1.0, 1.0)), f - vec3(1.0, 1.0, 1.0)), u.x), u.y), u.z);
+    }
 
-    float rotSpeed = 0.05;
+    // Enhanced fractal noise with more octaves
+    float fbm(vec3 p) {
+        float value = 0.0;
+        float amplitude = 0.5;
+        float frequency = 1.0;
+        
+        // 6 octaves for more detailed noise
+        value += amplitude * noise(p * frequency);
+        amplitude *= 0.5;
+        frequency *= 2.0;
+        
+        value += amplitude * noise(p * frequency);
+        amplitude *= 0.5;
+        frequency *= 2.0;
+        
+        value += amplitude * noise(p * frequency);
+        amplitude *= 0.5;
+        frequency *= 2.0;
+        
+        value += amplitude * noise(p * frequency);
+        amplitude *= 0.5;
+        frequency *= 2.0;
+        
+        value += amplitude * noise(p * frequency);
+        amplitude *= 0.5;
+        frequency *= 2.0;
+        
+        value += amplitude * noise(p * frequency);
+        
+        return value;
+    }
+
+    // Grainy noise function for texture
+    float grainNoise(vec2 uv, float time) {
+        vec2 grain_uv = uv * 800.0 + time * 0.1;
+        return fract(sin(dot(grain_uv, vec2(12.9898, 78.233))) * 43758.5453) * 2.0 - 1.0;
+    }
+    
+    // Authentic film grain noise function
+    float filmGrain(vec2 uv, float time) {
+        // Create moving grain coordinates
+        vec2 grainUv = uv + time * 0.02;
+        
+        // Multiple hash functions for realistic grain texture
+        float hash1 = fract(sin(dot(grainUv * 512.0, vec2(12.9898, 78.233))) * 43758.5453);
+        float hash2 = fract(sin(dot(grainUv * 256.0 + 1.0, vec2(269.5, 183.3))) * 43758.5453);
+        float hash3 = fract(sin(dot(grainUv * 1024.0 + 2.0, vec2(419.2, 371.9))) * 43758.5453);
+        
+        // Combine multiple scales for realistic film grain
+        float grain = 0.0;
+        grain += (hash1 - 0.5) * 0.6;  // Main grain structure
+        grain += (hash2 - 0.5) * 0.3;  // Medium grain details
+        grain += (hash3 - 0.5) * 0.1;  // Fine grain details
+        
+        return grain;
+    }
+    
+    // Additional noise layers for grain complexity
+    float layeredGrainNoise(vec2 uv, float time, float scale) {
+        vec2 noiseUv = uv * scale + time * 0.01;
+        float hash = fract(sin(dot(noiseUv, vec2(127.1, 311.7))) * 43758.5453);
+        return (hash - 0.5) * 2.0; // Center around 0 with range -1 to 1
+    }
+
+    // Wavy noise function for flowing patterns
+    float wavyNoise(vec2 uv, float time) {
+        vec2 wave1 = vec2(
+            sin(uv.x * 8.0 + time * 1.2) * 0.1,
+            cos(uv.y * 6.0 + time * 0.8) * 0.1
+        );
+        vec2 wave2 = vec2(
+            cos(uv.x * 12.0 + time * 0.9) * 0.05,
+            sin(uv.y * 10.0 + time * 1.1) * 0.05
+        );
+        vec2 wave3 = vec2(
+            sin(uv.x * 16.0 + uv.y * 4.0 + time * 0.7) * 0.03,
+            cos(uv.y * 14.0 + uv.x * 3.0 + time * 1.3) * 0.03
+        );
+        
+        vec2 waveUv = uv + wave1 + wave2 + wave3;
+        return noise(vec3(waveUv * 4.0, time * 0.3));
+    }
+
+    // Enhanced wavy fractal noise
+    float wavyFbm(vec3 p) {
+        vec2 uv = p.xy;
+        float value = 0.0;
+        float amplitude = 0.5;
+        float frequency = 1.0;
+        
+        // Apply wavy distortion to each octave
+        for (int i = 0; i < 4; i++) {
+            vec2 wavyUv = uv + vec2(
+                sin(uv.x * frequency * 0.5 + uTime * 0.8) * 0.1 / frequency,
+                cos(uv.y * frequency * 0.3 + uTime * 0.6) * 0.1 / frequency
+            );
+            value += amplitude * noise(vec3(wavyUv * frequency, p.z));
+            amplitude *= 0.5;
+            frequency *= 2.0;
+        }
+        
+        return value;
+    }
 
     void main() {
-        vec2 uv = vUv;
+        vec4 density = texture2D(uDensity, vUv);
+        vec2 velocity = texture2D(uVelocity, vUv).xy;
         
-        vec4 buff = texture2D(iChannel0, uv)*2.0-1.0;
-        float z = sqrt(1.0 - clamp(dot(vec2(buff.x,buff.y), vec2(buff.x,buff.y)), 0.0, 1.0));
-        vec3 n = normalize(vec3(buff.x, buff.y, z));
+        // Enhanced fluid distortion with more noise layers
+        vec2 fluidUv = vUv;
+        fluidUv += velocity * 10.;
         
-        vec3 lightDir = vec3(sin(iTime*rotSpeed), cos(iTime*rotSpeed), 0.0);
+        // Multiple detailed noise layers with wavy patterns
+        float detailNoise1 = wavyFbm(vec3(fluidUv * 8.0, uTime * 0.1));
+        float detailNoise2 = wavyFbm(vec3(fluidUv * 16.0 + 50.0, uTime * 0.08));
+        float detailNoise3 = wavyNoise(fluidUv * 32.0 + 100.0, uTime * 0.12);
+        float detailNoise4 = wavyNoise(fluidUv * 64.0 + 150.0, uTime * 0.06);
         
-        float l = max(0.0, dot(n, lightDir));
-        float fresnel = 1.0 - dot(vec3(0.0,0.0,1.0), n);
+        // Add flowing wavy patterns
+        float wavyPattern1 = wavyNoise(fluidUv * 6.0, uTime * 0.4);
+        float wavyPattern2 = wavyNoise(fluidUv * 12.0 + 200.0, uTime * 0.3);
         
-        // Simulate environment reflection
-        vec2 reflectCoords = reflect(normalize(vec3(0.0, 0.0, 1.0)), n).xy * 0.5 + 0.5;
-        vec4 reflection = texture2D(iChannel2, reflectCoords);
+        // Combine multiple noise layers for rich detail
+        float combinedNoise = detailNoise1 * 0.3 + detailNoise2 * 0.25 + detailNoise3 * 0.2 + detailNoise4 * 0.15;
+        combinedNoise += (wavyPattern1 + wavyPattern2) * 0.05; // Add wavy influence
         
-        // Use normal map to distort the background - this creates refraction
-        vec2 refractionUv = vUv + n.xy * 0.1;
-        vec4 tex = texture2D(iChannel1, vec2(uv.x*(iResolution.x/iResolution.y), uv.y) + n.xy*0.1);
+        // Create flowing gradient with wavy distortion
+        vec2 gradient = fluidUv;
+        gradient += vec2(combinedNoise * 0.2);
+        gradient += velocity * 1.5;
         
-        // Final color composition
-        vec4 waterColor = vec4(0.2, 0.4, 0.8, 1.0);
-        vec4 finalColor = tex*0.5 + vec4((fresnel + l)*0.5)*reflection + reflection*0.5;
-        finalColor = mix(waterColor, finalColor, 0.8);
+        // Add wavy distortion to gradient
+        gradient += vec2(
+            wavyPattern1 * 0.1,
+            wavyPattern2 * 0.08
+        );
         
-        // Make it slightly transparent to see objects behind
-        gl_FragColor = vec4(finalColor.rgb, opacity * 0.85);
-    }
-`
-
-// Buffer reset shader
-const resetShaderFragment = `
-    varying vec2 vUv;
-        void main() {
-        gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+        // Velocity magnitude for dynamic effects
+        float velocityMag = length(velocity);
+        float fluidStrength = velocityMag * 3.0 + combinedNoise * 0.2; // Reduced noise influence
+        
+        // Gradient calculation with more noise detail
+        float gradientValue = 0.0;
+        gradientValue += smoothstep(-0.3, 1.3, gradient.x + gradient.y + combinedNoise * 0.2) * 0.3; // Reduced noise
+        gradientValue += smoothstep(-0.2, 1.2, gradient.x - gradient.y + combinedNoise * 0.15) * 0.3; // Reduced noise
+        gradientValue += smoothstep(0.0, 1.0, length(gradient - 0.5) * 1.5 + combinedNoise * 0.15) * 0.2; // Reduced noise
+        gradientValue += combinedNoise * 0.15; // Reduced direct noise contribution
+        
+        // Add fluid motion and density influence
+        gradientValue += fluidStrength * 0.3;
+        gradientValue += density.a * 0.8; // Stronger density influence
+        
+        // Authentic film grain effect covering the entire plane
+        float movieGrain = filmGrain(vUv, uTime);
+        
+        // Multiple grain layers for different frequencies
+        float grainLayer1 = layeredGrainNoise(vUv, uTime, 800.0);  // Coarse grain
+        float grainLayer2 = layeredGrainNoise(vUv, uTime * 1.2, 1200.0); // Medium grain
+        float grainLayer3 = layeredGrainNoise(vUv, uTime * 0.8, 1600.0); // Fine grain
+        float grainLayer4 = layeredGrainNoise(vUv, uTime * 1.5, 2000.0); // Ultra fine grain
+        
+        // Combine all grain layers for realistic film texture
+        float combinedGrain = movieGrain * 0.5 + 
+                              grainLayer1 * 0.25 + 
+                              grainLayer2 * 0.15 + 
+                              grainLayer3 * 0.08 + 
+                              grainLayer4 * 0.02;
+        
+        // Intensify grain for visibility - make it much more prominent
+        float grainIntensity = 0.4; // High intensity for visible effect
+        float finalGrain = combinedGrain * grainIntensity;
+        
+        // Apply film grain effect across entire plane with smooth interpolation
+        vec3 baseColor;
+        
+        // Calculate light mode version
+        float lightGradientValue = 1.0 - gradientValue; // Invert
+        lightGradientValue = pow(lightGradientValue, 2.8); // Strong contrast
+        float lightDarkGrayRange = 0.15 + lightGradientValue * 0.1; // Very dark range: 0.15 to 0.25 (very dark gray)
+        vec3 lightBaseColor = vec3(lightDarkGrayRange);
+        lightBaseColor += vec3(finalGrain * 0.7); // Slightly reduced but still intense grain in light mode
+        float lightShadow = smoothstep(0.95, 1.0, (1.0 - lightGradientValue) + fluidStrength);
+        lightBaseColor -= vec3(lightShadow * 0.05); // Minimal shadows to stay very dark
+        
+        // Calculate dark mode version
+        float darkGradientValue = pow(gradientValue, 3.0); // Very strong contrast to push almost everything to black
+        float darkBlackRange = darkGradientValue * 0.08; // Extremely limited range: 0.0 to 0.08 (ultra dark)
+        vec3 darkBaseColor = vec3(darkBlackRange);
+        darkBaseColor += vec3(finalGrain); // Full intensity film grain in dark mode
+        float darkHighlight = smoothstep(0.98, 1.0, darkGradientValue + fluidStrength);
+        darkBaseColor += vec3(darkHighlight * 0.05); // Very minimal highlights
+        
+        // Smooth interpolation between light and dark modes
+        baseColor = mix(lightBaseColor, darkBaseColor, uThemeValue);
+        
+        // Add extremely subtle flowing patterns with wavy noise
+        float wavyFlow1 = wavyNoise(gradient * 15.0, uTime * 2.0);
+        float wavyFlow2 = wavyNoise(gradient * 20.0 + 300.0, uTime * 1.5);
+        
+        float flowPattern = sin(gradient.x * 25.0 + uTime * 2.0 + combinedNoise * 8.0 + finalGrain * 10.0 + wavyFlow1 * 5.0) * 
+                           cos(gradient.y * 20.0 + uTime * 1.5 + combinedNoise * 6.0 + finalGrain * 8.0 + wavyFlow2 * 4.0);
+        flowPattern *= (velocityMag * 1.5 + 0.05) * combinedNoise;
+        
+        // Add very subtle wavy flow contribution with smooth interpolation
+        float pureWavyFlow = (wavyFlow1 + wavyFlow2) * 0.5;
+        
+        // Calculate light mode flow effects
+        vec3 lightFlowEffect = vec3(flowPattern * 0.005) + vec3(pureWavyFlow * 0.003);
+        
+        // Calculate dark mode flow effects  
+        vec3 darkFlowEffect = vec3(-flowPattern * 0.003) + vec3(-pureWavyFlow * 0.002);
+        
+        // Smooth interpolation between light and dark flow effects
+        baseColor += mix(lightFlowEffect, darkFlowEffect, uThemeValue);
+        
+        // Film grain stays consistent across all effects
+        baseColor = clamp(baseColor, 0.0, 1.0);
+        
+        // Dynamic opacity
+        float dynamicOpacity = uOpacity * (0.3 + velocityMag * 1.5 + density.a * 0.5);
+        dynamicOpacity = clamp(dynamicOpacity, 0.0, 0.8); // Cap maximum opacity
+        
+        gl_FragColor = vec4(baseColor, dynamicOpacity);
     }
 `
 
@@ -313,326 +431,256 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
     const {
         position = [0, 0, 0],
         rotation = [0, 0, 0],
-        opacity = 0.4,
+        opacity = 1,
         color = '#ffffff'
     } = props
 
-    // Get viewport size for fullscreen rendering
     const { viewport, size: canvasSize } = useThree()
-
     const { theme } = useTheme()
-    const mouseRef = useRef<THREE.Vector4>(new THREE.Vector4(0, 0, 0, 0))
-    const frameCountRef = useRef(0)
+
     const meshRef = useRef<THREE.Mesh>(null)
-    const [hovered, setHovered] = useState(false)
+    const mouseRef = useRef({ x: 0, y: 0, prevX: 0, prevY: 0, pressed: false })
+    const timeRef = useRef(0)
 
-    // FBO setup with higher resolution for more detail
-    const fboSize = useMemo(() => new THREE.Vector2(1024, 1024), [])
+    // Smooth theme transition state
+    const currentThemeValue = useRef(1.0); // 1.0 for dark, 0.0 for light
+    const targetThemeValue = useRef(1.0);
 
-    // Create render targets (buffers)
-    const bufferA = useFBO({
-        samples: 4,
-        stencilBuffer: false,
-        format: THREE.RGBAFormat,
+    useEffect(() => {
+        // Set target theme value for smooth transition
+        targetThemeValue.current = theme === 'dark' ? 1.0 : 0.0;
+    }, [theme]);
+
+    // Optimized resolution - reduced from 512x512 to 256x256 for better performance
+    const resolution = useMemo(() => new THREE.Vector2(256, 256), [])
+
+    // Optimized FBO settings - reduced precision and simplified filtering
+    const fboSettings = useMemo(() => ({
         minFilter: THREE.LinearFilter,
-        magFilter: THREE.LinearFilter
-    })
-    const bufferB = useFBO({
-        samples: 4,
-        stencilBuffer: false,
+        magFilter: THREE.LinearFilter,
         format: THREE.RGBAFormat,
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.LinearFilter
-    })
-    const bufferBPrev = useFBO({
-        samples: 4,
-        stencilBuffer: false,
-        format: THREE.RGBAFormat,
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.LinearFilter
-    })
-    const bufferC = useFBO({
-        samples: 4,
-        stencilBuffer: false,
-        format: THREE.RGBAFormat,
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.LinearFilter
-    })
-    const resetTarget = useFBO({
-        samples: 4,
-        stencilBuffer: false,
-        format: THREE.RGBAFormat,
-        minFilter: THREE.NearestFilter,
-        magFilter: THREE.NearestFilter
-    })
+        generateMipmaps: false, // Disable mipmaps for performance
+        stencilBuffer: false,   // Disable stencil buffer
+    }), [])
 
-    // Create material refs
-    const bufferAMaterial = useRef<THREE.ShaderMaterial | null>(null)
-    const bufferBMaterial = useRef<THREE.ShaderMaterial | null>(null)
-    const bufferCMaterial = useRef<THREE.ShaderMaterial | null>(null)
-    const finalMaterial = useRef<THREE.ShaderMaterial | null>(null)
+    const fboFloatSettings = useMemo(() => ({
+        ...fboSettings,
+        type: THREE.FloatType,
+    }), [fboSettings])
 
-    // Create environment map texture
-    const envMapTexture = useMemo(() => {
-        const loader = new THREE.TextureLoader()
-        // Create a fallback texture in case the file doesn't exist
-        const fallbackTexture = new THREE.DataTexture(
-            new Uint8Array([0, 128, 255, 255]), // RGBA blue color
-            1, 1,
-            THREE.RGBAFormat
-        )
-        fallbackTexture.needsUpdate = true
+    // Create render targets for ping-pong rendering with optimized settings
+    const velocityTarget1 = useFBO(resolution.x, resolution.y, fboFloatSettings)
+    const velocityTarget2 = useFBO(resolution.x, resolution.y, fboFloatSettings)
+    const pressureTarget1 = useFBO(resolution.x, resolution.y, fboFloatSettings)
+    const pressureTarget2 = useFBO(resolution.x, resolution.y, fboFloatSettings)
+    const densityTarget1 = useFBO(resolution.x, resolution.y, fboSettings)
+    const densityTarget2 = useFBO(resolution.x, resolution.y, fboSettings)
 
-        try {
-            return loader.load('/textures/envmap.jpg',
-                (texture) => {
-                    texture.wrapS = THREE.RepeatWrapping
-                    texture.wrapT = THREE.RepeatWrapping
-                },
-                undefined,
-                () => fallbackTexture // On error, use fallback
-            )
-        } catch (error) {
-            console.warn("Error loading environment map texture, using fallback", error)
-            return fallbackTexture
-        }
-    }, [])
+    // Create materials with memoized uniforms
+    const velocityUniforms = useMemo(() => ({
+        uVelocity: { value: null },
+        uPressure: { value: null },
+        uResolution: { value: resolution },
+        uMouse: { value: new THREE.Vector2() },
+        uPrevMouse: { value: new THREE.Vector2() },
+        uTime: { value: 0 },
+        uDeltaTime: { value: 0 },
+        uMousePressed: { value: false },
+    }), [resolution])
 
-    // Create scene and camera for FBO rendering
+    const pressureUniforms = useMemo(() => ({
+        uVelocity: { value: null },
+        uPressure: { value: null },
+        uResolution: { value: resolution },
+    }), [resolution])
+
+    const densityUniforms = useMemo(() => ({
+        uDensity: { value: null },
+        uVelocity: { value: null },
+        uResolution: { value: resolution },
+        uMouse: { value: new THREE.Vector2() },
+        uMousePressed: { value: false },
+        uTime: { value: 0 },
+        uDeltaTime: { value: 0 },
+    }), [resolution])
+
+    const renderUniforms = useMemo(() => ({
+        uDensity: { value: null },
+        uVelocity: { value: null },
+        uResolution: { value: resolution },
+        uTime: { value: 0 },
+        uOpacity: { value: opacity },
+        uThemeValue: { value: 1.0 }, // Use float value for smooth interpolation instead of boolean
+    }), [resolution, opacity])
+
+    const velocityMaterial = useMemo(() => new THREE.ShaderMaterial({
+        vertexShader,
+        fragmentShader: velocityShader,
+        uniforms: velocityUniforms,
+    }), [velocityUniforms])
+
+    const pressureMaterial = useMemo(() => new THREE.ShaderMaterial({
+        vertexShader,
+        fragmentShader: pressureShader,
+        uniforms: pressureUniforms,
+    }), [pressureUniforms])
+
+    const densityMaterial = useMemo(() => new THREE.ShaderMaterial({
+        vertexShader,
+        fragmentShader: densityShader,
+        uniforms: densityUniforms,
+    }), [densityUniforms])
+
+    const renderMaterial = useMemo(() => new THREE.ShaderMaterial({
+        vertexShader,
+        fragmentShader: renderShader,
+        uniforms: renderUniforms,
+        transparent: true,
+        depthWrite: false,
+    }), [renderUniforms])
+
+    // Scene and camera for FBO rendering
     const scene = useMemo(() => new THREE.Scene(), [])
     const camera = useMemo(() => new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1), [])
-    const plane = useMemo(() => new THREE.PlaneGeometry(2, 2), [])
+    const quad = useMemo(() => new THREE.Mesh(new THREE.PlaneGeometry(2, 2)), [])
 
-    // Create materials for each buffer
-    const shaderMaterials = useMemo(() => {
-        // Reset material
-        const resetMaterial = new THREE.ShaderMaterial({
-            vertexShader: bufferAVertexShader,
-            fragmentShader: resetShaderFragment,
-            uniforms: {}
-        })
-
-        // Buffer A material
-        const bufferAMat = new THREE.ShaderMaterial({
-            vertexShader: bufferAVertexShader,
-            fragmentShader: bufferAFragmentShader,
-            uniforms: {
-                iTime: { value: 0 },
-                iTimeDelta: { value: 0 },
-                iFrame: { value: 0 },
-                iResolution: { value: fboSize },
-                iMouse: { value: mouseRef.current },
-                iChannel0: { value: null }
-            }
-        })
-
-        // Buffer B material
-        const bufferBMat = new THREE.ShaderMaterial({
-            vertexShader: bufferBVertexShader,
-            fragmentShader: bufferBFragmentShader,
-            uniforms: {
-                iTime: { value: 0 },
-                iTimeDelta: { value: 0 },
-                iFrame: { value: 0 },
-                iResolution: { value: fboSize },
-                iChannel0: { value: null },
-                iChannel1: { value: null },
-                iChannel2: { value: resetTarget.texture },
-                iChannel3: { value: null }
-            }
-        })
-
-        // Buffer C material
-        const bufferCMat = new THREE.ShaderMaterial({
-            vertexShader: bufferCVertexShader,
-            fragmentShader: bufferCFragmentShader,
-            uniforms: {
-                iTime: { value: 0 },
-                iResolution: { value: fboSize },
-                iChannel0: { value: null }
-            }
-        })
-
-        // Final material - make it transparent and refractive
-        const finalMat = new THREE.ShaderMaterial({
-            vertexShader: finalVertexShader,
-            fragmentShader: finalFragmentShader,
-            uniforms: {
-                iTime: { value: 0 },
-                opacity: { value: opacity },
-                iResolution: { value: new THREE.Vector2(viewport.width * 2., viewport.height * 2.) },
-                iChannel0: { value: null },
-                iChannel1: { value: null },
-                iChannel2: { value: envMapTexture }
-            },
-            transparent: true,
-            depthWrite: false, // Important for transparency to see objects behind
-            side: THREE.DoubleSide
-        })
-
-        return { resetMaterial, bufferAMat, bufferBMat, bufferCMat, finalMat }
-    }, [fboSize, viewport.width, viewport.height, opacity, envMapTexture])
-
-    // Setup for FBO rendering
     useEffect(() => {
-        const quad = new THREE.Mesh(plane, shaderMaterials.resetMaterial)
         scene.add(quad)
-
-        // Initialize reset target texture
-        const renderer = new THREE.WebGLRenderer()
-        renderer.setSize(fboSize.x, fboSize.y)
-        renderer.setRenderTarget(resetTarget)
-        renderer.render(scene, camera)
-        renderer.setRenderTarget(null)
-
-        // Setup initial buffer states
-        quad.material = shaderMaterials.resetMaterial
-        renderer.setRenderTarget(bufferB)
-        renderer.render(scene, camera)
-        renderer.setRenderTarget(bufferBPrev)
-        renderer.render(scene, camera)
-        renderer.setRenderTarget(null)
-
-        // Store material references
-        bufferAMaterial.current = shaderMaterials.bufferAMat
-        bufferBMaterial.current = shaderMaterials.bufferBMat
-        bufferCMaterial.current = shaderMaterials.bufferCMat
-        finalMaterial.current = shaderMaterials.finalMat
-
         return () => {
             scene.remove(quad)
-            renderer.dispose()
         }
-    }, [plane, scene, camera, fboSize, shaderMaterials, resetTarget, bufferB, bufferBPrev])
+    }, [scene, quad])
 
-    // Handle mouse movement for interactivity
+    // Optimized mouse interaction with throttling
     useEffect(() => {
-        const handlePointerMove = (event: PointerEvent) => {
-            if (meshRef.current) {
-                // Normalize mouse position to FBO space
-                const x = (event.clientX / canvasSize.width) * fboSize.x
-                const y = (1.0 - event.clientY / canvasSize.height) * fboSize.y
+        let throttleTimer: NodeJS.Timeout | null = null
 
-                mouseRef.current.x = x
-                mouseRef.current.y = y
-                // Keep ripple effect active when mouse is over the canvas
-                mouseRef.current.z = 1
-            }
+        const handlePointerMove = (event: PointerEvent) => {
+            // Throttle mouse updates to every 16ms (~60fps)
+            if (throttleTimer) return
+
+            throttleTimer = setTimeout(() => {
+                mouseRef.current.prevX = mouseRef.current.x
+                mouseRef.current.prevY = mouseRef.current.y
+
+                // Convert to normalized coordinates (0-1) and then to FBO resolution
+                const normalizedX = event.clientX / canvasSize.width
+                const normalizedY = 1.0 - (event.clientY / canvasSize.height) // Flip Y for GPU
+
+                mouseRef.current.x = normalizedX * resolution.x
+                mouseRef.current.y = normalizedY * resolution.y
+
+                throttleTimer = null
+            }, 16)
         }
 
-        const handlePointerDown = () => {
-            // Stronger effect on click
-            mouseRef.current.z = 2
+        const handlePointerDown = (event: PointerEvent) => {
+            mouseRef.current.pressed = true
+            // Update position on click as well
+            const normalizedX = event.clientX / canvasSize.width
+            const normalizedY = 1.0 - (event.clientY / canvasSize.height)
+            mouseRef.current.x = normalizedX * resolution.x
+            mouseRef.current.y = normalizedY * resolution.y
         }
 
         const handlePointerUp = () => {
-            // Return to hover effect
-            mouseRef.current.z = 1
+            mouseRef.current.pressed = false
         }
 
-        // Add event listeners to window for fullscreen effect
-        window.addEventListener('pointermove', handlePointerMove)
-        window.addEventListener('pointerdown', handlePointerDown)
-        window.addEventListener('pointerup', handlePointerUp)
+        window.addEventListener('pointermove', handlePointerMove, { passive: true })
+        window.addEventListener('pointerdown', handlePointerDown, { passive: true })
+        window.addEventListener('pointerup', handlePointerUp, { passive: true })
 
         return () => {
+            if (throttleTimer) clearTimeout(throttleTimer)
             window.removeEventListener('pointermove', handlePointerMove)
             window.removeEventListener('pointerdown', handlePointerDown)
             window.removeEventListener('pointerup', handlePointerUp)
         }
-    }, [canvasSize, fboSize])
+    }, [canvasSize, resolution])
 
-    // Update and render buffers every frame
+    // Ping-pong state
+    const [ping, setPing] = useState(true)
+
+    // Optimize uniform updates by caching values
+    const lastMouseX = useRef(0)
+    const lastMouseY = useRef(0)
+
     useFrame((state) => {
         const { gl, clock } = state
-        frameCountRef.current++
+        const deltaTime = Math.min(clock.getDelta(), 1 / 30) // Cap delta time for stability
+        timeRef.current = clock.getElapsedTime()
 
-        // Update uniforms
-        const time = clock.getElapsedTime()
-        const delta = clock.getDelta()
+        // Update mouse uniforms only if changed
+        const mouseX = mouseRef.current.x
+        const mouseY = mouseRef.current.y
+        const prevMouseX = mouseRef.current.prevX
+        const prevMouseY = mouseRef.current.prevY
 
-        if (!bufferAMaterial.current || !bufferBMaterial.current ||
-            !bufferCMaterial.current || !finalMaterial.current) return
+        if (mouseX !== lastMouseX.current || mouseY !== lastMouseY.current) {
+            velocityMaterial.uniforms.uMouse.value.set(mouseX, mouseY)
+            velocityMaterial.uniforms.uPrevMouse.value.set(prevMouseX, prevMouseY)
+            densityMaterial.uniforms.uMouse.value.set(mouseX, mouseY)
+            lastMouseX.current = mouseX
+            lastMouseY.current = mouseY
+        }
 
-        // Update Buffer A uniforms
-        bufferAMaterial.current.uniforms.iTime.value = time
-        bufferAMaterial.current.uniforms.iTimeDelta.value = delta
-        bufferAMaterial.current.uniforms.iFrame.value = frameCountRef.current
-        bufferAMaterial.current.uniforms.iMouse.value = mouseRef.current
-        bufferAMaterial.current.uniforms.iChannel0.value = resetTarget.texture
+        // Update time uniforms
+        velocityMaterial.uniforms.uTime.value = timeRef.current
+        velocityMaterial.uniforms.uDeltaTime.value = deltaTime
+        velocityMaterial.uniforms.uMousePressed.value = mouseRef.current.pressed
 
-        // Render Buffer A
-        const quadA = new THREE.Mesh(plane, bufferAMaterial.current)
-        scene.clear()
-        scene.add(quadA)
-        gl.setRenderTarget(bufferA)
+        densityMaterial.uniforms.uTime.value = timeRef.current
+        densityMaterial.uniforms.uDeltaTime.value = deltaTime
+        densityMaterial.uniforms.uMousePressed.value = mouseRef.current.pressed
+
+        renderMaterial.uniforms.uTime.value = timeRef.current
+
+        // Smooth theme transition using linear interpolation
+        currentThemeValue.current += (targetThemeValue.current - currentThemeValue.current) * 0.05; // Smooth lerp for 1000ms-like transition
+        renderMaterial.uniforms.uThemeValue.value = currentThemeValue.current;
+
+        // Ping-pong between render targets
+        const velocityRead = ping ? velocityTarget1 : velocityTarget2
+        const velocityWrite = ping ? velocityTarget2 : velocityTarget1
+        const pressureRead = ping ? pressureTarget1 : pressureTarget2
+        const pressureWrite = ping ? pressureTarget2 : pressureTarget1
+        const densityRead = ping ? densityTarget1 : densityTarget2
+        const densityWrite = ping ? densityTarget2 : densityTarget1
+
+        // Update velocity
+        velocityMaterial.uniforms.uVelocity.value = velocityRead.texture
+        velocityMaterial.uniforms.uPressure.value = pressureRead.texture
+        quad.material = velocityMaterial
+        gl.setRenderTarget(velocityWrite)
         gl.render(scene, camera)
 
-        // Update Buffer C uniforms
-        bufferCMaterial.current.uniforms.iTime.value = time
-        bufferCMaterial.current.uniforms.iChannel0.value = bufferA.texture
+        // Reduced pressure iterations from 3 to 2 for better performance
+        for (let i = 0; i < 2; i++) {
+            pressureMaterial.uniforms.uVelocity.value = velocityWrite.texture
+            pressureMaterial.uniforms.uPressure.value = i === 0 ? pressureRead.texture : pressureWrite.texture
+            quad.material = pressureMaterial
+            gl.setRenderTarget(pressureWrite)
+            gl.render(scene, camera)
+        }
 
-        // Render Buffer C
-        const quadC = new THREE.Mesh(plane, bufferCMaterial.current)
-        scene.clear()
-        scene.add(quadC)
-        gl.setRenderTarget(bufferC)
+        // Update density
+        densityMaterial.uniforms.uDensity.value = densityRead.texture
+        densityMaterial.uniforms.uVelocity.value = velocityWrite.texture
+        quad.material = densityMaterial
+        gl.setRenderTarget(densityWrite)
         gl.render(scene, camera)
 
-        // Update Buffer B uniforms
-        bufferBMaterial.current.uniforms.iTime.value = time
-        bufferBMaterial.current.uniforms.iTimeDelta.value = delta
-        bufferBMaterial.current.uniforms.iFrame.value = frameCountRef.current
-        bufferBMaterial.current.uniforms.iChannel0.value = bufferA.texture
-        bufferBMaterial.current.uniforms.iChannel1.value = bufferBPrev.texture
-        bufferBMaterial.current.uniforms.iChannel3.value = bufferC.texture
+        // Final render
+        renderMaterial.uniforms.uDensity.value = densityWrite.texture
+        renderMaterial.uniforms.uVelocity.value = velocityWrite.texture
 
-        // Render Buffer B
-        const quadB = new THREE.Mesh(plane, bufferBMaterial.current)
-        scene.clear()
-        scene.add(quadB)
-        gl.setRenderTarget(bufferB)
-        gl.render(scene, camera)
-
-        // Copy bufferB to bufferBPrev for the next frame
-        // Using a simple pass-through shader
-        const copyPassMaterial = new THREE.ShaderMaterial({
-            vertexShader: `
-                varying vec2 vUv;
-                void main() {
-                    vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-            fragmentShader: `
-                varying vec2 vUv;
-                uniform sampler2D tDiffuse;
-                void main() {
-                    gl_FragColor = texture2D(tDiffuse, vUv);
-                }
-            `,
-            uniforms: {
-                tDiffuse: { value: bufferB.texture }
-            }
-        });
-        quadB.material = copyPassMaterial;
-        gl.setRenderTarget(bufferBPrev)
-        gl.render(scene, camera)
-
-        // Update Final material uniforms
-        finalMaterial.current.uniforms.iTime.value = time
-        finalMaterial.current.uniforms.iChannel0.value = bufferA.texture
-        finalMaterial.current.uniforms.iChannel1.value = bufferB.texture
-
-        // Reset render target
         gl.setRenderTarget(null)
+        setPing(!ping)
 
-        // Clear scene
-        scene.clear()
-
-        // Update mesh material
-        if (meshRef.current) {
-            meshRef.current.material = finalMaterial.current
+        // Update mesh material only if needed
+        if (meshRef.current && meshRef.current.material !== renderMaterial) {
+            meshRef.current.material = renderMaterial
         }
     })
 
@@ -641,27 +689,15 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
             ref={meshRef}
             position={position}
             rotation={rotation}
-            // Use larger scale multiplier to ensure full coverage
-            scale={[viewport.width * 4, viewport.height * 4, 1]}
-            onPointerOver={() => setHovered(true)}
-            onPointerOut={() => setHovered(false)}
+            scale={[viewport.width * 2, viewport.height * 2, 1]}
         >
             <planeGeometry args={[1, 1]} />
             <shaderMaterial
-                ref={finalMaterial}
-                vertexShader={finalVertexShader}
-                fragmentShader={finalFragmentShader}
+                vertexShader={vertexShader}
+                fragmentShader={renderShader}
+                uniforms={renderMaterial.uniforms}
                 transparent={true}
                 depthWrite={false}
-                side={THREE.DoubleSide}
-                uniforms={{
-                    iTime: { value: 0 },
-                    opacity: { value: opacity },
-                    iResolution: { value: new THREE.Vector2(viewport.width * 4, viewport.height * 4) },
-                    iChannel0: { value: null },
-                    iChannel1: { value: null },
-                    iChannel2: { value: envMapTexture }
-                }}
             />
         </mesh>
     )

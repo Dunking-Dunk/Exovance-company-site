@@ -145,7 +145,7 @@ const Abstract = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.4, ease: "easeInOut" }}
-            className="playwrite-us-trad text-4xl md:text-7xl text-customGrayDark"
+            className="text-4xl md:text-7xl text-customGrayDark"
           >
             Solutions for a
           </motion.span>

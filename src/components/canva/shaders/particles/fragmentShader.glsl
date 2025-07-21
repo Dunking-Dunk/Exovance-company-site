@@ -3,15 +3,14 @@ uniform vec3 uColor;
 uniform float uTime;
 
 void main(){
-    // Optimized color mixing with smooth transition
-    vec3 color1=uColor;
-    vec3 color2=vec3(0.);
+    // Use the theme-based color directly from uniform
+    vec3 finalColor=uColor;
     
-    // Add subtle animation to color mixing
-    float mixFactor=.2+sin(uTime*.5)*.05;
-    vec3 color=mix(color2,color1,mixFactor);
+    // Add very subtle animation to brightness for living effect
+    float brightness=.8+sin(uTime*.5)*.05;
+    finalColor*=brightness;
     
-    // Apply color with smooth alpha transition
-    float alpha=smoothstep(0.,1.,vColor.a);
-    gl_FragColor=vec4(color*vColor.rgb,alpha);
+    // Apply particle with full opacity for strong contrast
+    float alpha=1.;
+    gl_FragColor=vec4(finalColor,alpha);
 }
