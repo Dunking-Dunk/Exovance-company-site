@@ -407,13 +407,24 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
     const meshRef = useRef<THREE.Mesh>(null)
     const timeRef = useRef(0)
 
-    // Smooth theme transition state
+    // Smooth theme transition state with easing
     const currentThemeValue = useRef(1.0); // 1.0 for dark, 0.0 for light
     const targetThemeValue = useRef(1.0);
+    const transitionProgress = useRef(0.0); // Track transition progress for easing
+    const transitionStartValue = useRef(1.0); // Store the value when transition starts
+    const transitionSpeed = 0.04; // Slower transition for more smoothness
+    const isTransitioning = useRef(false);
+
+    // Enhanced easing function for ultra-smooth transitions
+    const easeInOutQuart = (t: number) => {
+        return t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
+    };
 
     useEffect(() => {
         // Set target theme value for smooth transition
         targetThemeValue.current = theme === 'dark' ? 1.0 : 0.0;
+        transitionStartValue.current = currentThemeValue.current; // Store current value as start
+        transitionProgress.current = 0.0; // Reset transition progress
     }, [theme]);
 
     // Optimized resolution - reduced from 512x512 to 256x256 for better performance
@@ -530,8 +541,26 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
 
         renderMaterial.uniforms.uTime.value = timeRef.current
 
-        // Smooth theme transition using linear interpolation
-        currentThemeValue.current += (targetThemeValue.current - currentThemeValue.current) * 0.05; // Smooth lerp for 1000ms-like transition
+        // Smooth theme transition using easing
+        if (Math.abs(targetThemeValue.current - currentThemeValue.current) > 0.001) {
+            isTransitioning.current = true;
+            transitionProgress.current = Math.min(transitionProgress.current + transitionSpeed, 1.0);
+            const easedProgress = easeInOutQuart(transitionProgress.current);
+
+            // Apply eased interpolation from start to target
+            const startValue = transitionStartValue.current;
+            const targetValue = targetThemeValue.current;
+
+            currentThemeValue.current = startValue + (targetValue - startValue) * easedProgress;
+
+            // Snap to target when very close to avoid floating point precision issues
+            if (transitionProgress.current >= 1.0) {
+                currentThemeValue.current = targetValue;
+                isTransitioning.current = false;
+            }
+        } else {
+            isTransitioning.current = false;
+        }
         renderMaterial.uniforms.uThemeValue.value = currentThemeValue.current;
 
         // Ping-pong between render targets

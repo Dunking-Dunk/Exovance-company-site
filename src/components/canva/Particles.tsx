@@ -134,16 +134,16 @@ export const Particles = () => {
             // Section 1 (INVENT): starts around 33% 
             // Section 2 (EXOVANCE): starts around 66%
 
-            if (progress < 0.30) {
+            if (progress < 0.35) {
                 // Sphere grows continuously until IMAGINE text becomes visible
                 currentPosition = 'A';
                 transitionProgress = 0;
-                radiusScale = 1 + (progress * 16); // Continuous growth to maximum
+                radiusScale = 1 + (progress * 12); // Continuous growth to maximum
 
-            } else if (progress < 0.38) {
+            } else if (progress < 0.43) {
                 // Transition to Brain as IMAGINE text pops up (becomes clear from blur)
                 currentPosition = 'A-B';
-                const sectionProgress = (progress - 0.30) / (0.38 - 0.30);
+                const sectionProgress = (progress - 0.35) / (0.43 - 0.35);
                 transitionProgress = Math.min(1, sectionProgress * 6); // Very fast transition
                 radiusScale = 5; // Peak size during brain formation
 
