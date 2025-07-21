@@ -27,29 +27,15 @@ const velocityShader = `
     uniform sampler2D uVelocity;
     uniform sampler2D uPressure;
     uniform vec2 uResolution;
-    uniform vec2 uMouse;
-    uniform vec2 uPrevMouse;
     uniform float uTime;
     uniform float uDeltaTime;
-    uniform bool uMousePressed;
         varying vec2 vUv;
 
     void main() {
         vec2 texel = 1.0 / uResolution;
         vec2 velocity = texture2D(uVelocity, vUv).xy;
 
-        // Mouse interaction - only when pressed and moving
-        vec2 mousePos = uMouse / uResolution;
-        vec2 prevMousePos = uPrevMouse / uResolution;
-        vec2 mouseVel = (mousePos - prevMousePos) / max(uDeltaTime, 0.001);
-
-        float dist = length(vUv - mousePos);
-        float force = exp(-dist * 50.0) * 0.3; // Small radius
-        
-        // Only interact when mouse is pressed AND moving
-        if (uMousePressed && dist < 0.05 && length(mouseVel) > 0.001) {
-            velocity += mouseVel * force * 3.0;
-        }
+        // Mouse interaction removed - no mouse effects
             
         // Reduced ambient motion with smaller patterns
         float time1 = uTime * 0.3;
@@ -126,8 +112,6 @@ const densityShader = `
     uniform sampler2D uDensity;
     uniform sampler2D uVelocity;
     uniform vec2 uResolution;
-    uniform vec2 uMouse;
-    uniform bool uMousePressed;
     uniform float uTime;
     uniform float uDeltaTime;
     varying vec2 vUv;
@@ -140,25 +124,7 @@ const densityShader = `
         vec2 coord = vUv - velocity * uDeltaTime * 0.15;
         vec4 density = texture2D(uDensity, coord);
         
-        // Add density only when mouse is pressed and moving
-        vec2 mousePos = uMouse / uResolution;
-        float dist = length(vUv - mousePos);
-        
-        // Only interact when pressed and in small radius
-        if (uMousePressed && dist < 0.03) {
-            // Create fine spiral effect
-            float angle = atan(vUv.y - mousePos.y, vUv.x - mousePos.x);
-            float spiral = sin(angle * 6.0 + uTime * 12.0 + dist * 50.0);
-            
-            // Pulsating brightness based on time and distance
-            float brightness = (0.6 + 0.2 * spiral) * (1.0 - dist * 30.0);
-            brightness *= (0.5 + 0.3 * sin(uTime * 6.0));
-            
-            // Add density with fine control
-            float intensity = exp(-dist * 150.0) * brightness * 1.5;
-            density.rgb += vec3(intensity);
-            density.a += intensity * 0.6;
-        }
+        // Mouse density effects removed - no mouse interaction
         
         // Faster decay for more responsive effects
         density.rgb *= 0.996;
@@ -439,7 +405,6 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
     const { theme } = useTheme()
 
     const meshRef = useRef<THREE.Mesh>(null)
-    const mouseRef = useRef({ x: 0, y: 0, prevX: 0, prevY: 0, pressed: false })
     const timeRef = useRef(0)
 
     // Smooth theme transition state
@@ -481,11 +446,8 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
         uVelocity: { value: null },
         uPressure: { value: null },
         uResolution: { value: resolution },
-        uMouse: { value: new THREE.Vector2() },
-        uPrevMouse: { value: new THREE.Vector2() },
         uTime: { value: 0 },
         uDeltaTime: { value: 0 },
-        uMousePressed: { value: false },
     }), [resolution])
 
     const pressureUniforms = useMemo(() => ({
@@ -498,8 +460,6 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
         uDensity: { value: null },
         uVelocity: { value: null },
         uResolution: { value: resolution },
-        uMouse: { value: new THREE.Vector2() },
-        uMousePressed: { value: false },
         uTime: { value: 0 },
         uDeltaTime: { value: 0 },
     }), [resolution])
@@ -551,88 +511,22 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
         }
     }, [scene, quad])
 
-    // Optimized mouse interaction with throttling
-    useEffect(() => {
-        let throttleTimer: NodeJS.Timeout | null = null
-
-        const handlePointerMove = (event: PointerEvent) => {
-            // Throttle mouse updates to every 16ms (~60fps)
-            if (throttleTimer) return
-
-            throttleTimer = setTimeout(() => {
-                mouseRef.current.prevX = mouseRef.current.x
-                mouseRef.current.prevY = mouseRef.current.y
-
-                // Convert to normalized coordinates (0-1) and then to FBO resolution
-                const normalizedX = event.clientX / canvasSize.width
-                const normalizedY = 1.0 - (event.clientY / canvasSize.height) // Flip Y for GPU
-
-                mouseRef.current.x = normalizedX * resolution.x
-                mouseRef.current.y = normalizedY * resolution.y
-
-                throttleTimer = null
-            }, 16)
-        }
-
-        const handlePointerDown = (event: PointerEvent) => {
-            mouseRef.current.pressed = true
-            // Update position on click as well
-            const normalizedX = event.clientX / canvasSize.width
-            const normalizedY = 1.0 - (event.clientY / canvasSize.height)
-            mouseRef.current.x = normalizedX * resolution.x
-            mouseRef.current.y = normalizedY * resolution.y
-        }
-
-        const handlePointerUp = () => {
-            mouseRef.current.pressed = false
-        }
-
-        window.addEventListener('pointermove', handlePointerMove, { passive: true })
-        window.addEventListener('pointerdown', handlePointerDown, { passive: true })
-        window.addEventListener('pointerup', handlePointerUp, { passive: true })
-
-        return () => {
-            if (throttleTimer) clearTimeout(throttleTimer)
-            window.removeEventListener('pointermove', handlePointerMove)
-            window.removeEventListener('pointerdown', handlePointerDown)
-            window.removeEventListener('pointerup', handlePointerUp)
-        }
-    }, [canvasSize, resolution])
+    // Mouse interaction removed
 
     // Ping-pong state
     const [ping, setPing] = useState(true)
-
-    // Optimize uniform updates by caching values
-    const lastMouseX = useRef(0)
-    const lastMouseY = useRef(0)
 
     useFrame((state) => {
         const { gl, clock } = state
         const deltaTime = Math.min(clock.getDelta(), 1 / 30) // Cap delta time for stability
         timeRef.current = clock.getElapsedTime()
 
-        // Update mouse uniforms only if changed
-        const mouseX = mouseRef.current.x
-        const mouseY = mouseRef.current.y
-        const prevMouseX = mouseRef.current.prevX
-        const prevMouseY = mouseRef.current.prevY
-
-        if (mouseX !== lastMouseX.current || mouseY !== lastMouseY.current) {
-            velocityMaterial.uniforms.uMouse.value.set(mouseX, mouseY)
-            velocityMaterial.uniforms.uPrevMouse.value.set(prevMouseX, prevMouseY)
-            densityMaterial.uniforms.uMouse.value.set(mouseX, mouseY)
-            lastMouseX.current = mouseX
-            lastMouseY.current = mouseY
-        }
-
         // Update time uniforms
         velocityMaterial.uniforms.uTime.value = timeRef.current
         velocityMaterial.uniforms.uDeltaTime.value = deltaTime
-        velocityMaterial.uniforms.uMousePressed.value = mouseRef.current.pressed
 
         densityMaterial.uniforms.uTime.value = timeRef.current
         densityMaterial.uniforms.uDeltaTime.value = deltaTime
-        densityMaterial.uniforms.uMousePressed.value = mouseRef.current.pressed
 
         renderMaterial.uniforms.uTime.value = timeRef.current
 
