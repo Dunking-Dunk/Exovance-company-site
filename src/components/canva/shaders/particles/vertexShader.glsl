@@ -1,4 +1,4 @@
-#define POINT_SIZE_MIN 1.
+#define POINT_SIZE_MIN 1.1
 #define POINT_SIZE_MAX 10.
 #define POINT_SIZE_BASE 5.
 #define COLOR_INTENSITY_BASE.6

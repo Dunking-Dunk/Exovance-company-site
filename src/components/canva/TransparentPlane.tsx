@@ -5,6 +5,7 @@ import { useTheme } from 'next-themes'
 import * as THREE from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useFBO } from '@react-three/drei'
+import { lerp } from 'three/src/math/MathUtils.js'
 
 interface TransparentPlaneProps {
     position?: [number, number, number]
@@ -13,7 +14,7 @@ interface TransparentPlaneProps {
     color?: string
 }
 
-// Vertex shader for all passes
+
 const vertexShader = `
         varying vec2 vUv;
         void main() {
@@ -22,7 +23,6 @@ const vertexShader = `
         }
     `
 
-// Fluid simulation shader - enhanced velocity field
 const velocityShader = `
     uniform sampler2D uVelocity;
     uniform sampler2D uPressure;
@@ -158,13 +158,13 @@ const renderShader = `
         vec3 u = f * f * (3.0 - 2.0 * f);
         
         return mix(mix(mix(dot(hash(i + vec3(0.0, 0.0, 0.0)), f - vec3(0.0, 0.0, 0.0)),
-                          dot(hash(i + vec3(1.0, 0.0, 0.0)), f - vec3(1.0, 0.0, 0.0)), u.x),
-                      mix(dot(hash(i + vec3(0.0, 1.0, 0.0)), f - vec3(0.0, 1.0, 0.0)),
-                          dot(hash(i + vec3(1.0, 1.0, 0.0)), f - vec3(1.0, 1.0, 0.0)), u.x), u.y),
-                  mix(mix(dot(hash(i + vec3(0.0, 0.0, 1.0)), f - vec3(0.0, 0.0, 1.0)),
-                          dot(hash(i + vec3(1.0, 0.0, 1.0)), f - vec3(1.0, 0.0, 1.0)), u.x),
-                      mix(dot(hash(i + vec3(0.0, 1.0, 1.0)), f - vec3(0.0, 1.0, 1.0)),
-                          dot(hash(i + vec3(1.0, 1.0, 1.0)), f - vec3(1.0, 1.0, 1.0)), u.x), u.y), u.z);
+                           dot(hash(i + vec3(1.0, 0.0, 0.0)), f - vec3(1.0, 0.0, 0.0)), u.x),
+                       mix(dot(hash(i + vec3(0.0, 1.0, 0.0)), f - vec3(0.0, 1.0, 0.0)),
+                           dot(hash(i + vec3(1.0, 1.0, 0.0)), f - vec3(1.0, 1.0, 0.0)), u.x), u.y),
+                   mix(mix(dot(hash(i + vec3(0.0, 0.0, 1.0)), f - vec3(0.0, 0.0, 1.0)),
+                           dot(hash(i + vec3(1.0, 0.0, 1.0)), f - vec3(1.0, 0.0, 1.0)), u.x),
+                       mix(dot(hash(i + vec3(0.0, 1.0, 1.0)), f - vec3(0.0, 1.0, 1.0)),
+                           dot(hash(i + vec3(1.0, 1.0, 1.0)), f - vec3(1.0, 1.0, 1.0)), u.x), u.y), u.z);
     }
 
     // Enhanced fractal noise with more octaves
@@ -330,10 +330,10 @@ const renderShader = `
         
         // Combine all grain layers for realistic film texture
         float combinedGrain = movieGrain * 0.5 + 
-                              grainLayer1 * 0.25 + 
-                              grainLayer2 * 0.15 + 
-                              grainLayer3 * 0.08 + 
-                              grainLayer4 * 0.02;
+                                  grainLayer1 * 0.25 + 
+                                  grainLayer2 * 0.15 + 
+                                  grainLayer3 * 0.08 + 
+                                  grainLayer4 * 0.02;
         
         // Intensify grain for visibility - make it much more prominent
         float grainIntensity = 0.4; // High intensity for visible effect
@@ -366,8 +366,7 @@ const renderShader = `
         float wavyFlow1 = wavyNoise(gradient * 15.0, uTime * 2.0);
         float wavyFlow2 = wavyNoise(gradient * 20.0 + 300.0, uTime * 1.5);
         
-        float flowPattern = sin(gradient.x * 25.0 + uTime * 2.0 + combinedNoise * 8.0 + finalGrain * 10.0 + wavyFlow1 * 5.0) * 
-                           cos(gradient.y * 20.0 + uTime * 1.5 + combinedNoise * 6.0 + finalGrain * 8.0 + wavyFlow2 * 4.0);
+        float flowPattern = sin(gradient.x * 25.0 + uTime * 2.0 + combinedNoise * 8.0 + finalGrain * 10.0 + wavyFlow1 * 5.0) * cos(gradient.y * 20.0 + uTime * 1.5 + combinedNoise * 6.0 + finalGrain * 8.0 + wavyFlow2 * 4.0);
         flowPattern *= (velocityMag * 1.5 + 0.05) * combinedNoise;
         
         // Add very subtle wavy flow contribution with smooth interpolation
@@ -376,7 +375,7 @@ const renderShader = `
         // Calculate light mode flow effects
         vec3 lightFlowEffect = vec3(flowPattern * 0.005) + vec3(pureWavyFlow * 0.003);
         
-        // Calculate dark mode flow effects  
+        // Calculate dark mode flow effects   
         vec3 darkFlowEffect = vec3(-flowPattern * 0.003) + vec3(-pureWavyFlow * 0.002);
         
         // Smooth interpolation between light and dark flow effects
@@ -398,33 +397,24 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
         position = [0, 0, 0],
         rotation = [0, 0, 0],
         opacity = 1,
-        color = '#ffffff'
     } = props
 
-    const { viewport, size: canvasSize } = useThree()
+    const { viewport, gl } = useThree()
     const { theme } = useTheme()
+    const [isCompiled, setIsCompiled] = useState(false);
 
-    const meshRef = useRef<THREE.Mesh>(null)
     const timeRef = useRef(0)
 
-    // Smooth theme transition state with easing
-    const currentThemeValue = useRef(1.0); // 1.0 for dark, 0.0 for light
-    const targetThemeValue = useRef(1.0);
-    const transitionProgress = useRef(0.0); // Track transition progress for easing
-    const transitionStartValue = useRef(1.0); // Store the value when transition starts
-    const transitionSpeed = 0.04; // Slower transition for more smoothness
-    const isTransitioning = useRef(false);
 
-    // Enhanced easing function for ultra-smooth transitions
-    const easeInOutQuart = (t: number) => {
-        return t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
-    };
+    const [themeValue, setThemeValue] = useState(theme === 'dark' ? 1.0 : 0.0);
 
     useEffect(() => {
-        // Set target theme value for smooth transition
-        targetThemeValue.current = theme === 'dark' ? 1.0 : 0.0;
-        transitionStartValue.current = currentThemeValue.current; // Store current value as start
-        transitionProgress.current = 0.0; // Reset transition progress
+        if (theme === 'dark') {
+            setThemeValue(1.0);
+        }
+        else {
+            setThemeValue(0.0);
+        }
     }, [theme]);
 
     // Optimized resolution - reduced from 512x512 to 256x256 for better performance
@@ -481,8 +471,8 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
         uResolution: { value: resolution },
         uTime: { value: 0 },
         uOpacity: { value: opacity },
-        uThemeValue: { value: 1.0 }, // Use float value for smooth interpolation instead of boolean
-    }), [resolution, opacity])
+        uThemeValue: { value: 0.0 }, // Start with neutral value
+    }), [resolution, opacity]) // Keep minimal dependencies
 
     const velocityMaterial = useMemo(() => new THREE.ShaderMaterial({
         vertexShader,
@@ -522,46 +512,56 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
         }
     }, [scene, quad])
 
-    // Mouse interaction removed
+    useEffect(() => {
+        const tempScene = new THREE.Scene();
+        const tempCam = new THREE.OrthographicCamera();
+        const tempMesh = new THREE.Mesh(new THREE.PlaneGeometry(), renderMaterial);
+        tempScene.add(tempMesh);
+
+        const tempRT = new THREE.WebGLRenderTarget(1, 1);
+        gl.setRenderTarget(tempRT);
+        gl.render(tempScene, tempCam);
+        gl.setRenderTarget(null);
+
+        tempMesh.geometry.dispose();
+        tempRT.dispose();
+        setIsCompiled(true);
+    }, [gl, renderMaterial]);
+
 
     // Ping-pong state
     const [ping, setPing] = useState(true)
 
+
     useFrame((state) => {
+        if (!isCompiled) return; // Wait until shaders are compiled
         const { gl, clock } = state
-        const deltaTime = Math.min(clock.getDelta(), 1 / 30) // Cap delta time for stability
+        const deltaTime = Math.min(clock.getDelta(), 1 / 30)
         timeRef.current = clock.getElapsedTime()
 
-        // Update time uniforms
         velocityMaterial.uniforms.uTime.value = timeRef.current
         velocityMaterial.uniforms.uDeltaTime.value = deltaTime
-
         densityMaterial.uniforms.uTime.value = timeRef.current
         densityMaterial.uniforms.uDeltaTime.value = deltaTime
-
         renderMaterial.uniforms.uTime.value = timeRef.current
 
-        // Smooth theme transition using easing
-        if (Math.abs(targetThemeValue.current - currentThemeValue.current) > 0.001) {
-            isTransitioning.current = true;
-            transitionProgress.current = Math.min(transitionProgress.current + transitionSpeed, 1.0);
-            const easedProgress = easeInOutQuart(transitionProgress.current);
+        // Smooth theme transition with optimized easing
+        const themeTransitionSpeed = 0.06; // Optimized speed for smooth transition
 
-            // Apply eased interpolation from start to target
-            const startValue = transitionStartValue.current;
-            const targetValue = targetThemeValue.current;
+        // Simple ease-out function that reaches the target value
+        const currentValue = renderMaterial.uniforms.uThemeValue.value;
+        const targetValue = themeValue;
+        const difference = Math.abs(targetValue - currentValue);
 
-            currentThemeValue.current = startValue + (targetValue - startValue) * easedProgress;
-
-            // Snap to target when very close to avoid floating point precision issues
-            if (transitionProgress.current >= 1.0) {
-                currentThemeValue.current = targetValue;
-                isTransitioning.current = false;
-            }
+        // Use a threshold to snap to target when very close (prevents infinite approach)
+        if (difference < 0.001) {
+            renderMaterial.uniforms.uThemeValue.value = targetValue;
         } else {
-            isTransitioning.current = false;
+            // Apply eased interpolation
+            const progress = 1 - Math.pow(1 - themeTransitionSpeed, 2); // Ease-out quadratic
+            renderMaterial.uniforms.uThemeValue.value = lerp(currentValue, targetValue, progress);
         }
-        renderMaterial.uniforms.uThemeValue.value = currentThemeValue.current;
+
 
         // Ping-pong between render targets
         const velocityRead = ping ? velocityTarget1 : velocityTarget2
@@ -583,7 +583,7 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
             pressureMaterial.uniforms.uVelocity.value = velocityWrite.texture
             pressureMaterial.uniforms.uPressure.value = i === 0 ? pressureRead.texture : pressureWrite.texture
             quad.material = pressureMaterial
-            gl.setRenderTarget(pressureWrite)
+            gl.setRenderTarget(i === 0 ? pressureWrite : pressureRead) // Alternate targets
             gl.render(scene, camera)
         }
 
@@ -600,28 +600,21 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
 
         gl.setRenderTarget(null)
         setPing(!ping)
-
-        // Update mesh material only if needed
-        if (meshRef.current && meshRef.current.material !== renderMaterial) {
-            meshRef.current.material = renderMaterial
-        }
     })
+
+
+    if (!isCompiled) {
+        return null;
+    }
 
     return (
         <mesh
-            ref={meshRef}
             position={position}
             rotation={rotation}
-            scale={[viewport.width * 2, viewport.height * 2, 1]}
+            scale={[viewport.width, viewport.height, 1]}
+            material={renderMaterial} // Use the material we created and update
         >
-            <planeGeometry args={[1, 1]} />
-            <shaderMaterial
-                vertexShader={vertexShader}
-                fragmentShader={renderShader}
-                uniforms={renderMaterial.uniforms}
-                transparent={true}
-                depthWrite={false}
-            />
+            <planeGeometry args={[2, 2]} />
         </mesh>
     )
-} 
+}

@@ -28,17 +28,45 @@ const getRandomData = (width, height) => {
 const normalizeAndResizeVertices = (vertices, size, scale) => {
     const normalizedData = new Float32Array(size * size * 4);
     const vertexCount = vertices.length / 3;
+    const totalParticles = size * size;
 
-    for (let i = 0; i < size * size; i++) {
-        const sourceIdx = (i % vertexCount) * 3;
+    if (vertexCount === 0) {
+        return normalizedData;
+    }
+
+    // Enhanced sampling strategy for better coverage
+    for (let i = 0; i < totalParticles; i++) {
         const targetIdx = i * 4;
+        let sourceIdx;
 
-        if (sourceIdx < vertices.length) {
-            normalizedData[targetIdx] = vertices[sourceIdx] * scale;
-            normalizedData[targetIdx + 1] = vertices[sourceIdx + 1] * scale;
-            normalizedData[targetIdx + 2] = vertices[sourceIdx + 2] * scale;
-            normalizedData[targetIdx + 3] = 1.0;
+        if (totalParticles >= vertexCount) {
+            // More particles than vertices: use multiple passes with offset
+            const passes = Math.ceil(totalParticles / vertexCount);
+            const currentPass = Math.floor(i / vertexCount);
+            const indexInPass = i % vertexCount;
+
+            // Add offset for each pass to create variation
+            const passOffset = (currentPass * 7) % vertexCount; // Use prime number for better distribution
+            sourceIdx = ((indexInPass + passOffset) % vertexCount) * 3;
+        } else {
+
+            const goldenRatio = 1.618033988749;
+            const step = vertexCount / totalParticles;
+
+
+            const baseIndex = Math.floor(i * step);
+            const quasiRandomOffset = Math.floor((i * goldenRatio * step * 0.3) % (step * 0.6));
+
+            sourceIdx = Math.min(baseIndex + quasiRandomOffset, vertexCount - 1) * 3;
         }
+
+        // Ensure we don't exceed the vertices array bounds
+        sourceIdx = Math.min(sourceIdx, vertices.length - 3);
+
+        normalizedData[targetIdx] = vertices[sourceIdx] * scale;
+        normalizedData[targetIdx + 1] = vertices[sourceIdx + 1] * scale;
+        normalizedData[targetIdx + 2] = vertices[sourceIdx + 2] * scale;
+        normalizedData[targetIdx + 3] = 1.0;
     }
     return normalizedData;
 };
@@ -48,6 +76,8 @@ const brainVertices = () => {
 
     if (!nodes.Object_4) return new Float32Array();
     const positions = nodes.Object_4.geometry.attributes.position.array;
+
+
     return positions;
 };
 
@@ -88,12 +118,6 @@ const robotVertices = () => {
     }
 
 
-    // Start traversal from the root node
-    // if (nodes) {
-    //         for (let i in nodes) {
-    //             collectVertices(nodes[i]);
-    //         }
-    // }
 
     return allVertices.length > 0 ? new Float32Array(allVertices) : new Float32Array();
 };

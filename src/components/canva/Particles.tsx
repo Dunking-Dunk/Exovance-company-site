@@ -19,7 +19,7 @@ import { damp } from "three/src/math/MathUtils.js";
 extend({ SimulationMaterial: SimulationMaterial });
 
 
-const SIZE = 170;
+const SIZE = 120;
 const POSITIONS = new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0]);
 const UVS = new Float32Array([0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0]);
 
@@ -80,6 +80,7 @@ export const Particles = () => {
             let i3 = i * 3;
             particles[i3 + 0] = (i % SIZE) / SIZE;
             particles[i3 + 1] = i / SIZE / SIZE;
+            particles[i3 + 2] = 0;
         }
         return particles;
     }, []);
@@ -97,27 +98,26 @@ export const Particles = () => {
 
     // Fixed mouse position update handler with activity tracking
     const updateMousePosition = useCallback((e: MouseEvent) => {
-        // Simply use window dimensions since Three.js canvas is typically fullscreen
+
         const x = (e.clientX / window.innerWidth) * 2 - 1;
         const y = -(e.clientY / window.innerHeight) * 2 + 1;
 
-        // Track significant mouse movement
+
         const prevX = mousePosition.current.targetX;
         const prevY = mousePosition.current.targetY;
         const moveDist = Math.sqrt((x - prevX) * (x - prevX) + (y - prevY) * (y - prevY));
 
-        // If mouse moved significantly, update activity time
         if (moveDist > 0.02) {
             mouseActive.current = Date.now() / 1000;
             lastMouseMove.current = Date.now() / 1000;
         }
 
-        // Apply smoother interpolation for mouse movement
+
         mousePosition.current.targetX += (x - mousePosition.current.targetX) * 0.2;
         mousePosition.current.targetY += (y - mousePosition.current.targetY) * 0.2;
     }, []);
 
-    // Optimize scroll trigger setup - Synced with Vision page
+
     useEffect(() => {
         gsap.registerPlugin(ScrollTrigger);
 
@@ -128,60 +128,53 @@ export const Particles = () => {
             let transitionProgress = 0;
             let radiusScale = 1;
 
-            // Vision timeline: 240% scroll with 3 sections
-            // GSAP timeline adds each section sequentially with overlaps
-            // Section 0 (IMAGINE): starts immediately 
-            // Section 1 (INVENT): starts around 33% 
-            // Section 2 (EXOVANCE): starts around 66%
+
 
             if (progress < 0.35) {
-                // Sphere grows continuously until IMAGINE text becomes visible
+
                 currentPosition = 'A';
                 transitionProgress = 0;
-                radiusScale = 1 + (progress * 12); // Continuous growth to maximum
+                radiusScale = 1 + (progress * 12);
 
             } else if (progress < 0.43) {
-                // Transition to Brain as IMAGINE text pops up (becomes clear from blur)
+
                 currentPosition = 'A-B';
                 const sectionProgress = (progress - 0.35) / (0.43 - 0.35);
-                transitionProgress = Math.min(1, sectionProgress * 6); // Very fast transition
-                radiusScale = 5; // Peak size during brain formation
+                transitionProgress = Math.min(1, sectionProgress * 3);
+                radiusScale = 5;
 
             } else if (progress < 0.50) {
-                // Hold Brain formation while IMAGINE is fully visible
+
                 currentPosition = 'B';
                 transitionProgress = 1;
-                radiusScale = 2.5; // Stable brain size
+                radiusScale = 2.5;
 
             } else if (progress < 0.63) {
-                // Transition to Human head as INVENT text pops up
+
                 currentPosition = 'B-C';
                 const sectionProgress = (progress - 0.50) / (0.63 - 0.50);
-                transitionProgress = Math.min(1, sectionProgress * 6); // Very fast transition
+                transitionProgress = Math.min(1, sectionProgress * 3);
                 radiusScale = 2.5;
 
             } else if (progress < 0.61) {
-                // Hold Human head while INVENT is fully visible
+
                 currentPosition = 'C';
                 transitionProgress = 1;
-                radiusScale = 2; // Stable human head size
+                radiusScale = 2;
 
             } else if (progress < 0.88) {
-                // Transition to Robot as EXOVANCE text pops up
+
                 currentPosition = 'C-D';
                 const sectionProgress = (progress - 0.61) / (0.88 - 0.61);
-                transitionProgress = Math.min(1, sectionProgress * 6); // Very fast transition
+                transitionProgress = Math.min(1, sectionProgress * 3);
                 radiusScale = 2;
 
             } else {
-                // EXOVANCE section and beyond - hold Robot formation
+
                 currentPosition = 'D';
                 transitionProgress = 1;
-                radiusScale = 1.5; // Final stable robot size
+                radiusScale = 1.5;
             }
-
-            // Debug logging to help track the animations
-            console.log(`Particles - Progress: ${progress.toFixed(3)}, Position: ${currentPosition}, Transition: ${transitionProgress.toFixed(3)}, Scale: ${radiusScale.toFixed(3)}`);
 
             simulationMaterialRef.current.uniforms.uTransitionProgress.value = transitionProgress;
             simulationMaterialRef.current.uniforms.uRadiusScale.value = radiusScale;
@@ -206,31 +199,28 @@ export const Particles = () => {
         });
 
         return () => {
-            // Clean up only this specific ScrollTrigger
             particlesScrollTrigger.kill();
         };
     }, []);
 
-    // Mouse event effect with correct element reference
+
     useEffect(() => {
         window.addEventListener('mousemove', updateMousePosition);
         return () => window.removeEventListener('mousemove', updateMousePosition);
     }, [updateMousePosition]);
 
-    // Optimize frame updates with improved mouse handling and smooth color transitions
+
     useFrame((state) => {
         const { gl, clock } = state;
         const elapsedTime = clock.getElapsedTime();
 
-        // Save previous mouse position
+
         prevMouse.current.set(mouse.current.x, mouse.current.y, 0);
 
-        // Enhanced mouse movement smoothing
+
         mousePosition.current.x += (mousePosition.current.targetX - mousePosition.current.x) * 0.15;
         mousePosition.current.y += (mousePosition.current.targetY - mousePosition.current.y) * 0.15;
 
-        // Map mouse position to world space without additional scaling
-        // The mouse coordinates are already properly normalized
         mouse.current.set(
             mousePosition.current.x,
             mousePosition.current.y,
@@ -239,7 +229,7 @@ export const Particles = () => {
 
         if (!simulationMaterialRef.current) return;
 
-        // Update scroll progress with damping
+
         const dt = 10;
         const dampedScroll = damp(
             simulationMaterialRef.current.uniforms.uScroll.value,

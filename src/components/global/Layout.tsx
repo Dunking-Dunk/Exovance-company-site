@@ -24,6 +24,8 @@ type Props = {
 const Layout = ({ children }: Props) => {
     const ref = useRef<HTMLDivElement | null>(null)
     const lenisRef = useRef<any>(null)
+    const [isLoading, setIsLoading] = React.useState(true)
+    const [sceneReady, setSceneReady] = React.useState(false)
 
     useEffect(() => {
         // Set initial viewport height
@@ -67,6 +69,17 @@ const Layout = ({ children }: Props) => {
         };
     }, []);
 
+    // Handle loading completion
+    const handleLoadingComplete = React.useCallback(() => {
+        setTimeout(() => {
+            setIsLoading(false);
+            // Enable interactions after scene is ready
+            setTimeout(() => {
+                setSceneReady(true);
+            }, 500);
+        }, 300);
+    }, []);
+
     return (
         <ReactLenis
             ref={lenisRef}
@@ -92,7 +105,7 @@ const Layout = ({ children }: Props) => {
                 className='bg-customBlack'
             >
                 <Header />
-                <AnimatedCursor />
+                {!isLoading && <AnimatedCursor />}
                 {children}
 
                 <Scene
@@ -102,12 +115,14 @@ const Layout = ({ children }: Props) => {
                         left: 0,
                         width: '100vw',
                         height: '100vh',
-                        pointerEvents: 'none',
+                        pointerEvents: sceneReady ? 'none' : 'none',
+                        opacity: isLoading ? 0 : 1,
+                        transition: 'opacity 0.5s ease-in-out'
                     }}
                     eventSource={ref}
                     eventPrefix='client'
                 />
-                <LoadingScreen />
+                {isLoading && <LoadingScreen onLoadingComplete={handleLoadingComplete} />}
             </div>
         </ReactLenis>
     )
