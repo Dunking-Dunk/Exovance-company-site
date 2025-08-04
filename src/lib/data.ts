@@ -32,19 +32,19 @@ export const foundingTeam: FoundingTeamMember[] = [
     {
         name: "Hursun",
         role: "CEO",
-        image: "/team/hursun.jpg",
+        image: "/team/hursun.webp",
         description: "Tech founder, community lead"
     },
     {
         name: "Shantosh",
         role: "CTO",
-        image: "/team/shantosh.jpg",
+        image: "/team/shantosh.webp",
         description: "AI architect, innovation leader with 10+ years in machine learning"
     },
     {
         name: "Dhayananth",
         role: "CMO",
-        image: "/team/dhaya.jpg",
+        image: "/team/dhaya.webp",
         description: "Operations expert, growth strategist focused on scaling tech companies"
     },
     {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic';
 import { foundingTeam, type FoundingTeamMember } from '@/lib/data';
 import SpotlightCard from '../ui/SpotlightCard';
@@ -9,7 +9,19 @@ const CircularGallery = dynamic(() => import('@/components/ui/CircularGallery'),
 
 const Team = () => {
     const [selectedMemberIndex, setSelectedMemberIndex] = useState(0);
+    const [isMobile, setIsMobile] = useState(false);
     const selectedMember = foundingTeam[selectedMemberIndex];
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const handleCenterItemChange = (index: number) => {
         setSelectedMemberIndex(index);
@@ -31,7 +43,7 @@ const Team = () => {
 
             <div className="w-full h-[600px] overflow-hidden">
                 <CircularGallery
-                    bend={3}
+                    bend={isMobile ? 0 : 3}
                     textColor="#ffffff"
                     borderRadius={0.05}
                     scrollEase={0.02}
@@ -40,13 +52,16 @@ const Team = () => {
             </div>
 
 
-            <div className='w-full flex items-center justify-center px-4 h-[400px]'>
-                <SpotlightCard spotlightColor="rgba(139, 92, 246, 0.3)" className='max-w-lg'>
-                    <div className="text-center p-2">
+            <div className='w-full flex items-center justify-center px-4 h-[300px]'>
+                <SpotlightCard
+                    spotlightColor="rgba(139, 92, 246, 0.3)"
+                    className='w-[600px] h-[300px] max-w-[90vw]'
+                >
+                    <div className="text-center p-6 h-full flex flex-col justify-center">
                         <h4 className="text-3xl md:text-4xl font-bold text-customGrayLight mb-3 transition-all duration-300">
                             {selectedMember.name}
                         </h4>
-                        <div className="inline-block px-4 py-2 mb-6  rounded-full border border-white">
+                        <div className="inline-block px-4 py-2 mb-6 rounded-full border border-white mx-auto">
                             <ShinyText className="text-xl text-customGrayLight font-semibold" text={selectedMember.role} speed={3} />
                         </div>
                         <p className="text-customGrayLight leading-relaxed text-lg opacity-90">
