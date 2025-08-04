@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { View } from '../canva/View';
-import { BackgroundHero } from '../canva/BackgroundHero';
-import { DotBackground } from '../ui/dot-background';
+// import { View } from '../canva/View';
+// import { BackgroundHero } from '../canva/BackgroundHero';
+// import { DotBackground } from '../ui/dot-background';
 import Dither from '../canva/Dither';
 
 const ContactPage = () => {
