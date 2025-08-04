@@ -44,7 +44,7 @@ const About = () => {
                 >
                     <TextGenerateEffect
                         duration={1.2}
-                        words='INNOVATE THE UNSEEN'
+                        words='INNOVATE THE <br/> UNSEEN'
                         className='text-6xl md:text-8xl lg:text-[120px] xl:text-[140px] font-medium tracking-wider leading-none'
                     />
                 </motion.div>
@@ -58,7 +58,7 @@ const About = () => {
                     className="max-w-5xl"
                 >
                     <p
-                        className="text-lg md:text-xl lg:text-2xl leading-relaxed text-customGrayDark"
+                        className="text-lg md:text-xl lg:text-xl leading-relaxed text-customGrayDark"
                     >
                         At EXOVANCE, we are committed to pushing the boundaries of technology and design. Our team of experts is dedicated to creating innovative solutions that not only meet the needs of our clients but also inspire and engage users. We believe in the power of collaboration and creativity, and we strive to bring a fresh perspective to every project we undertake.
                     </p>
