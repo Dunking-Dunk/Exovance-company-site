@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Layout from "@/components/global/Layout";
 import { ThemeProvider } from "@/components/provider/theme-provider";
+import { ScrollThemeProvider } from "@/components/provider/scroll-theme-provider";
 import { memo } from 'react';
 
 export const metadata: Metadata = {
@@ -49,9 +50,11 @@ const RootLayout = memo(({ children }: RootLayoutProps) => {
           enableSystem
           disableTransitionOnChange
         >
-          <Layout>
-            {children}
-          </Layout>
+          <ScrollThemeProvider>
+            <Layout>
+              {children}
+            </Layout>
+          </ScrollThemeProvider>
         </ThemeProvider>
       </body>
     </html>

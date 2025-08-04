@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useRef, useEffect, useMemo, useState } from 'react'
-import { useTheme } from 'next-themes'
+import { useScrollTheme } from '@/components/provider/scroll-theme-provider'
 import * as THREE from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useFBO } from '@react-three/drei'
@@ -400,7 +400,7 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
     } = props
 
     const { viewport, gl } = useThree()
-    const { theme } = useTheme()
+    const { theme } = useScrollTheme()
     const [isCompiled, setIsCompiled] = useState(false);
 
     const timeRef = useRef(0)
@@ -545,20 +545,19 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
         densityMaterial.uniforms.uDeltaTime.value = deltaTime
         renderMaterial.uniforms.uTime.value = timeRef.current
 
-        // Smooth theme transition with optimized easing
-        const themeTransitionSpeed = 0.06; // Optimized speed for smooth transition
 
-        // Simple ease-out function that reaches the target value
+        const themeTransitionSpeed = 0.06;
+
         const currentValue = renderMaterial.uniforms.uThemeValue.value;
         const targetValue = themeValue;
         const difference = Math.abs(targetValue - currentValue);
 
-        // Use a threshold to snap to target when very close (prevents infinite approach)
-        if (difference < 0.001) {
+
+        if (difference < 0.01) {
             renderMaterial.uniforms.uThemeValue.value = targetValue;
         } else {
-            // Apply eased interpolation
-            const progress = 1 - Math.pow(1 - themeTransitionSpeed, 2); // Ease-out quadratic
+
+            const progress = 1 - Math.pow(1 - themeTransitionSpeed, 2);
             renderMaterial.uniforms.uThemeValue.value = lerp(currentValue, targetValue, progress);
         }
 
@@ -612,6 +611,7 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
             position={position}
             rotation={rotation}
             scale={[viewport.width, viewport.height, 1]}
+            renderOrder={0}
             material={renderMaterial} // Use the material we created and update
         >
             <planeGeometry args={[2, 2]} />

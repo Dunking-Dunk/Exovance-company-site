@@ -25,7 +25,7 @@ const config: Config = {
       },
       animation: {
         aurora: 'aurora 60s linear infinite',
-        spotlight: 'spotlight 2s ease .75s 1 forwards'
+        spotlight: 'spotlight 2s ease .75s 1 forwards', shine: 'shine 5s linear infinite'
       },
       keyframes: {
         aurora: {
@@ -35,6 +35,10 @@ const config: Config = {
           to: {
             backgroundPosition: '350% 50%, 350% 50%'
           }
+        },
+        shine: {
+          '0%': { 'background-position': '100%' },
+          '100%': { 'background-position': '-100%' },
         },
         spotlight: {
           '0%': {

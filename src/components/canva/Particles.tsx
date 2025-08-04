@@ -12,19 +12,19 @@ import SimulationMaterial from './shaders/particles/simulationMaterial';
 import vertexShader from "!!raw-loader!./shaders/particles/vertexShader.glsl";
 import fragmentShader from "!!raw-loader!./shaders/particles/fragmentShader.glsl";
 import { getVariableColor } from "@/lib/utils";
-import { useTheme } from "next-themes";
+import { useScrollTheme } from "@/components/provider/scroll-theme-provider";
 import { useMotionValueEvent, useTransform } from "framer-motion";
 import { damp } from "three/src/math/MathUtils.js";
 
 extend({ SimulationMaterial: SimulationMaterial });
 
 
-const SIZE = 120;
+const SIZE = 100;
 const POSITIONS = new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0]);
 const UVS = new Float32Array([0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0]);
 
 export const Particles = () => {
-    const { theme } = useTheme();
+    const { theme } = useScrollTheme();
     const points = useRef();
     const simulationMaterialRef = useRef();
     const mousePosition = useRef({
@@ -34,17 +34,18 @@ export const Particles = () => {
         targetY: 0,
     });
 
-    // Track previous mouse position and activity time
     const prevMouse = useRef(new THREE.Vector3());
     const mouseActive = useRef(0);
     const lastMouseMove = useRef(0);
-
-    // Add ref for canvas element
     const canvasRef = useRef(null);
-
-    // Smooth color transition state
     const currentColor = useRef(new THREE.Vector3(1.0, 1.0, 1.0)); // Start with white
     const targetColor = useRef(new THREE.Vector3(1.0, 1.0, 1.0));
+
+
+    const particleOffset = useRef(0);
+    const isParticleStopped = useRef(false);
+    const stopScrollPosition = useRef(0);
+    const scrollPositions = useRef({ heroEnd: 0.35, aboutEnd: 0.43, visionStart: 0.50, visionEnd: 0.65 });
 
     useEffect(() => {
         // Set target color based on theme with smooth transition
@@ -91,7 +92,8 @@ export const Particles = () => {
         uColor: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
         uTransitionProgress: { value: 0 },
         uRadiusScale: { value: 1 },
-        uCurrentPosition: { value: 0 }
+        uCurrentPosition: { value: 0 },
+        uParticleOffset: { value: 0 }
     }), []);
 
     const mouse = useRef(new THREE.Vector3());
@@ -121,59 +123,98 @@ export const Particles = () => {
     useEffect(() => {
         gsap.registerPlugin(ScrollTrigger);
 
+
+        const calculateScrollPositions = () => {
+            const heroSection = document.querySelector('[data-section="hero"]');
+            const aboutSection = document.querySelector('[data-section="about"]');
+            const visionSection = document.querySelector('[data-section="vision"]');
+            const teamSection = document.querySelector('[data-section="team"]');
+
+            const totalScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+
+
+            let positions = { heroEnd: 0.35, aboutEnd: 0.43, visionStart: 0.50, visionEnd: 0.65 };
+
+            if (totalScrollHeight > 0) {
+                // Calculate positions relative to total scroll height
+                if (heroSection) {
+                    const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
+                    positions.heroEnd = heroBottom / totalScrollHeight
+                    positions.heroEnd += 0.12;
+                }
+
+                if (aboutSection) {
+                    const aboutBottom = aboutSection.offsetTop + aboutSection.offsetHeight;
+                    positions.aboutEnd = aboutBottom / totalScrollHeight
+                }
+
+                if (visionSection) {
+                    positions.visionStart = Math.max(positions.aboutEnd + 0.03, visionSection.offsetTop / totalScrollHeight);
+                    const visionBottom = visionSection.offsetTop + visionSection.offsetHeight;
+
+                    positions.visionEnd = (visionBottom - window.innerHeight) / totalScrollHeight
+                }
+
+
+                positions.aboutEnd = Math.max(positions.heroEnd + 0.05, positions.aboutEnd);
+                positions.visionStart = Math.max(positions.aboutEnd + 0.03, positions.visionStart);
+                positions.visionEnd = Math.max(positions.visionStart + 0.1, positions.visionEnd);
+            }
+
+            scrollPositions.current = positions;
+            return positions;
+        };
+
         const updatePositionState = (progress: number) => {
             if (!simulationMaterialRef.current) return;
+
+            const { heroEnd, aboutEnd, visionStart, visionEnd } = scrollPositions.current;
 
             let currentPosition = 'A';
             let transitionProgress = 0;
             let radiusScale = 1;
 
+            if (progress <= visionEnd) {
+                isParticleStopped.current = false;
 
-
-            if (progress < 0.35) {
-
-                currentPosition = 'A';
-                transitionProgress = 0;
-                radiusScale = 1 + (progress * 12);
-
-            } else if (progress < 0.43) {
-
-                currentPosition = 'A-B';
-                const sectionProgress = (progress - 0.35) / (0.43 - 0.35);
-                transitionProgress = Math.min(1, sectionProgress * 3);
-                radiusScale = 5;
-
-            } else if (progress < 0.50) {
-
-                currentPosition = 'B';
-                transitionProgress = 1;
-                radiusScale = 2.5;
-
-            } else if (progress < 0.63) {
-
-                currentPosition = 'B-C';
-                const sectionProgress = (progress - 0.50) / (0.63 - 0.50);
-                transitionProgress = Math.min(1, sectionProgress * 3);
-                radiusScale = 2.5;
-
-            } else if (progress < 0.61) {
-
-                currentPosition = 'C';
-                transitionProgress = 1;
-                radiusScale = 2;
-
-            } else if (progress < 0.88) {
-
-                currentPosition = 'C-D';
-                const sectionProgress = (progress - 0.61) / (0.88 - 0.61);
-                transitionProgress = Math.min(1, sectionProgress * 3);
-                radiusScale = 2;
-
+                if (progress < heroEnd) {
+                    currentPosition = 'A';
+                    transitionProgress = 0;
+                    radiusScale = 1 + (progress * 12);
+                } else if (progress < aboutEnd) {
+                    currentPosition = 'A-B';
+                    const sectionProgress = (progress - heroEnd) / (aboutEnd - heroEnd);
+                    transitionProgress = Math.min(1, sectionProgress * 3);
+                    radiusScale = 5;
+                } else if (progress < visionStart) {
+                    currentPosition = 'B';
+                    transitionProgress = 1;
+                    radiusScale = 2.5;
+                } else if (progress < visionEnd) {
+                    const visionProgress = (progress - visionStart) / (visionEnd - visionStart);
+                    if (visionProgress < 0.5) {
+                        currentPosition = 'B-C';
+                        transitionProgress = Math.min(1, visionProgress * 6); // Faster transition
+                        radiusScale = 2.5;
+                    } else {
+                        currentPosition = 'C-D';
+                        const secondHalf = (visionProgress - 0.5) / 0.5;
+                        transitionProgress = Math.min(1, secondHalf * 3);
+                        radiusScale = 2 - (secondHalf * 0.5); // Gradually reduce from 2 to 1.5
+                    }
+                }
             } else {
+                if (!isParticleStopped.current) {
+                    isParticleStopped.current = true;
+                    stopScrollPosition.current = progress;
+                }
 
                 currentPosition = 'D';
                 transitionProgress = 1;
                 radiusScale = 1.5;
+
+                const scrollAfterStop = progress - stopScrollPosition.current;
+                particleOffset.current = scrollAfterStop * 25;
             }
 
             simulationMaterialRef.current.uniforms.uTransitionProgress.value = transitionProgress;
@@ -188,18 +229,40 @@ export const Particles = () => {
                                         currentPosition === 'D' ? 3 : 0;
         };
 
-        // Create a separate ScrollTrigger for particles that doesn't conflict with theme switching
+        // Initial calculation
+        const initTimer = setTimeout(calculateScrollPositions, 100);
+
+
         const particlesScrollTrigger = ScrollTrigger.create({
             trigger: 'body',
             start: 'top top',
             end: 'bottom bottom',
             scrub: 1,
             onUpdate: (self) => updatePositionState(self.progress),
-            id: 'particles-animation'
+            id: 'particles-animation',
+            refreshPriority: -1,
         });
+
+        const resizeObserver = new ResizeObserver(() => {
+            calculateScrollPositions();
+            ScrollTrigger.refresh();
+        });
+
+
+        resizeObserver.observe(document.body);
+
+
+        const handleResize = () => {
+            calculateScrollPositions();
+            ScrollTrigger.refresh();
+        };
+        window.addEventListener('resize', handleResize);
 
         return () => {
             particlesScrollTrigger.kill();
+            resizeObserver.disconnect();
+            window.removeEventListener('resize', handleResize);
+            clearTimeout(initTimer);
         };
     }, []);
 
@@ -254,9 +317,10 @@ export const Particles = () => {
         // Smooth color transition using lerp for eased animation
         currentColor.current.lerp(targetColor.current, 0.05); // Slower lerp for smooth 1000ms-like transition
 
-        // Update points material with smooth color transition
+        // Update points material with smooth color transition and particle offset
         points.current.material.uniforms.uPositions.value = renderTarget.texture;
         points.current.material.uniforms.uColor.value = currentColor.current;
+        points.current.material.uniforms.uParticleOffset.value = particleOffset.current;
     });
 
     try {
@@ -282,7 +346,7 @@ export const Particles = () => {
                     </mesh>,
                     scene
                 )}
-                <points ref={points}>
+                <points ref={points} renderOrder={1}>
                     <bufferGeometry>
                         <bufferAttribute
                             attach="attributes-position"
@@ -293,6 +357,9 @@ export const Particles = () => {
                     </bufferGeometry>
                     <shaderMaterial
                         depthWrite={false}
+                        transparent={true}
+                        blending={THREE.NormalBlending}
+                        depthTest={true}
                         fragmentShader={fragmentShader}
                         vertexShader={vertexShader}
                         uniforms={uniforms}

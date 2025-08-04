@@ -5,27 +5,37 @@ import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-interface HeroProps {
-    mousePosition: { x: number; y: number };
-}
+export default function Hero() {
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-export default function Hero({ mousePosition }: HeroProps) {
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            setMousePosition({
+                x: (e.clientX / window.innerWidth) * 100,
+                y: (e.clientY / window.innerHeight) * 100,
+            });
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+        return () => window.removeEventListener('mousemove', handleMouseMove);
+    }, []);
+
     return (
         <section className="relative z-10 h-[100dvh] w-full flex flex-col items-center justify-center antialiased bg-grid-white/[0.02] overflow-hidden">
 
-            {/* Ambient Grid Lines */}
+
             <div className="absolute inset-0 opacity-20 dark:opacity-10 transition-opacity duration-1000 ease-in-out">
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
             </div>
 
-            {/* Floating Geometric Shapes */}
+
             <motion.div
                 className="absolute inset-0 pointer-events-none transition-all duration-1000 ease-in-out"
                 style={{
                     transform: `translate(${mousePosition.x * 0.02}px, ${mousePosition.y * 0.02}px)`,
                 }}
             >
-                {/* Large Circle */}
+
                 <motion.div
                     className="absolute w-96 h-96 border border-gray-300/20 dark:border-gray-600/20 rounded-full transition-colors duration-1000 ease-in-out"
                     style={{
@@ -42,7 +52,7 @@ export default function Hero({ mousePosition }: HeroProps) {
                     }}
                 />
 
-                {/* Medium Rectangle */}
+
                 <motion.div
                     className="absolute w-32 h-20 border border-gray-400/30 dark:border-gray-500/30 transition-colors duration-1000 ease-in-out"
                     style={{
@@ -60,7 +70,6 @@ export default function Hero({ mousePosition }: HeroProps) {
                     }}
                 />
 
-                {/* Small Triangular Shape */}
                 <motion.div
                     className="absolute w-0 h-0 border-l-[20px] border-r-[20px] border-b-[35px] border-l-transparent border-r-transparent border-b-gray-400/25 dark:border-b-gray-500/25 transition-colors duration-1000 ease-in-out"
                     style={{
@@ -167,6 +176,24 @@ export default function Hero({ mousePosition }: HeroProps) {
                     }}
                 />
 
+                <motion.div
+                    className="absolute -top-16 left-0 text-xs tracking-[0.3em] uppercase text-customGrayDarker/60 font-light"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, delay: 1.5 }}
+                >
+                    IMAGINE
+                </motion.div>
+
+                <motion.div
+                    className="absolute -top-16 right-0 text-xs tracking-[0.3em] uppercase text-customGrayDarker/60 font-light"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, delay: 2 }}
+                >
+                    INVENT
+                </motion.div>
+
                 <h1 className={cn(
                     "font-regular tracking-widest text-customGrayDark cursor-hover md:text-9xl text-6xl relative transition-colors duration-1000 ease-in-out",
                     "before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-customGrayDark/20 before:to-transparent",
@@ -174,6 +201,16 @@ export default function Hero({ mousePosition }: HeroProps) {
                 )}>
                     EXOVANCE
                 </h1>
+
+                {/* Bottom descriptive text */}
+                <motion.div
+                    className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs tracking-[0.4em] uppercase text-customGrayDarker/50 font-light"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, delay: 2.5 }}
+                >
+                    EXPERIENCE
+                </motion.div>
             </div>
 
             {/* Enhanced Bottom Section */}

@@ -1,10 +1,10 @@
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useTheme } from 'next-themes';
+import { useScrollTheme } from '@/components/provider/scroll-theme-provider';
 
 const MarqueeScrollText = () => {
     const containerRef = React.useRef(null);
-    const { theme } = useTheme()
+    const { theme } = useScrollTheme()
 
     const { scrollYProgress } = useScroll({
         target: containerRef,

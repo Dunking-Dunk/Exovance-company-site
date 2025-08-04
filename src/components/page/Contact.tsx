@@ -3,19 +3,33 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { View } from '../canva/View';
-import { BackgroundHero } from '../canva/backgroundHero';
-import { useTheme } from 'next-themes';
+import { BackgroundHero } from '../canva/BackgroundHero';
 import { DotBackground } from '../ui/dot-background';
+import Dither from '../canva/Dither';
 
 const ContactPage = () => {
     return (
         <div className="relative h-[100dvh] z-20 overflow-hidden">
             {/* Background layers */}
-            <div className="absolute inset-0 z-0 bg-gradient-to-b dark:from-transparent h-screen" />
+            {/* <div className="absolute inset-0 z-0 bg-gradient-to-b dark:from-transparent h-screen" />
             <DotBackground />
             <View className="absolute inset-0 z-[0]">
                 <BackgroundHero />
-            </View>
+            </View> */}
+
+            <div className="absolute inset-0 z-10 bg-black/50" />
+            <div className="absolute inset-0 z-[0]">
+                <Dither
+                    waveColor={[0.5, 0.5, 0.5]}
+                    disableAnimation={false}
+                    enableMouseInteraction={true}
+                    mouseRadius={0.5}
+                    colorNum={4}
+                    waveAmplitude={0.3}
+                    waveFrequency={3}
+                    waveSpeed={0.05}
+                />
+            </div>
 
             {/* Main content */}
             <div className="relative z-10 w-full h-full flex flex-col justify-center px-4 md:px-8 lg:px-16">

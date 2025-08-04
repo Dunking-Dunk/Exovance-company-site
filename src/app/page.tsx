@@ -1,19 +1,16 @@
 "use client"
 
 import dynamic from "next/dynamic";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Vision from "@/components/page/Vision";
-import Abstract from "@/components/page/Abstract";
-import Service from "@/components/page/Service";
 import ScrollTextAnimation from "@/components/global/Marquee";
 import ContactPage from "@/components/page/Contact";
 import Footer from "@/components/global/Footer";
 import About from "@/components/page/About";
-import Works from "@/components/page/Works";
 import Hero from "@/components/page/Hero";
-import { useTheme } from "next-themes";
-import { gsap } from 'gsap';
+import { useScrollTheme } from "@/components/provider/scroll-theme-provider";
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Team from "@/components/page/Team";
 
 // Preload critical components
 const View = dynamic(() => import("@/components/canva/View").then((mod: any) => mod.View), {
@@ -40,65 +37,71 @@ if (typeof window !== 'undefined') {
 }
 
 export default function Home() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const { setTheme } = useTheme();
+  const { setScrollTheme } = useScrollTheme();
+  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('dark');
+
+  const handleThemeSwitch = useCallback((progress: number) => {
+    const visionStart = 0.25;
+    const visionEnd = 0.65;
+
+    let targetTheme: 'light' | 'dark';
+
+    if (progress >= visionStart && progress <= visionEnd) {
+      targetTheme = 'light';
+    } else {
+      targetTheme = 'dark';
+    }
+
+
+    if (targetTheme !== currentTheme) {
+      setCurrentTheme(targetTheme);
+      setScrollTheme(targetTheme);
+    }
+  }, [setScrollTheme, currentTheme]);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({
-        x: (e.clientX / window.innerWidth) * 100,
-        y: (e.clientY / window.innerHeight) * 100,
-      });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
-
-  useEffect(() => {
-    setTheme('dark');
-
-    const handleThemeSwitch = (progress: number) => {
-      const visionStart = 0.30;
-      const visionEnd = 0.80;
-      if (progress >= visionStart && progress <= visionEnd) {
-        setTheme('light');
-      } else {
-        setTheme('dark');
-      }
-    };
-
     const themeScrollTrigger = ScrollTrigger.create({
       trigger: 'body',
       start: 'top top',
       end: 'bottom bottom',
       onUpdate: (self) => handleThemeSwitch(self.progress),
-      id: 'theme-switcher'
+      id: 'theme-switcher',
+      refreshPriority: -1
     });
 
     return () => {
       themeScrollTrigger.kill();
     };
-  }, [setTheme]);
+  }, [handleThemeSwitch]);
 
   return (
     <>
-      <div className="w-full h-full relative " >
-        <div className="absolute inset-0 z-[0] bg-gradient-to-b dark:from-zinc-900 from-zinc-100 dark:from-40% from-40% dark:via-gray-50/10 via-gray-600/10 dark:to-transparent to-transparent h-dvh" />
+      <div className="w-full h-full relative" >
+        {/* <div className="absolute inset-0 z-[0] bg-gradient-to-b dark:from-zinc-900 from-zinc-100 dark:from-40% from-40% dark:via-gray-50/10 via-gray-600/10 dark:to-transparent to-transparent h-dvh" /> */}
 
         {/* Hero Page */}
-        <Hero mousePosition={mousePosition} />
+        <div data-section="hero">
+          <Hero />
+        </div>
 
         {/* About Us */}
-        <About />
+        <div data-section="about">
+          <About />
+        </div>
 
         {/* Vision*/}
-        <Vision />
+        <div data-section="vision">
+          <Vision />
+        </div>
+
+        {/* Team */}
+        <div data-section="team">
+          <Team />
+        </div>
+
 
         {/* Abstract */}
         {/* <Abstract /> */}
-
 
         {/* Works */}
         {/* <Works /> */}
@@ -115,14 +118,10 @@ export default function Home() {
         {/* footer */}
         <Footer />
 
-        {/* transparent plane - background layer */}
-        {/* @ts-ignore */}
-        <View className="fixed inset-0 z-[5] pointer-events-none">
-          <TransparentPlane />
-        </View>
         {/* particle - foreground layer */}
         {/* @ts-ignore */}
-        <View className="fixed inset-0 z-[15]">
+        <View className="fixed inset-0 z-[15] pointer-events-none">
+          <TransparentPlane />
           <Common />
           <Particles />
         </View>

@@ -3,8 +3,7 @@
 import { forwardRef, Suspense, useImperativeHandle, useRef } from 'react'
 import { OrbitControls, PerspectiveCamera, View as ViewImpl } from '@react-three/drei'
 import { Three } from '@/lib/components/Three'
-import { Bloom, Vignette, Noise } from '@react-three/postprocessing'
-import { EffectComposer } from '@react-three/postprocessing'
+
 
 export const Common = ({ color }: { color?: string }) => (
     <Suspense fallback={null}>
@@ -32,7 +31,6 @@ const View = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & {
                     {children}
                     {orbit && <OrbitControls />}
                 </ViewImpl>
-
             </Three>
         </>
     )

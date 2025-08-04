@@ -3,13 +3,15 @@
 import dynamic from 'next/dynamic'
 import React, { useRef, useEffect } from 'react'
 import Header from './Header'
-import AnimatedCursor from './AnimatedCursor'
+import BlobCursor from './AnimatedCursor'
 import { ReactLenis } from 'lenis/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from "@gsap/react";
+
 import LoadingScreen from './loading-screen'
 import { debounce } from '@/lib/utils'
+import { useScrollTheme } from '@/components/provider/scroll-theme-provider'
 
 gsap.registerPlugin(ScrollTrigger)
 gsap.registerPlugin(useGSAP);
@@ -26,9 +28,15 @@ const Layout = ({ children }: Props) => {
     const lenisRef = useRef<any>(null)
     const [isLoading, setIsLoading] = React.useState(true)
     const [sceneReady, setSceneReady] = React.useState(false)
+    const { theme } = useScrollTheme();
 
     useEffect(() => {
-        // Set initial viewport height
+        function update(time: number) {
+            lenisRef.current?.lenis?.raf(time * 1000)
+        }
+
+        gsap.ticker.add(update)
+
         const setAppHeight = () => {
             document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
         };
@@ -62,6 +70,7 @@ const Layout = ({ children }: Props) => {
         window.addEventListener('resize', debouncedRefresh);
 
         return () => {
+            gsap.ticker.remove(update)
             window.removeEventListener('resize', setAppHeight);
             window.removeEventListener('resize', debouncedRefresh);
             ScrollTrigger.clearScrollMemory();
@@ -73,7 +82,6 @@ const Layout = ({ children }: Props) => {
     const handleLoadingComplete = React.useCallback(() => {
         setTimeout(() => {
             setIsLoading(false);
-            // Enable interactions after scene is ready
             setTimeout(() => {
                 setSceneReady(true);
             }, 500);
@@ -88,7 +96,8 @@ const Layout = ({ children }: Props) => {
                 wheelMultiplier: 1,
                 touchMultiplier: 1,
                 smoothWheel: true,
-                syncTouch: true
+                syncTouch: true,
+                autoRaf: false
             }}
         >
             <div
@@ -105,7 +114,24 @@ const Layout = ({ children }: Props) => {
                 className='bg-customBlack'
             >
                 <Header />
-                {!isLoading && <AnimatedCursor />}
+                {!isLoading && <BlobCursor
+                    blobType="circle"
+                    fillColor={theme === 'dark' ? '#fff' : '#000'}
+                    trailCount={3}
+                    sizes={[50, 115, 65]}
+                    innerSizes={[20, 35, 25]}
+                    innerColor="rgba(0, 0, 0, 0.3)"
+                    opacities={[0.4, 0.3, 0.2]}
+                    shadowColor="rgba(0, 0, 0, 0.5)"
+                    shadowBlur={8}
+                    shadowOffsetX={5}
+                    shadowOffsetY={5}
+                    filterStdDeviation={25}
+                    useFilter={true}
+                    fastDuration={0.1}
+                    slowDuration={0.5}
+                    zIndex={100}
+                />}
                 {children}
 
                 <Scene
@@ -124,7 +150,7 @@ const Layout = ({ children }: Props) => {
                 />
                 {isLoading && <LoadingScreen onLoadingComplete={handleLoadingComplete} />}
             </div>
-        </ReactLenis>
+        </ReactLenis >
     )
 }
 

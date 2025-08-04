@@ -20,3 +20,43 @@ export const services = [
         video: 'optimization'
     }
 ];
+
+export interface FoundingTeamMember {
+    name: string;
+    role: string;
+    image: string;
+    description: string;
+}
+
+export const foundingTeam: FoundingTeamMember[] = [
+    {
+        name: "Hursun",
+        role: "CEO",
+        image: "/team/hursun.jpg",
+        description: "Tech founder, community lead"
+    },
+    {
+        name: "Shantosh",
+        role: "CTO",
+        image: "/team/shantosh.jpg",
+        description: "AI architect, innovation leader with 10+ years in machine learning"
+    },
+    {
+        name: "Dhayananth",
+        role: "CMO",
+        image: "/team/dhaya.jpg",
+        description: "Operations expert, growth strategist focused on scaling tech companies"
+    },
+    {
+        name: "Sarah Davis",
+        role: "Lead Developer",
+        image: "https://picsum.photos/seed/sarah/400/400",
+        description: "Full-stack developer specializing in modern web technologies"
+    },
+    {
+        name: "Alex Chen",
+        role: "Data Scientist",
+        image: "https://picsum.photos/seed/alex/400/400",
+        description: "Analytics expert driving data-driven decision making"
+    }
+];

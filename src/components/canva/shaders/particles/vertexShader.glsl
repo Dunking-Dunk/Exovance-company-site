@@ -17,6 +17,7 @@ uniform float uScroll;
 uniform float uTransitionProgress;
 uniform float uRadiusScale;
 uniform float uCurrentPosition;
+uniform float uParticleOffset;
 
 varying vec4 vColor;
 
@@ -60,6 +61,9 @@ void main(){
     // Optimized position sampling
     vec3 pos=texture2D(uPositions,position.xy).xyz;
     pos=calculatePosition(pos);
+    
+    // Apply upward particle offset when stopped
+    pos.y+=uParticleOffset;
     
     // Enhanced color calculation with pulsing effect
     float angle=atan(pos.y,pos.x);

@@ -3,10 +3,10 @@
 import React from 'react'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
-import { useTheme } from 'next-themes'
+import { useScrollTheme } from '@/components/provider/scroll-theme-provider'
 
 export const BackgroundHero = (props: any) => {
-    const { theme } = useTheme()
+    const { theme } = useScrollTheme()
     useGLTF.preload('/3d/lost_orb_in_the_mountains-transformed.glb')
     const { nodes }: { nodes: any } = useGLTF('/3d/lost_orb_in_the_mountains-transformed.glb')
 
