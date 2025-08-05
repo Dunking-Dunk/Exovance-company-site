@@ -97,7 +97,8 @@ const Layout = ({ children }: Props) => {
                 touchMultiplier: 1,
                 smoothWheel: true,
                 syncTouch: true,
-                autoRaf: false
+                autoRaf: false,
+                lerp: 0.09
             }}
         >
             <div
