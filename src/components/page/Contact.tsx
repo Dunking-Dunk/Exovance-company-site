@@ -32,7 +32,7 @@ const ContactPage = () => {
             </div>
 
             {/* Main content */}
-            <div className="relative z-10 w-full h-full flex flex-col justify-center px-4 md:px-8 lg:px-16">
+            <div className="relative z-10 w-full h-full flex flex-col justify-center px-4 md:px-8 lg:px-32">
                 <div className="w-full">
                     {/* Section label */}
                     <motion.div

@@ -14,7 +14,7 @@ const About = () => {
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-customBlack/5 to-transparent" />
             </div>
 
-            <div className="relative z-10 w-full flex flex-col justify-center px-4 md:px-8 lg:px-16 xl:px-24 py-20 md:py-32">
+            <div className="relative z-10 w-full flex flex-col justify-center px-4 md:px-8 lg:px-32 py-20 md:py-32">
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}

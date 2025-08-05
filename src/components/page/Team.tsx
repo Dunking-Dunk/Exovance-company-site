@@ -1,40 +1,30 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import dynamic from 'next/dynamic';
 import { foundingTeam, type FoundingTeamMember } from '@/lib/data';
 import SpotlightCard from '../ui/SpotlightCard';
 import ShinyText from '../ui/ShinyText';
+import { useMobile } from '@/hooks/useMobile';
 
 
 const CircularGallery = dynamic(() => import('@/components/ui/CircularGallery'), { ssr: false });
 
 const Team = () => {
     const [selectedMemberIndex, setSelectedMemberIndex] = useState(0);
-    const [isMobile, setIsMobile] = useState(false);
+    const isMobile = useMobile();
     const selectedMember = foundingTeam[selectedMemberIndex];
-
-    useEffect(() => {
-        const checkMobile = () => {
-            setIsMobile(window.innerWidth < 768);
-        };
-
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-
-        return () => window.removeEventListener('resize', checkMobile);
-    }, []);
 
     const handleCenterItemChange = (index: number) => {
         setSelectedMemberIndex(index);
     };
 
     return (
-        <div className="w-full min-h-screen z-[30] py-8">
+        <div className="w-full min-h-screen z-[20] ">
             {/* Header Section */}
-            <div className="text-center mb-4">
+            <div className="mb-4 py-8 px-4 md:px-32">
                 <h1 className='text-5xl md:text-6xl font-bold mb-4 text-customGrayLight'>
                     Meet Our Team
                 </h1>
-                <p className='text-lg text-customGray max-w-2xl mx-auto leading-relaxed'>
+                <p className='text-lg text-customGray max-w-2xl leading-relaxed'>
                     We are a group of passionate students dedicated to building and developing in the field of deep tech.
                 </p>
             </div>

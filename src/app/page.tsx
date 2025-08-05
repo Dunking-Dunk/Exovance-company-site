@@ -11,6 +11,7 @@ import Hero from "@/components/page/Hero";
 import { useScrollTheme } from "@/components/provider/scroll-theme-provider";
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Team from "@/components/page/Team";
+import Service from "@/components/page/Service";
 
 // Preload critical components
 const View = dynamic(() => import("@/components/canva/View").then((mod: any) => mod.View), {
@@ -29,7 +30,7 @@ const TransparentPlane = dynamic(() => import("@/components/canva/TransparentPla
   ssr: false
 })
 
-// Preload components immediately
+
 if (typeof window !== 'undefined') {
   import("@/components/canva/View");
   import("@/components/canva/Particles");
@@ -42,7 +43,7 @@ export default function Home() {
 
   const handleThemeSwitch = useCallback((progress: number) => {
     const visionStart = 0.25;
-    const visionEnd = 0.65;
+    const visionEnd = 0.60;
 
     let targetTheme: 'light' | 'dark';
 
@@ -84,15 +85,24 @@ export default function Home() {
           <Hero />
         </div>
 
-        {/* About Us */}
+
+
+        {/* About */}
         <div data-section="about">
           <About />
         </div>
+
 
         {/* Vision*/}
         <div data-section="vision">
           <Vision />
         </div>
+
+        {/* Services */}
+        <div data-section="service">
+          <Service />
+        </div>
+
 
         {/* Team */}
         <div data-section="team">
@@ -106,8 +116,6 @@ export default function Home() {
         {/* Works */}
         {/* <Works /> */}
 
-        {/* Services */}
-        {/* <Service /> */}
 
         {/* scroll text carousel */}
         <ScrollTextAnimation />

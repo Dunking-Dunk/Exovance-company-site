@@ -1,101 +1,127 @@
 "use client"
 
-import React, { useRef } from 'react'
+import React from 'react'
 import { services } from '@/lib/data'
-import { useGSAP } from '@gsap/react';
-import { ScrollTrigger } from 'gsap/all';
-import gsap from 'gsap';
-import { TypewriterEffectSmooth } from '../ui/typewriter-effect';
+import CardSwap, { Card } from '../ui/CardSwap'
+import { useMobile } from '@/hooks/useMobile'
 
 type Props = {}
 
-const Card = ({ title, description, index, video }: {
-    title: string;
-    description: string;
-    index: number;
-    video: string;
-}) => {
+const Service = (props: Props) => {
+    const isMobile = useMobile();
+
+    const handleLearnMore = () => {
+        window.open('/services', '_blank'); // 
+    };
+
     return (
-        <div className={`relative service__card`} id={`card-${index + 1}`}>
-            <div className="relative flex flex-col md:flex-row w-full h-full py-4 md:py-8 md:gap-16 gap-6 will-change-transform service__card__inner bg-customBlack border-b-2 border-b-customGray">
-                <div className="mg:flex-[3] flex-[2] space-y-2 md:space-y-6 z-10">
-                    <TypewriterEffectSmooth
-                        words={title.split(' ').map((x) => ({
-                            text: x,
-                            className: 'text-2xl md:text-4xl lg:text-7xl font-bold text-customGray'
-                        }))}
-                    />
-                    <p className="text-sm md:text-xl text-customGrayDark w-full md:w-2/3">{description}</p>
+        <div className="w-full h-screen px-4 md:px-32 py-32 relative z-10">
+            <div className={`flex flex-col ${!isMobile ? 'lg:flex-row' : ''} gap-12 h-full`}>
+                {/* Left Content Section */}
+                <div className={`${!isMobile ? 'lg:w-1/2' : 'w-full'} flex flex-col justify-center`}>
+                    <h1 className="text-6xl md:text-8xl font-bold text-customGrayDark mb-6">
+                        Our Services
+                    </h1>
+                    <p className="text-xl text-customGray max-w-2xl mb-8">
+                        Discover our cutting-edge solutions designed to transform your business with innovative technology and AI-powered innovation.
+                    </p>
+
+                    <div className="space-y-4 mb-8">
+                        <div className="flex items-center gap-3">
+                            <div className="w-2 h-2 bg-customGray rounded-full"></div>
+                            <span className="text-customGrayLight">AI-Powered Web Development</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <div className="w-2 h-2 bg-customGray rounded-full"></div>
+                            <span className="text-customGrayLight">End-to-End Automation Solutions</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <div className="w-2 h-2 bg-customGray rounded-full"></div>
+                            <span className="text-customGrayLight">Data-Driven Analytics</span>
+                        </div>
+                    </div>
+
+                    {/* Stats */}
+                    <div className="grid grid-cols-3 gap-6 mb-8">
+                        <div className="text-center">
+                            <div className="text-3xl font-bold text-customGrayLight mb-1">10+</div>
+                            <div className="text-sm text-customGray">Projects Delivered</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-3xl font-bold text-customGrayLight mb-1">24/7</div>
+                            <div className="text-sm text-customGray">Support</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-3xl font-bold text-customGrayLight mb-1">99%</div>
+                            <div className="text-sm text-customGray">Client Satisfaction</div>
+                        </div>
+                    </div>
+
+                    {/* Call to Action Button */}
+                    <button
+                        onClick={handleLearnMore}
+                        className="group relative px-8 py-4 bg-customGrayDark text-customGrayLight font-semibold rounded-lg overflow-hidden transition-all duration-300 hover:bg-customGray transform hover:scale-105 hover:shadow-xl max-w-fit border border-customGray"
+                    >
+                        <span className="relative z-10 flex items-center gap-2">
+                            Learn More About Our Services
+                            <svg
+                                className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
+                        </span>
+                        <div className="absolute inset-0 bg-customGray transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                    </button>
                 </div>
-                <div className="md:flex-1 flex-[2] aspect-[16/9] rounded-lg overflow-hidden z-20 ">
-                    <video className="w-full h-full object-cover z-20" autoPlay muted loop>
-                        <source src={`/video/${video}.mp4`} type="video/mp4" />
-                    </video>
-                </div>
+
+                {/* Right Side - CardSwap (Hidden on Mobile) */}
+                {!isMobile && (
+                    <div className="lg:w-1/2 flex items-center justify-center">
+                        <CardSwap
+                            width={700}
+                            height={500}
+                            cardDistance={60}
+                            verticalDistance={70}
+                            delay={5000}
+                            pauseOnHover={false}
+                        >
+                            {services.map((service, index) => (
+                                <Card key={index}>
+                                    <div className="relative w-full h-full bg-customBlack">
+                                        {/* Video Background */}
+                                        <div className="absolute inset-0">
+                                            <video
+                                                className="w-full h-full object-cover opacity-20"
+                                                autoPlay
+                                                muted
+                                                loop
+                                                playsInline
+                                            >
+                                                {/* <source src={`/video/${service.video}.mp4`} type="video/mp4" /> */}
+                                            </video>
+                                            <div className="absolute inset-0 bg-black/10" />
+                                        </div>
+
+                                        {/* Content */}
+                                        <div className="relative z-10 p-8 h-full flex flex-col justify-between">
+                                            <h3 className="text-2xl md:text-3xl font-bold text-customGrayLight mb-4">
+                                                {service.title}
+                                            </h3>
+                                            <p className="text-customGray text-sm md:text-base leading-relaxed">
+                                                {service.description}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </Card>
+                            ))}
+                        </CardSwap>
+                    </div>
+                )}
             </div>
         </div>
-    );
-};
-
-const Service = (props: Props) => {
-    const container = useRef(null)
-
-    useGSAP(() => {
-        const cards: any = gsap.utils.toArray('.service__card')
-
-        ScrollTrigger.create({
-            trigger: cards[0],
-            start: "top 35%",
-            endTrigger: cards[cards.length - 1],
-            end: "top 30%",
-            pin: '.service__intro',
-            pinSpacing: false,
-        })
-
-        cards.forEach((card: any, index: number) => {
-            const isLastCard = index === cards.length - 1;
-            const cardInner = card.querySelector(".service__card__inner");
-
-            ScrollTrigger.create({
-                trigger: card,
-                start: "top 35%",
-                endTrigger: ".service__outro",
-                end: "top 65%",
-                pin: true,
-                pinSpacing: false,
-            });
-
-            gsap.to(cardInner, {
-                y: `-${(cards.length - index) * (window.innerWidth < 768 ? 8 : 12)}vh`, // Adjust animation for mobile
-                ease: "none",
-                scrollTrigger: {
-                    trigger: card,
-                    start: "top 35%",
-                    endTrigger: ".service__outro",
-                    end: "top 65%",
-                    scrub: true,
-                },
-            });
-        });
-
-        // Cleanup function
-        return () => {
-            ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-        };
-    }, [])
-
-    return (
-        <>
-            <div className='w-full h-full service__intro' />
-            <div className='w-full h-full relative px-2 sm:px-4 md:px-10' ref={container}>
-                {
-                    services.map(({ title, description, video }, index) => (
-                        <Card key={index} title={title} description={description} index={index} video={video} />
-                    ))
-                }
-            </div>
-            <div className='service__outro w-full h-40 md:h-60' />
-        </>
     )
 }
 

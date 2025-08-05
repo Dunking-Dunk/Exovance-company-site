@@ -34,217 +34,6 @@ const MarqueeScrollText = () => {
             <motion.div
                 className="relative w-full px-4">
                 <div className='absolute z-20 inset-0 w-full h-full dark:bg-gradient-to-r dark:from-black dark:via-transparent dark:to-black' />
-                {/* Enhanced Background curves */}
-                <svg
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-60"
-                    viewBox="0 0 800 100"
-                >
-                    {/* Base curves */}
-                    {[...Array(3)].map((_, i) => (
-                        <motion.path
-                            key={`base-${i}`}
-                            d="M 0,50 C 200,30 600,70 800,50"
-                            stroke={theme === 'light' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)'}
-                            strokeWidth="1"
-                            fill="none"
-                            initial={{ pathLength: 0 }}
-                            animate={{
-                                pathLength: [0, 1],
-                                pathOffset: [0, 1]
-                            }}
-                            transition={{
-                                duration: 3,
-                                delay: i * 0.5,
-                                repeat: Infinity,
-                                ease: "linear"
-                            }}
-                        />
-                    ))}
-
-                    {/* Additional interweaving curves */}
-                    {[...Array(3)].map((_, i) => (
-                        <motion.path
-                            key={`wave-${i}`}
-                            d="M 0,50 C 100,20 200,80 300,50 C 400,20 500,80 600,50 C 700,20 800,80 800,50"
-                            stroke={theme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'}
-                            strokeWidth="1"
-                            fill="none"
-                            initial={{ pathLength: 0 }}
-                            animate={{
-                                pathLength: [0, 1],
-                                pathOffset: [0, 1]
-                            }}
-                            transition={{
-                                duration: 4,
-                                delay: i * 0.3,
-                                repeat: Infinity,
-                                ease: "linear"
-                            }}
-                        />
-                    ))}
-
-                    {/* Tighter curves for more detail */}
-                    {[...Array(2)].map((_, i) => (
-                        <motion.path
-                            key={`detail-${i}`}
-                            d="M 0,50 C 50,40 100,60 150,50 C 200,40 250,60 300,50 C 350,40 400,60 450,50 C 500,40 550,60 600,50 C 650,40 700,60 750,50 C 800,40 850,60 800,50"
-                            stroke={theme === 'light' ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'}
-                            strokeWidth="1"
-                            fill="none"
-                            initial={{ pathLength: 0 }}
-                            animate={{
-                                pathLength: [0, 1],
-                                pathOffset: [0, 1]
-                            }}
-                            transition={{
-                                duration: 5,
-                                delay: i * 0.4,
-                                repeat: Infinity,
-                                ease: "linear"
-                            }}
-                        />
-                    ))}
-                </svg>
-                <svg
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[25%] w-full h-60"
-                    viewBox="0 0 800 100"
-                >
-                    {/* Base curves */}
-                    {[...Array(3)].map((_, i) => (
-                        <motion.path
-                            key={`base-${i}`}
-                            d="M 0,50 C 200,30 600,70 800,50"
-                            stroke={theme === 'light' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)'}
-                            strokeWidth="1"
-                            fill="none"
-                            initial={{ pathLength: 0 }}
-                            animate={{
-                                pathLength: [0, 1],
-                                pathOffset: [0, 1]
-                            }}
-                            transition={{
-                                duration: 3,
-                                delay: i * 0.5,
-                                repeat: Infinity,
-                                ease: "linear"
-                            }}
-                        />
-                    ))}
-
-                    {/* Additional interweaving curves */}
-                    {[...Array(3)].map((_, i) => (
-                        <motion.path
-                            key={`wave-${i}`}
-                            d="M 0,50 C 100,20 200,80 300,50 C 400,20 500,80 600,50 C 700,20 800,80 800,50"
-                            stroke={theme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'}
-                            strokeWidth="1"
-                            fill="none"
-                            initial={{ pathLength: 0 }}
-                            animate={{
-                                pathLength: [0, 1],
-                                pathOffset: [0, 1]
-                            }}
-                            transition={{
-                                duration: 4,
-                                delay: i * 0.3,
-                                repeat: Infinity,
-                                ease: "linear"
-                            }}
-                        />
-                    ))}
-
-                    {/* Tighter curves for more detail */}
-                    {[...Array(2)].map((_, i) => (
-                        <motion.path
-                            key={`detail-${i}`}
-                            d="M 0,50 C 50,40 100,60 150,50 C 200,40 250,60 300,50 C 350,40 400,60 450,50 C 500,40 550,60 600,50 C 650,40 700,60 750,50 C 800,40 850,60 800,50"
-                            stroke={theme === 'light' ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'}
-                            strokeWidth="1"
-                            fill="none"
-                            initial={{ pathLength: 0 }}
-                            animate={{
-                                pathLength: [0, 1],
-                                pathOffset: [0, 1]
-                            }}
-                            transition={{
-                                duration: 5,
-                                delay: i * 0.4,
-                                repeat: Infinity,
-                                ease: "linear"
-                            }}
-                        />
-                    ))}
-                </svg>
-                <svg
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[75%] w-full h-60"
-                    viewBox="0 0 800 100"
-                >
-                    {/* Base curves */}
-                    {[...Array(3)].map((_, i) => (
-                        <motion.path
-                            key={`base-${i}`}
-                            d="M 0,50 C 200,30 600,70 800,50"
-                            stroke={theme === 'light' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)'}
-                            strokeWidth="1"
-                            fill="none"
-                            initial={{ pathLength: 0 }}
-                            animate={{
-                                pathLength: [0, 1],
-                                pathOffset: [0, 1]
-                            }}
-                            transition={{
-                                duration: 3,
-                                delay: i * 0.5,
-                                repeat: Infinity,
-                                ease: "linear"
-                            }}
-                        />
-                    ))}
-
-                    {/* Additional interweaving curves */}
-                    {[...Array(3)].map((_, i) => (
-                        <motion.path
-                            key={`wave-${i}`}
-                            d="M 0,50 C 100,20 200,80 300,50 C 400,20 500,80 600,50 C 700,20 800,80 800,50"
-                            stroke={theme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'}
-                            strokeWidth="1"
-                            fill="none"
-                            initial={{ pathLength: 0 }}
-                            animate={{
-                                pathLength: [0, 1],
-                                pathOffset: [0, 1]
-                            }}
-                            transition={{
-                                duration: 4,
-                                delay: i * 0.3,
-                                repeat: Infinity,
-                                ease: "linear"
-                            }}
-                        />
-                    ))}
-
-                    {/* Tighter curves for more detail */}
-                    {[...Array(2)].map((_, i) => (
-                        <motion.path
-                            key={`detail-${i}`}
-                            d="M 0,50 C 50,40 100,60 150,50 C 200,40 250,60 300,50 C 350,40 400,60 450,50 C 500,40 550,60 600,50 C 650,40 700,60 750,50 C 800,40 850,60 800,50"
-                            stroke={theme === 'light' ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'}
-                            strokeWidth="1"
-                            fill="none"
-                            initial={{ pathLength: 0 }}
-                            animate={{
-                                pathLength: [0, 1],
-                                pathOffset: [0, 1]
-                            }}
-                            transition={{
-                                duration: 5,
-                                delay: i * 0.4,
-                                repeat: Infinity,
-                                ease: "linear"
-                            }}
-                        />
-                    ))}
-                </svg>
 
                 {/* Marquee container */}
                 <div className="flex overflow-hidden">
@@ -280,3 +69,214 @@ const MarqueeScrollText = () => {
 };
 
 export default MarqueeScrollText;
+
+
+
+
+                // <svg
+                //     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-60"
+                //     viewBox="0 0 800 100"
+                // >
+    
+                //     {[...Array(3)].map((_, i) => (
+                //         <motion.path
+                //             key={`base-${i}`}
+                //             d="M 0,50 C 200,30 600,70 800,50"
+                //             stroke={theme === 'light' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)'}
+                //             strokeWidth="1"
+                //             fill="none"
+                //             initial={{ pathLength: 0 }}
+                //             animate={{
+                //                 pathLength: [0, 1],
+                //                 pathOffset: [0, 1]
+                //             }}
+                //             transition={{
+                //                 duration: 3,
+                //                 delay: i * 0.5,
+                //                 repeat: Infinity,
+                //                 ease: "linear"
+                //             }}
+                //         />
+                //     ))}
+
+   
+                //     {[...Array(3)].map((_, i) => (
+                //         <motion.path
+                //             key={`wave-${i}`}
+                //             d="M 0,50 C 100,20 200,80 300,50 C 400,20 500,80 600,50 C 700,20 800,80 800,50"
+                //             stroke={theme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'}
+                //             strokeWidth="1"
+                //             fill="none"
+                //             initial={{ pathLength: 0 }}
+                //             animate={{
+                //                 pathLength: [0, 1],
+                //                 pathOffset: [0, 1]
+                //             }}
+                //             transition={{
+                //                 duration: 4,
+                //                 delay: i * 0.3,
+                //                 repeat: Infinity,
+                //                 ease: "linear"
+                //             }}
+                //         />
+                //     ))}
+
+        
+                //     {[...Array(2)].map((_, i) => (
+                //         <motion.path
+                //             key={`detail-${i}`}
+                //             d="M 0,50 C 50,40 100,60 150,50 C 200,40 250,60 300,50 C 350,40 400,60 450,50 C 500,40 550,60 600,50 C 650,40 700,60 750,50 C 800,40 850,60 800,50"
+                //             stroke={theme === 'light' ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'}
+                //             strokeWidth="1"
+                //             fill="none"
+                //             initial={{ pathLength: 0 }}
+                //             animate={{
+                //                 pathLength: [0, 1],
+                //                 pathOffset: [0, 1]
+                //             }}
+                //             transition={{
+                //                 duration: 5,
+                //                 delay: i * 0.4,
+                //                 repeat: Infinity,
+                //                 ease: "linear"
+                //             }}
+                //         />
+                //     ))}
+                // </svg>
+                // <svg
+                //     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[25%] w-full h-60"
+                //     viewBox="0 0 800 100"
+                // >
+
+                //     {[...Array(3)].map((_, i) => (
+                //         <motion.path
+                //             key={`base-${i}`}
+                //             d="M 0,50 C 200,30 600,70 800,50"
+                //             stroke={theme === 'light' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)'}
+                //             strokeWidth="1"
+                //             fill="none"
+                //             initial={{ pathLength: 0 }}
+                //             animate={{
+                //                 pathLength: [0, 1],
+                //                 pathOffset: [0, 1]
+                //             }}
+                //             transition={{
+                //                 duration: 3,
+                //                 delay: i * 0.5,
+                //                 repeat: Infinity,
+                //                 ease: "linear"
+                //             }}
+                //         />
+                //     ))}
+
+                //     {[...Array(3)].map((_, i) => (
+                //         <motion.path
+                //             key={`wave-${i}`}
+                //             d="M 0,50 C 100,20 200,80 300,50 C 400,20 500,80 600,50 C 700,20 800,80 800,50"
+                //             stroke={theme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'}
+                //             strokeWidth="1"
+                //             fill="none"
+                //             initial={{ pathLength: 0 }}
+                //             animate={{
+                //                 pathLength: [0, 1],
+                //                 pathOffset: [0, 1]
+                //             }}
+                //             transition={{
+                //                 duration: 4,
+                //                 delay: i * 0.3,
+                //                 repeat: Infinity,
+                //                 ease: "linear"
+                //             }}
+                //         />
+                //     ))}
+
+            
+                //     {[...Array(2)].map((_, i) => (
+                //         <motion.path
+                //             key={`detail-${i}`}
+                //             d="M 0,50 C 50,40 100,60 150,50 C 200,40 250,60 300,50 C 350,40 400,60 450,50 C 500,40 550,60 600,50 C 650,40 700,60 750,50 C 800,40 850,60 800,50"
+                //             stroke={theme === 'light' ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'}
+                //             strokeWidth="1"
+                //             fill="none"
+                //             initial={{ pathLength: 0 }}
+                //             animate={{
+                //                 pathLength: [0, 1],
+                //                 pathOffset: [0, 1]
+                //             }}
+                //             transition={{
+                //                 duration: 5,
+                //                 delay: i * 0.4,
+                //                 repeat: Infinity,
+                //                 ease: "linear"
+                //             }}
+                //         />
+                //     ))}
+                // </svg>
+                // <svg
+                //     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[75%] w-full h-60"
+                //     viewBox="0 0 800 100"
+                // >
+    
+                //     {[...Array(3)].map((_, i) => (
+                //         <motion.path
+                //             key={`base-${i}`}
+                //             d="M 0,50 C 200,30 600,70 800,50"
+                //             stroke={theme === 'light' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)'}
+                //             strokeWidth="1"
+                //             fill="none"
+                //             initial={{ pathLength: 0 }}
+                //             animate={{
+                //                 pathLength: [0, 1],
+                //                 pathOffset: [0, 1]
+                //             }}
+                //             transition={{
+                //                 duration: 3,
+                //                 delay: i * 0.5,
+                //                 repeat: Infinity,
+                //                 ease: "linear"
+                //             }}
+                //         />
+                //     ))}
+
+                //     {[...Array(3)].map((_, i) => (
+                //         <motion.path
+                //             key={`wave-${i}`}
+                //             d="M 0,50 C 100,20 200,80 300,50 C 400,20 500,80 600,50 C 700,20 800,80 800,50"
+                //             stroke={theme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'}
+                //             strokeWidth="1"
+                //             fill="none"
+                //             initial={{ pathLength: 0 }}
+                //             animate={{
+                //                 pathLength: [0, 1],
+                //                 pathOffset: [0, 1]
+                //             }}
+                //             transition={{
+                //                 duration: 4,
+                //                 delay: i * 0.3,
+                //                 repeat: Infinity,
+                //                 ease: "linear"
+                //             }}
+                //         />
+                //     ))}
+
+                //     {[...Array(2)].map((_, i) => (
+                //         <motion.path
+                //             key={`detail-${i}`}
+                //             d="M 0,50 C 50,40 100,60 150,50 C 200,40 250,60 300,50 C 350,40 400,60 450,50 C 500,40 550,60 600,50 C 650,40 700,60 750,50 C 800,40 850,60 800,50"
+                //             stroke={theme === 'light' ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)'}
+                //             strokeWidth="1"
+                //             fill="none"
+                //             initial={{ pathLength: 0 }}
+                //             animate={{
+                //                 pathLength: [0, 1],
+                //                 pathOffset: [0, 1]
+                //             }}
+                //             transition={{
+                //                 duration: 5,
+                //                 delay: i * 0.4,
+                //                 repeat: Infinity,
+                //                 ease: "linear"
+                //             }}
+                //         />
+                //     ))}
+                // </svg>
