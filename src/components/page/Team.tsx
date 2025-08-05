@@ -18,7 +18,7 @@ const Team = () => {
     };
 
     return (
-        <div className="w-full min-h-screen z-[20] ">
+        <div className="w-full h-full z-[20] ">
             {/* Header Section */}
             <div className="mb-4 py-8 px-4 md:px-32">
                 <h1 className='text-5xl md:text-6xl font-bold mb-4 text-customGrayLight'>
@@ -42,7 +42,7 @@ const Team = () => {
             </div>
 
 
-            <div className='w-full flex items-center justify-center px-4 h-[300px]'>
+            <div className='w-full flex items-center justify-center px-4 py-10'>
                 <SpotlightCard
                     spotlightColor="rgba(139, 92, 246, 0.3)"
                     className='w-[600px] h-[300px] max-w-[90vw]'
