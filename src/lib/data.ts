@@ -26,16 +26,16 @@ export interface FoundingTeamMember {
 
 export const foundingTeam: FoundingTeamMember[] = [
     {
-        name: "Hursun",
-        role: "CEO",
-        image: "/team/hursun.webp",
-        description: "Tech founder, community lead"
-    },
-    {
         name: "Shantosh",
         role: "CTO",
         image: "/team/shantosh.webp",
         description: "AI architect, innovation leader with 10+ years in machine learning"
+    },
+    {
+        name: "Hursun",
+        role: "CEO",
+        image: "/team/hursun.jpg",
+        description: "Tech founder, community lead"
     },
     {
         name: "Dhayananth",
