@@ -100,7 +100,7 @@ const Service = (props: Props) => {
                                                 loop
                                                 playsInline
                                             >
-                                                {/* <source src={`/video/${service.video}.mp4`} type="video/mp4" /> */}
+                                                <source src={`/video/${service.video}.mp4`} type="video/mp4" />
                                             </video>
                                             <div className="absolute inset-0 bg-black/10" />
                                         </div>
