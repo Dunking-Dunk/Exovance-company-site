@@ -18,10 +18,10 @@ const Team = () => {
     };
 
     return (
-        <div className="w-full h-full z-[20] ">
+        <div className="w-full h-full z-[20] pt-20">
             {/* Header Section */}
-            <div className="mb-4 py-8 px-4 md:px-32">
-                <h1 className='text-5xl md:text-6xl font-bold mb-4 text-customGrayLight'>
+            <div className="mb-4 px-4 md:px-32">
+                <h1 className='text-5xl md:text-6xl font-bold text-customGrayLight'>
                     Meet Our Team
                 </h1>
                 <p className='text-lg text-customGray max-w-2xl leading-relaxed'>

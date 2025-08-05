@@ -34,7 +34,7 @@ export const foundingTeam: FoundingTeamMember[] = [
     {
         name: "Hursun",
         role: "CEO",
-        image: "/team/hursun.jpg",
+        image: "/team/hursun2.webp",
         description: "Tech founder, community lead"
     },
     {
