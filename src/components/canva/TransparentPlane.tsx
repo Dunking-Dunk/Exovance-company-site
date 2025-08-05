@@ -353,7 +353,7 @@ const renderShader = `
         
         // Calculate dark mode version
         float darkGradientValue = pow(gradientValue, 3.0); // Very strong contrast to push almost everything to black
-        float darkBlackRange = darkGradientValue * 0.08; // Extremely limited range: 0.0 to 0.08 (ultra dark)
+        float darkBlackRange = darkGradientValue * 0.3; // Extremely limited range: 0.0 to 0.08 (ultra dark)
         vec3 darkBaseColor = vec3(darkBlackRange);
         darkBaseColor += vec3(finalGrain); // Full intensity film grain in dark mode
         float darkHighlight = smoothstep(0.98, 1.0, darkGradientValue + fluidStrength);
