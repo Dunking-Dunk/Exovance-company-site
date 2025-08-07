@@ -54,13 +54,13 @@ const About = () => {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: 0.6 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
                     className="max-w-5xl"
                 >
                     <p
                         className="text-lg md:text-xl lg:text-xl leading-relaxed text-customGrayDark"
                     >
-                        At EXOVANCE, we are committed to pushing the boundaries of technology and design. Our team of experts is dedicated to creating innovative solutions that not only meet the needs of our clients but also inspire and engage users. We believe in the power of collaboration and creativity, and we strive to bring a fresh perspective to every project we undertake.
+                        At EXOVANCE, we specialize in building cutting-edge AI virtual agents powered by lifelike 3D avatars. Our intelligent agents can serve as sales representatives, billing counter assistants, and customer service representatives, all housed in movable kiosks for maximum flexibility. Beyond virtual agents, we provide a comprehensive range of automation services designed to streamline your business operations and enhance customer experiences.
                     </p>
                 </motion.div>
 
@@ -69,10 +69,10 @@ const About = () => {
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 1, delay: 0.9 }}
+                    transition={{ duration: 1, delay: 0.1 }}
                     className="mt-16 md:mt-24 flex flex-wrap gap-4"
                 >
-                    {['Innovation', 'Design', 'Technology', 'Creativity'].map((keyword, index) => (
+                    {['AI Agents', '3D Avatars', 'Automation', 'Virtual Kiosks'].map((keyword, index) => (
                         <motion.span
                             key={keyword}
                             initial={{ opacity: 0, y: 10 }}
@@ -84,6 +84,44 @@ const About = () => {
                             {keyword}
                         </motion.span>
                     ))}
+                </motion.div>
+
+                {/* Core Values Header Section */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.3 }}
+                    className="mt-32 md:mt-40"
+                >
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="flex items-center space-x-3 mb-12 md:mb-16"
+                    >
+                        <motion.div
+                            initial={{ height: 0 }}
+                            whileInView={{ height: 32 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                            className="w-1 bg-gradient-to-b from-customGrayDark to-customGrayDarker"
+                        />
+                        <span className="text-sm tracking-[0.2em] uppercase text-customGrayDark font-medium">
+                            Our Foundation
+                        </span>
+                    </motion.div>
+
+                    <motion.h2
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8, delay: 0.4 }}
+                        className="text-4xl md:text-6xl lg:text-7xl font-medium tracking-wide leading-tight mb-16 md:mb-20"
+                    >
+                        CORE VALUES & PILLARS
+                    </motion.h2>
                 </motion.div>
             </div>
         </div>

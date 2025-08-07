@@ -12,6 +12,7 @@ import { useScrollTheme } from "@/components/provider/scroll-theme-provider";
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Team from "@/components/page/Team";
 import Service from "@/components/page/Service";
+import Product from "@/components/page/Product";
 
 // Preload critical components
 const View = dynamic(() => import("@/components/canva/View").then((mod: any) => mod.View), {
@@ -42,8 +43,8 @@ export default function Home() {
   const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('dark');
 
   const handleThemeSwitch = useCallback((progress: number) => {
-    const visionStart = 0.25;
-    const visionEnd = 0.60;
+    const visionStart = 0.20;
+    const visionEnd = 0.45;
 
     let targetTheme: 'light' | 'dark';
 
@@ -77,7 +78,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="w-full h-full relative" >
+      <div className="w-full h-full relative overflow-x-hidden" >
         {/* <div className="absolute inset-0 z-[0] bg-gradient-to-b dark:from-zinc-900 from-zinc-100 dark:from-40% from-40% dark:via-gray-50/10 via-gray-600/10 dark:to-transparent to-transparent h-dvh" /> */}
 
         {/* Hero Page */}
@@ -98,6 +99,9 @@ export default function Home() {
           <Vision />
         </div>
 
+        {/* Products */}
+        <Product />
+
         {/* Services */}
         <div data-section="service">
           <Service />
@@ -113,8 +117,6 @@ export default function Home() {
         {/* Abstract */}
         {/* <Abstract /> */}
 
-        {/* Works */}
-        {/* <Works /> */}
 
 
         {/* scroll text carousel */}
