@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { TextGenerateEffect } from "../ui/text-generate-effect";
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 
 const Abstract = () => {
   const container = useRef(null);

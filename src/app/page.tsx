@@ -2,17 +2,17 @@
 
 import dynamic from "next/dynamic";
 import { useState, useEffect, useCallback } from "react";
-import Vision from "@/components/page/Vision";
+import Vision from "@/app/_section/Vision";
 import ScrollTextAnimation from "@/components/global/Marquee";
-import ContactPage from "@/components/page/Contact";
+import ContactPage from "@/app/_section/Contact";
 import Footer from "@/components/global/Footer";
-import About from "@/components/page/About";
-import Hero from "@/components/page/Hero";
+import About from "@/app/_section/About";
+import Hero from "@/app/_section/Hero";
 import { useScrollTheme } from "@/components/provider/scroll-theme-provider";
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Team from "@/components/page/Team";
-import Service from "@/components/page/Service";
-import Product from "@/components/page/Product";
+import Team from "@/app/_section/Team";
+import Service from "@/app/_section/Service";
+import Product from "@/app/_section/Product";
 
 // Preload critical components
 const View = dynamic(() => import("@/components/canva/View").then((mod: any) => mod.View), {
@@ -44,7 +44,7 @@ export default function Home() {
 
   const handleThemeSwitch = useCallback((progress: number) => {
     const visionStart = 0.20;
-    const visionEnd = 0.45;
+    const visionEnd = 0.50;
 
     let targetTheme: 'light' | 'dark';
 
@@ -79,7 +79,6 @@ export default function Home() {
   return (
     <>
       <div className="w-full h-full relative overflow-x-hidden" >
-        {/* <div className="absolute inset-0 z-[0] bg-gradient-to-b dark:from-zinc-900 from-zinc-100 dark:from-40% from-40% dark:via-gray-50/10 via-gray-600/10 dark:to-transparent to-transparent h-dvh" /> */}
 
         {/* Hero Page */}
         <div data-section="hero">
@@ -100,7 +99,9 @@ export default function Home() {
         </div>
 
         {/* Products */}
-        <Product />
+        <div data-section="product">
+          <Product />
+        </div>
 
         {/* Services */}
         <div data-section="service">
@@ -109,9 +110,9 @@ export default function Home() {
 
 
         {/* Team */}
-        <div data-section="team">
+        {/* <div data-section="team">
           <Team />
-        </div>
+        </div> */}
 
 
         {/* Abstract */}

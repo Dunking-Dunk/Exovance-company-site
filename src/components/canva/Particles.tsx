@@ -48,11 +48,10 @@ export const Particles = () => {
     const scrollPositions = useRef({ heroEnd: 0.35, aboutEnd: 0.43, visionStart: 0.50, visionEnd: 0.65 });
 
     useEffect(() => {
-        // Set target color based on theme with smooth transition
         if (theme === 'dark') {
-            targetColor.current.set(1.0, 1.0, 1.0); // White particles in dark mode
+            targetColor.current.set(1.0, 1.0, 1.0);
         } else {
-            targetColor.current.set(0.0, 0.0, 0.0); // Black particles in light mode
+            targetColor.current.set(0.0, 0.0, 0.0);
         }
     }, [theme]);
 
@@ -214,7 +213,7 @@ export const Particles = () => {
                 radiusScale = 1.5;
 
                 const scrollAfterStop = progress - stopScrollPosition.current;
-                particleOffset.current = scrollAfterStop * 25;
+                particleOffset.current = scrollAfterStop * 40;
             }
 
             simulationMaterialRef.current.uniforms.uTransitionProgress.value = transitionProgress;
@@ -314,10 +313,8 @@ export const Particles = () => {
         gl.render(scene, camera);
         gl.setRenderTarget(null);
 
-        // Smooth color transition using lerp for eased animation
-        currentColor.current.lerp(targetColor.current, 0.05); // Slower lerp for smooth 1000ms-like transition
 
-        // Update points material with smooth color transition and particle offset
+        currentColor.current.lerp(targetColor.current, 0.05);
         points.current.material.uniforms.uPositions.value = renderTarget.texture;
         points.current.material.uniforms.uColor.value = currentColor.current;
         points.current.material.uniforms.uParticleOffset.value = particleOffset.current;

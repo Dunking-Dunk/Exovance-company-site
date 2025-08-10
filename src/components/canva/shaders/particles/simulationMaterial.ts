@@ -177,11 +177,11 @@ class SimulationMaterial extends THREE.ShaderMaterial {
                 uMouse: { value: new THREE.Vector3(0, 0, 0) },
                 uPrevMouse: { value: new THREE.Vector3(0, 0, 0) },
                 uMouseActive: { value: 0 },
-                uMouseRadius: { value: 0.3 },
+                uMouseRadius: { value: 0.2 },
                 uScroll: { value: 0 },
                 uTransitionProgress: { value: 0 },
                 uRadiusScale: { value: 1 },
-                uCurrentPosition: { value: 0 } // 0: A, 1: A-B transition, 2: B-C transition, 3: C-D transition
+                uCurrentPosition: { value: 0 }
             },
             vertexShader: simulationVertexShader,
             fragmentShader: simulationFragmentShader,

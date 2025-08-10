@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import dynamic from 'next/dynamic';
 import { foundingTeam, type FoundingTeamMember } from '@/lib/data';
-import SpotlightCard from '../ui/SpotlightCard';
-import ShinyText from '../ui/ShinyText';
+import SpotlightCard from '@/components/ui/SpotlightCard';
+import ShinyText from '@/components/ui/ShinyText';
 import { useMobile } from '@/hooks/useMobile';
 
 
@@ -19,7 +19,7 @@ const Team = () => {
 
     return (
         <div className="w-full h-full z-[20] pt-20">
-            {/* Header Section */}
+
             <div className="mb-4 px-4 md:px-32">
                 <h1 className='text-5xl md:text-6xl font-bold text-customGrayLight'>
                     Meet Our Team

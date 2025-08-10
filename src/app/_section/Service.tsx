@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { services } from '@/lib/data'
-import CardSwap, { Card } from '../ui/CardSwap'
+import CardSwap, { Card } from '../../components/ui/CardSwap'
 import { useMobile } from '@/hooks/useMobile'
 
 type Props = {}

@@ -33,9 +33,7 @@ const MarqueeScrollText = () => {
 
             <motion.div
                 className="relative w-full px-4">
-                <div className='absolute z-20 inset-0 w-full h-full dark:bg-gradient-to-r dark:from-black dark:via-transparent dark:to-black' />
 
-                {/* Marquee container */}
                 <div className="flex overflow-hidden">
                     <motion.div
                         className="flex space-x-32 whitespace-nowrap"

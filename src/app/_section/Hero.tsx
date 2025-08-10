@@ -1,12 +1,15 @@
 "use client"
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useCurrentScrollTheme } from "@/components/provider/scroll-theme-provider";
 
 export default function Hero() {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+    const theme = useCurrentScrollTheme();
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -195,11 +198,22 @@ export default function Hero() {
                 </motion.div>
 
                 <h1 className={cn(
-                    "font-regular tracking-widest text-customGrayDark cursor-hover md:text-9xl text-6xl relative transition-colors duration-1000 ease-in-out",
+                    "font-regular tracking-widest text-customGrayLight cursor-hover md:text-9xl text-6xl relative transition-colors duration-1000 ease-in-out",
                     "before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-customGrayDark/20 before:to-transparent",
                     "before:animate-pulse before:opacity-50 before:blur-sm before:transition-colors before:duration-1000 before:ease-in-out"
                 )}>
-                    EXOVANCE
+                    <span className="inline-flex items-baseline align-middle leading-none">
+                        <Image
+                            src={theme === 'dark' ? '/logo/only logo white.png' : '/logo/only logo black.png'}
+                            alt="E mark"
+                            width={120}
+                            height={120}
+                            priority
+                            style={{ height: '1em', width: '1em' }}
+                            className="mr-[0.05em]"
+                        />
+                        <span>XOVANCE</span>
+                    </span>
                 </h1>
 
                 {/* Bottom descriptive text */}
@@ -213,21 +227,8 @@ export default function Hero() {
                 </motion.div>
             </div>
 
-            {/* Enhanced Bottom Section */}
-            <div className="absolute bottom-28 flex flex-col items-center space-y-6">
-                {/* Subtle Line Above Text */}
-                <motion.div
-                    className="w-24 h-px bg-gradient-to-r from-transparent via-gray-400/50 to-transparent transition-colors duration-1000 ease-in-out"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ duration: 2, delay: 1 }}
-                />
 
-                <TextGenerateEffect
-                    words="SCROLL TO DISCOVER"
-                    duration={3}
-                    className="font-base text-2xl text-customGrayDarker transition-colors duration-1000 ease-in-out"
-                />
+            <div className="absolute bottom-28 flex flex-col items-center space-y-6">
 
                 <motion.div
                     animate={{
@@ -257,7 +258,6 @@ export default function Hero() {
                     </svg>
                 </motion.div>
 
-                {/* Subtle Line Below Arrow */}
                 <motion.div
                     className="w-12 h-px bg-gradient-to-r from-transparent via-gray-400/30 to-transparent transition-colors duration-1000 ease-in-out"
                     initial={{ scaleX: 0 }}

@@ -1,8 +1,8 @@
 "use client"
 
 import { motion } from 'framer-motion'
-import { TextGenerateEffect } from '../ui/text-generate-effect'
-import { DotBackground } from '../ui/dot-background'
+import { TextGenerateEffect } from '@/components/ui/text-generate-effect'
+import { DotBackground } from '@/components/ui/dot-background'
 import React from 'react';
 
 const About = () => {
@@ -84,44 +84,6 @@ const About = () => {
                             {keyword}
                         </motion.span>
                     ))}
-                </motion.div>
-
-                {/* Core Values Header Section */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: 0.3 }}
-                    className="mt-32 md:mt-40"
-                >
-                    <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                        className="flex items-center space-x-3 mb-12 md:mb-16"
-                    >
-                        <motion.div
-                            initial={{ height: 0 }}
-                            whileInView={{ height: 32 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.8, delay: 0.2 }}
-                            className="w-1 bg-gradient-to-b from-customGrayDark to-customGrayDarker"
-                        />
-                        <span className="text-sm tracking-[0.2em] uppercase text-customGrayDark font-medium">
-                            Our Foundation
-                        </span>
-                    </motion.div>
-
-                    <motion.h2
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, delay: 0.4 }}
-                        className="text-4xl md:text-6xl lg:text-7xl font-medium tracking-wide leading-tight mb-16 md:mb-20"
-                    >
-                        CORE VALUES & PILLARS
-                    </motion.h2>
                 </motion.div>
             </div>
         </div>

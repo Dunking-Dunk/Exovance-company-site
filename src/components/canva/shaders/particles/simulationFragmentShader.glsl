@@ -8,7 +8,7 @@
 #define MOUSE_INFLUENCE 2.
 #define SPHERE_RADIUS 1.
 #define TRANSITION_SPEED.1
-#define MORPH_SPEED.05
+#define MORPH_SPEED 5.
 #define MORPH_PATTERNS 4.
 #define INITIAL_RADIUS.8
 #define MOUSE_RADIUS.4

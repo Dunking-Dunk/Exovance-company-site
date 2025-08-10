@@ -2,27 +2,22 @@
 
 import React from 'react'
 import dynamic from 'next/dynamic'
-import { TextGenerateEffect } from '../ui/text-generate-effect'
-import { DotBackground } from '../ui/dot-background'
-import { Button } from '../ui/button'
+import { TextGenerateEffect } from '@/components/ui/text-generate-effect'
+import { DotBackground } from '@/components/ui/dot-background'
+import { Button } from '@/components/ui/button'
 import { ArrowRight, Zap, Globe, Users, TrendingUp, Clock, Brain } from 'lucide-react'
-
-// Dynamic import for MagicBento to prevent SSR issues
-const MagicBento = dynamic(() => import('../ui/MagicBento'), {
-    ssr: false,
-    loading: () => <div className="w-full h-64 bg-transparent border border-customGrayDark/20 rounded-lg animate-pulse" />
-})
+import MagicBento from '@/components/ui/MagicBento'
 
 const Product = () => {
     return (
-        <div className="w-full h-full relative overflow-hidden z-20" >
+        <div className="w-full h-full relative z-20" >
 
             <div className="absolute inset-0 z-0">
                 <DotBackground />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-customBlack/5 to-transparent" />
             </div>
 
-            <div className="relative z-10 w-full flex flex-col justify-center px-4 md:px-8 lg:px-32">
+            <div className="relative z-10 w-full h-full flex flex-col justify-center px-4 md:px-8 lg:px-32">
 
                 <div className="flex items-center space-x-3 mb-8 md:mb-12">
                     <div className="w-1 h-8 bg-gradient-to-b from-customGrayDark to-customGrayDarker" />
@@ -47,7 +42,6 @@ const Product = () => {
                     </h2>
                 </div>
 
-                {/* Product Description */}
                 <div className="max-w-5xl mb-16 md:mb-24">
                     <p className="text-lg md:text-xl lg:text-xl leading-relaxed text-customGrayDark">
                         AIVA is more than AI — it's your all-in-one, charming, intelligent sales assistant that engages,
@@ -56,10 +50,9 @@ const Product = () => {
                     </p>
                 </div>
 
-                {/* Full Screen AIVA Kiosk Video */}
                 <div className="relative w-full mb-16 md:mb-24">
                     <div className="relative w-full h-[60vh] md:h-[70vh] lg:h-[80vh] xl:h-[90vh] rounded-2xl overflow-hidden group">
-                        {/* Video Background */}
+
                         <video
                             className="absolute inset-0 w-full h-full object-cover"
                             autoPlay
@@ -205,10 +198,6 @@ const Product = () => {
                                 <div className="w-1 h-1 bg-customGrayDark rounded-full"></div>
                                 <span>Instant deployment</span>
                             </div>
-                        </div>
-
-                        <div className="flex items-center justify-center mt-12">
-                            <div className="w-24 h-px bg-gradient-to-r from-transparent via-customGrayDarker to-transparent"></div>
                         </div>
                     </div>
                 </div>
