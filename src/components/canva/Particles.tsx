@@ -19,7 +19,7 @@ import { damp } from "three/src/math/MathUtils.js";
 extend({ SimulationMaterial: SimulationMaterial });
 
 
-const SIZE = 100;
+const SIZE = 90;
 const POSITIONS = new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0]);
 const UVS = new Float32Array([0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0]);
 

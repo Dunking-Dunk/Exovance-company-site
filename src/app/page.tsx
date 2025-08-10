@@ -135,7 +135,7 @@ export default function Home() {
         <View className="fixed inset-0 z-[15] pointer-events-none">
           <TransparentPlane />
           <Common />
-          {/* <Particles /> */}
+          <Particles />
         </View>
       </div>
     </>

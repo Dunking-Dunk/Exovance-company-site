@@ -4,7 +4,6 @@ import React from 'react'
 import { services } from '@/lib/data'
 import CardSwap, { Card } from '../../components/ui/CardSwap'
 import { useMobile } from '@/hooks/useMobile'
-import { motion } from 'framer-motion'
 import { CheckCircle2, Cpu, BarChart3, Workflow, Sparkles } from 'lucide-react'
 
 type Props = {}
@@ -23,18 +22,18 @@ const Service = (props: Props) => {
             <div className={`relative z-10 flex flex-col ${!isMobile ? 'lg:flex-row' : ''} gap-12`}>
                 {/* Left Content Section */}
                 <div className={`${!isMobile ? 'lg:w-1/2' : 'w-full'} flex flex-col justify-center`}>
-                    <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }} className="mb-3 inline-flex items-center gap-2 text-customGray">
+                    <div className="mb-3 inline-flex items-center gap-2 text-customGray">
                         <Sparkles className="h-4 w-4 text-customGrayLight/80" />
                         <span className="text-sm tracking-widest uppercase">What we do</span>
-                    </motion.div>
-                    <motion.h1 initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55 }} className="text-5xl md:text-7xl lg:text-8xl font-bold text-customGray leading-[1.05] mb-6">
+                    </div>
+                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-customGray leading-[1.05] mb-6">
                         Our Services
-                    </motion.h1>
-                    <motion.p initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-lg md:text-xl text-customGrayDark max-w-2xl mb-10">
+                    </h1>
+                    <p className="text-lg md:text-xl text-customGrayDark max-w-2xl mb-10">
                         Discover solutions engineered to transform your business through modern software, automation, and AI-driven insight.
-                    </motion.p>
+                    </p>
 
-                    <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.1, duration: 0.6 }} className="space-y-4 mb-10">
+                    <div className="space-y-4 mb-10">
                         {[{
                             label: 'AI-Powered Web Development',
                             Icon: Cpu
@@ -51,7 +50,7 @@ const Service = (props: Props) => {
                                 <span className="text-customGrayLight">{label}</span>
                             </div>
                         ))}
-                    </motion.div>
+                    </div>
 
                     <div className="grid grid-cols-3 gap-6 mb-10">
                         {[{ value: '10+', label: 'Projects Delivered' }, { value: '24/7', label: 'Support' }, { value: '99%', label: 'Client Satisfaction' }].map((item) => (
@@ -62,11 +61,7 @@ const Service = (props: Props) => {
                         ))}
                     </div>
 
-                    <motion.button
-                        initial={{ opacity: 0, y: 10 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
+                    <button
                         onClick={handleLearnMore}
                         className="group relative px-8 py-4 bg-customGrayDark text-customGrayLight font-semibold rounded-lg overflow-hidden transition-all duration-300 hover:bg-customGray transform hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(255,255,255,0.08)] max-w-fit border border-customGray"
                     >
@@ -82,7 +77,7 @@ const Service = (props: Props) => {
                             </svg>
                         </span>
                         <div className="absolute inset-0 bg-customGray transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-                    </motion.button>
+                    </button>
                 </div>
 
                 {!isMobile && (
