@@ -1,10 +1,10 @@
-/* eslint-disable react/no-unknown-property */
 import { useRef, useState, useEffect, forwardRef } from "react";
-import { Canvas, useFrame, useThree, ThreeEvent } from "@react-three/fiber";
+import { useFrame, useThree, ThreeEvent } from "@react-three/fiber";
 import { EffectComposer, wrapEffect } from "@react-three/postprocessing";
 import { Effect } from "postprocessing";
 import * as THREE from "three";
 import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 
 const waveVertexShader = `
 precision highp float;
@@ -238,6 +238,8 @@ function DitheredWaves({
     const mesh = useRef<THREE.Mesh>(null);
     const mouseRef = useRef(new THREE.Vector2());
     const { viewport, size, gl } = useThree();
+    const pathname = usePathname();
+    console.log(pathname)
 
     const waveUniformsRef = useRef<WaveUniforms>({
         time: new THREE.Uniform(0),
@@ -354,7 +356,7 @@ export default function Dither({
 }: DitherProps) {
     return (
         // @ts-ignore
-        <View className="absolute inset-0 z-0 opacity-60 pointer-events-none">
+        <View className="absolute inset-0 z-10 pointer-events-none">
             <DitheredWaves
                 waveSpeed={waveSpeed}
                 waveFrequency={waveFrequency}
@@ -367,7 +369,5 @@ export default function Dither({
                 mouseRadius={mouseRadius}
             />
         </View>
-
-
     );
 }

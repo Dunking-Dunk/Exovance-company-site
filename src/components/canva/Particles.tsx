@@ -351,8 +351,9 @@ export const Particles = () => {
                     <shaderMaterial
                         depthWrite={false}
                         transparent={true}
-                        blending={THREE.NormalBlending}
-                        depthTest={true}
+                        blending={THREE.AdditiveBlending}
+                        depthTest={false}
+                        toneMapped={false}
                         fragmentShader={fragmentShader}
                         vertexShader={vertexShader}
                         uniforms={uniforms}

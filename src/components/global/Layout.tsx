@@ -12,12 +12,24 @@ import { useGSAP } from "@gsap/react";
 import LoadingScreen from './loading-screen'
 import { debounce } from '@/lib/utils'
 import { useScrollTheme } from '@/components/provider/scroll-theme-provider'
+import Footer from './Footer'
+
+
 
 gsap.registerPlugin(ScrollTrigger)
 gsap.registerPlugin(useGSAP);
 
 const
     Scene: any = dynamic(() => import('@/components/canva/Scene'), { ssr: false })
+
+
+const TransparentPlane: any = dynamic(() => import("@/components/canva/TransparentPlane").then((mod: any) => mod.TransparentPlane), {
+    ssr: false
+})
+
+const View: any = dynamic(() => import("@/components/canva/View").then((mod: any) => mod.View), {
+    ssr: false
+})
 
 type Props = {
     children: React.ReactNode
@@ -44,7 +56,7 @@ const Layout = ({ children }: Props) => {
         window.addEventListener('resize', setAppHeight);
         setAppHeight();
 
-        // ScrollTrigger setup with correct proxy
+
         ScrollTrigger.scrollerProxy(ref.current, {
             scrollTop(value: any) {
                 if (arguments.length) {
@@ -62,7 +74,6 @@ const Layout = ({ children }: Props) => {
             }
         });
 
-        // Refresh ScrollTrigger on resize
         const debouncedRefresh = debounce(() => {
             ScrollTrigger.refresh();
         }, 200);
@@ -78,7 +89,7 @@ const Layout = ({ children }: Props) => {
         };
     }, []);
 
-    // Handle loading completion
+
     const handleLoadingComplete = React.useCallback(() => {
         setTimeout(() => {
             setIsLoading(false);
@@ -149,7 +160,16 @@ const Layout = ({ children }: Props) => {
                     eventSource={ref}
                     eventPrefix='client'
                 />
+
                 {isLoading && <LoadingScreen onLoadingComplete={handleLoadingComplete} />}
+
+                {/* @ts-ignore */}
+                <View className="fixed inset-0 z-[-10] pointer-events-none">
+                    <TransparentPlane />
+                </View>
+
+                <Footer />
+
             </div>
         </ReactLenis >
     )

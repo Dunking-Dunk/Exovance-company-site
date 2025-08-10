@@ -150,23 +150,18 @@ const Abstract = () => {
     <div className="relative h-[100dvh] z-10 overflow-hidden flex items-center justify-center px-4 md:px-16 lg:px-80 md:py-60 py-10" ref={container}>
       {tagVariants.map(({ text, scrollRange, outputRange, top, left, right, delay, duration, spring }, index) => {
         const x = useTransform(scrollYProgress, scrollRange, outputRange);
-        const opacity = useTransform(scrollYProgress,
-          [scrollRange[0] - 0.1, scrollRange[0], scrollRange[1], scrollRange[1] + 0.1],
-          [0, 1, 1, 0]
-        );
 
         return (
           <motion.div
             key={index}
             style={{
               x,
-              opacity,
               position: 'absolute',
               top,
               left,
               right
             }}
-            initial={{ y: 50, opacity: 0 }}
+            initial={{ y: 50, opacity: 1 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{
               type: "spring",

@@ -612,7 +612,7 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
             rotation={rotation}
             scale={[viewport.width, viewport.height, 1]}
             renderOrder={0}
-            material={renderMaterial} // Use the material we created and update
+            material={renderMaterial}
         >
             <planeGeometry args={[2, 2]} />
         </mesh>

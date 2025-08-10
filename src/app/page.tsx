@@ -5,7 +5,6 @@ import { useState, useEffect, useCallback } from "react";
 import Vision from "@/app/_section/Vision";
 import ScrollTextAnimation from "@/components/global/Marquee";
 import ContactPage from "@/app/_section/Contact";
-import Footer from "@/components/global/Footer";
 import About from "@/app/_section/About";
 import Hero from "@/app/_section/Hero";
 import { useScrollTheme } from "@/components/provider/scroll-theme-provider";
@@ -13,6 +12,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Service from "@/app/_section/Service";
 import Product from "@/app/_section/Product";
 import Abstract from "./_section/Abstract";
+import LoadingScreen from "@/components/global/loading-screen";
+import { useHomeNavigation } from "@/hooks/useHomeNavigation";
 
 // Preload critical components
 const View = dynamic(() => import("@/components/canva/View").then((mod: any) => mod.View), {
@@ -24,10 +25,6 @@ const Common = dynamic(() => import("@/components/canva/View").then((mod: any) =
 })
 
 const Particles = dynamic(() => import("@/components/canva/Particles").then((mod: any) => mod.Particles), {
-  ssr: false
-})
-
-const TransparentPlane = dynamic(() => import("@/components/canva/TransparentPlane").then((mod: any) => mod.TransparentPlane), {
   ssr: false
 })
 
@@ -128,13 +125,9 @@ export default function Home() {
         {/* contact */}
         <ContactPage />
 
-        {/* footer */}
-        <Footer />
-
         {/* particle - foreground layer */}
         {/* @ts-ignore */}
-        <View className="fixed inset-0 z-[15] pointer-events-none">
-          <TransparentPlane />
+        <View className="fixed inset-0 z-[10] pointer-events-none">
           <Common />
           <Particles />
         </View>

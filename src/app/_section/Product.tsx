@@ -17,7 +17,7 @@ const Product = () => {
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-customBlack/5 to-transparent" />
             </div>
 
-            <div className="relative w-full h-full flex flex-col justify-center px-4 md:px-8 lg:px-32">
+            <div className="relative w-full h-full flex flex-col justify-center px-4 md:px-8 lg:px-32 md:py-32">
 
                 <div className="flex items-center space-x-3 mb-8 md:mb-12">
                     <div className="w-1 h-8 bg-gradient-to-b from-customGrayDark to-customGrayDarker" />

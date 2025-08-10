@@ -1,10 +1,21 @@
 import React from 'react'
+import Mission from './_section/Mission'
+import Story from './_section/Story'
+import Community from './_section/Community'
+import Principles from './_section/Principles'
+import Journey from './_section/Journey'
 
-type Props = {}
 
-const About = (props: Props) => {
+const About = () => {
     return (
-        <div>About</div>
+        <main className="w-full h-full relative">
+            <Mission />
+            <Story />
+            <Community />
+            <Principles />
+            <Journey />
+
+        </main>
     )
 }
 

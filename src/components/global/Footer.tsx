@@ -16,7 +16,7 @@ const Footer = () => {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="relative w-full h-full py-24 overflow-hidden text-customGray border-t border-customGrayDark/40">
+        <footer className="relative w-full h-full py-24 overflow-hidden text-customGray border-t border-customGrayDark/40 z-20">
             <h2 className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[25vw] sm:text-[20vw] z-10 font-semibold text-customGrayDarker opacity-50'>EXOVANCE</h2>
 
             <Dither
