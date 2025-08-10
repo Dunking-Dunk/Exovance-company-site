@@ -23,10 +23,11 @@ const SIZE = 90;
 const POSITIONS = new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0]);
 const UVS = new Float32Array([0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0]);
 
-export const Particles = () => {
+export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
     const { theme } = useScrollTheme();
     const points = useRef();
     const simulationMaterialRef = useRef();
+    const [isReady, setIsReady] = useState(false);
     const mousePosition = useRef({
         x: 0,
         y: 0,
@@ -272,9 +273,7 @@ export const Particles = () => {
         const { gl, clock } = state;
         const elapsedTime = clock.getElapsedTime();
 
-
         prevMouse.current.set(mouse.current.x, mouse.current.y, 0);
-
 
         mousePosition.current.x += (mousePosition.current.targetX - mousePosition.current.x) * 0.15;
         mousePosition.current.y += (mousePosition.current.targetY - mousePosition.current.y) * 0.15;
@@ -286,6 +285,17 @@ export const Particles = () => {
         );
 
         if (!simulationMaterialRef.current) return;
+
+        // Check if particles are ready and notify parent
+        if (!isReady && simulationMaterialRef.current && points.current) {
+            setIsReady(true);
+            if (onReady) {
+                // Add a small delay to ensure everything is properly initialized
+                setTimeout(() => {
+                    onReady();
+                }, 100);
+            }
+        }
 
 
         const dt = 10;

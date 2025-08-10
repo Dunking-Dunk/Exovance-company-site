@@ -42,6 +42,7 @@ const Layout = ({ children }: Props) => {
     const lenisRef = useRef<any>(null)
     const [isLoading, setIsLoading] = React.useState(true)
     const [sceneReady, setSceneReady] = React.useState(false)
+    const [particlesReady, setParticlesReady] = React.useState(false)
     const { theme } = useScrollTheme();
     const pathname = usePathname();
 
@@ -110,6 +111,9 @@ const Layout = ({ children }: Props) => {
     // Handle route changes - refresh scroll calculations
     useEffect(() => {
         const handleRouteChange = () => {
+            // Reset particles ready state when navigating
+            setParticlesReady(false);
+
             // Reset scroll position to top on route change
             lenisRef.current?.lenis?.scrollTo(0, { immediate: true });
 
@@ -133,14 +137,32 @@ const Layout = ({ children }: Props) => {
     }, [pathname]);
 
 
-    const handleLoadingComplete = React.useCallback(() => {
-        setTimeout(() => {
-            setIsLoading(false);
-            setTimeout(() => {
-                setSceneReady(true);
-            }, 500);
-        }, 300);
+    const handleParticlesReady = React.useCallback(() => {
+        console.log('Particles are ready!');
+        setParticlesReady(true);
     }, []);
+
+    const handleLoadingComplete = React.useCallback(() => {
+        // Only complete loading if we're on home page and particles are ready, 
+        // or if we're not on home page (no particles needed)
+        const shouldWaitForParticles = render3DComponents.showParticles;
+
+        if (!shouldWaitForParticles || particlesReady) {
+            setTimeout(() => {
+                setIsLoading(false);
+                setTimeout(() => {
+                    setSceneReady(true);
+                }, 500);
+            }, 300);
+        }
+    }, [render3DComponents.showParticles, particlesReady]);
+
+    // Trigger loading completion when particles are ready
+    useEffect(() => {
+        if (particlesReady || !render3DComponents.showParticles) {
+            handleLoadingComplete();
+        }
+    }, [particlesReady, render3DComponents.showParticles, handleLoadingComplete]);
 
     return (
         <ReactLenis
@@ -203,13 +225,11 @@ const Layout = ({ children }: Props) => {
                 />
 
                 {/* Conditional 3D Content */}
-                {!isLoading && (
-                    <View className="fixed inset-0 z-[10] pointer-events-none">
-                        {render3DComponents.showCommon && <Common />}
-                        {render3DComponents.showParticles && <Particles />}
-                        {render3DComponents.showTransparentPlane && <TransparentPlane />}
-                    </View>
-                )}
+                <View className="fixed inset-0 z-[10] pointer-events-none">
+                    {render3DComponents.showCommon && <Common />}
+                    {render3DComponents.showParticles && <Particles onReady={handleParticlesReady} />}
+                    {render3DComponents.showTransparentPlane && <TransparentPlane />}
+                </View>
                 {isLoading && <LoadingScreen onLoadingComplete={handleLoadingComplete} />}
                 <Footer />
             </div>
