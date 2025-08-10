@@ -24,7 +24,7 @@ const ContactSection = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.3 }}
                     transition={{ duration: 0.7, delay: 0.1 }}
-                    className="text-3xl md:text-5xl lg:text-6xl font-light tracking-widest text-customGrayLight mb-6"
+                    className="text-3xl md:text-5xl lg:text-6xl font-light tracking-widest text-customGray mb-6"
                 >
                     Let’s collaborate on what’s next
                 </motion.h2>

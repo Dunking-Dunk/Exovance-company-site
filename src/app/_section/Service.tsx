@@ -27,10 +27,10 @@ const Service = (props: Props) => {
                         <Sparkles className="h-4 w-4 text-customGrayLight/80" />
                         <span className="text-sm tracking-widest uppercase">What we do</span>
                     </motion.div>
-                    <motion.h1 initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55 }} className="text-5xl md:text-7xl lg:text-8xl font-bold text-customGrayLight leading-[1.05] mb-6">
+                    <motion.h1 initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55 }} className="text-5xl md:text-7xl lg:text-8xl font-bold text-customGray leading-[1.05] mb-6">
                         Our Services
                     </motion.h1>
-                    <motion.p initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-lg md:text-xl text-customGray max-w-2xl mb-10">
+                    <motion.p initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-lg md:text-xl text-customGrayDark max-w-2xl mb-10">
                         Discover solutions engineered to transform your business through modern software, automation, and AI-driven insight.
                     </motion.p>
 
@@ -85,7 +85,7 @@ const Service = (props: Props) => {
                     </motion.button>
                 </div>
 
-                {!isMobile && (
+                {/* {!isMobile && (
                     <div className="flex items-center justify-center">
                         <CardSwap
                             width={700}
@@ -125,7 +125,7 @@ const Service = (props: Props) => {
                             ))}
                         </CardSwap>
                     </div>
-                )}
+                )} */}
 
 
             </div>
