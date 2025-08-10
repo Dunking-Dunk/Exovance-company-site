@@ -356,7 +356,7 @@ export default function Dither({
 }: DitherProps) {
     return (
         // @ts-ignore
-        <View className="absolute inset-0 z-10 pointer-events-none">
+        <View className="absolute w-full h-full inset-0 z-10 pointer-events-none">
             <DitheredWaves
                 waveSpeed={waveSpeed}
                 waveFrequency={waveFrequency}

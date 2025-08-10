@@ -6,7 +6,16 @@ import CoreTeam from './_section/CoreTeam'
 import CommunityAdvisors from './_section/CommunityAdvisors'
 import CultureValues from './_section/CultureValues'
 import JoinTeam from './_section/JoinTeam'
+import dynamic from 'next/dynamic'
+import Footer from '@/components/global/Footer'
 
+const View: any = dynamic(() => import("@/components/canva/View").then((mod: any) => mod.View), {
+    ssr: false
+})
+
+const TransparentPlane: any = dynamic(() => import("@/components/canva/TransparentPlane").then((mod: any) => mod.TransparentPlane), {
+    ssr: false
+})
 
 const TeamPage = () => {
     return (
@@ -29,6 +38,11 @@ const TeamPage = () => {
             <CommunityAdvisors />
             <CultureValues />
             <JoinTeam />
+
+            {/* @ts-ignore */}
+            <View className="fixed inset-0 z-[0] pointer-events-none">
+                <TransparentPlane />
+            </View>
         </main>
     )
 }

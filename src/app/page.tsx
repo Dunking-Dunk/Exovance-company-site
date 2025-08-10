@@ -12,28 +12,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Service from "@/app/_section/Service";
 import Product from "@/app/_section/Product";
 import Abstract from "./_section/Abstract";
-import LoadingScreen from "@/components/global/loading-screen";
-import { useHomeNavigation } from "@/hooks/useHomeNavigation";
-
-// Preload critical components
-const View = dynamic(() => import("@/components/canva/View").then((mod: any) => mod.View), {
-  ssr: false
-})
-
-const Common = dynamic(() => import("@/components/canva/View").then((mod: any) => mod.Common), {
-  ssr: false
-})
-
-const Particles = dynamic(() => import("@/components/canva/Particles").then((mod: any) => mod.Particles), {
-  ssr: false
-})
+import Footer from "@/components/global/Footer";
 
 
-if (typeof window !== 'undefined') {
-  import("@/components/canva/View");
-  import("@/components/canva/Particles");
-  import("@/components/canva/TransparentPlane");
-}
+// 3D components are now handled in Layout component
 
 export default function Home() {
   const { setScrollTheme } = useScrollTheme();
@@ -125,12 +107,6 @@ export default function Home() {
         {/* contact */}
         <ContactPage />
 
-        {/* particle - foreground layer */}
-        {/* @ts-ignore */}
-        <View className="fixed inset-0 z-[10] pointer-events-none">
-          <Common />
-          <Particles />
-        </View>
       </div>
     </>
   );

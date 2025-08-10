@@ -4,7 +4,8 @@ import Story from './_section/Story'
 import Community from './_section/Community'
 import Principles from './_section/Principles'
 import Journey from './_section/Journey'
-
+import Footer from "@/components/global/Footer";
+// 3D components are now handled in Layout component
 
 const About = () => {
     return (

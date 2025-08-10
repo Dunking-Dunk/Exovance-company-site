@@ -1,7 +1,8 @@
 "use client"
 
 import dynamic from 'next/dynamic'
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useMemo } from 'react'
+import { usePathname } from 'next/navigation'
 import Header from './Header'
 import BlobCursor from './AnimatedCursor'
 import { ReactLenis } from 'lenis/react'
@@ -15,21 +16,22 @@ import { useScrollTheme } from '@/components/provider/scroll-theme-provider'
 import Footer from './Footer'
 
 
-
 gsap.registerPlugin(ScrollTrigger)
 gsap.registerPlugin(useGSAP);
 
-const
-    Scene: any = dynamic(() => import('@/components/canva/Scene'), { ssr: false })
+// Dynamic imports for 3D components with preloading
+const Scene: any = dynamic(() => import('@/components/canva/Scene'), { ssr: false })
+const View: any = dynamic(() => import('@/components/canva/View').then((mod: any) => mod.View), { ssr: false })
+const Common: any = dynamic(() => import('@/components/canva/View').then((mod: any) => mod.Common), { ssr: false })
+const Particles: any = dynamic(() => import('@/components/canva/Particles').then((mod: any) => mod.Particles), { ssr: false })
+const TransparentPlane: any = dynamic(() => import('@/components/canva/TransparentPlane').then((mod: any) => mod.TransparentPlane), { ssr: false })
 
-
-const TransparentPlane: any = dynamic(() => import("@/components/canva/TransparentPlane").then((mod: any) => mod.TransparentPlane), {
-    ssr: false
-})
-
-const View: any = dynamic(() => import("@/components/canva/View").then((mod: any) => mod.View), {
-    ssr: false
-})
+// Preload 3D components for better performance
+if (typeof window !== 'undefined') {
+    import('@/components/canva/View');
+    import('@/components/canva/Particles');
+    import('@/components/canva/TransparentPlane');
+}
 
 type Props = {
     children: React.ReactNode
@@ -41,6 +43,19 @@ const Layout = ({ children }: Props) => {
     const [isLoading, setIsLoading] = React.useState(true)
     const [sceneReady, setSceneReady] = React.useState(false)
     const { theme } = useScrollTheme();
+    const pathname = usePathname();
+
+    // Determine which 3D components to render based on route
+    const render3DComponents = useMemo(() => {
+        const isHomePage = pathname === '/';
+        const isAboutPage = pathname === '/about';
+
+        return {
+            showParticles: isHomePage,
+            showTransparentPlane: isHomePage || isAboutPage,
+            showCommon: isHomePage,
+        };
+    }, [pathname]);
 
     useEffect(() => {
         function update(time: number) {
@@ -56,23 +71,12 @@ const Layout = ({ children }: Props) => {
         window.addEventListener('resize', setAppHeight);
         setAppHeight();
 
+        // Ensure ScrollTrigger updates when Lenis scrolls
+        const handleLenisScroll = () => {
+            ScrollTrigger.update();
+        };
 
-        ScrollTrigger.scrollerProxy(ref.current, {
-            scrollTop(value: any) {
-                if (arguments.length) {
-                    window.scrollTo(0, value);
-                }
-                return window.pageYOffset;
-            },
-            getBoundingClientRect() {
-                return {
-                    top: 0,
-                    left: 0,
-                    width: window.innerWidth,
-                    height: window.innerHeight
-                };
-            }
-        });
+        lenisRef.current?.lenis?.on('scroll', handleLenisScroll);
 
         const debouncedRefresh = debounce(() => {
             ScrollTrigger.refresh();
@@ -80,14 +84,53 @@ const Layout = ({ children }: Props) => {
 
         window.addEventListener('resize', debouncedRefresh);
 
+        // Add ResizeObserver to watch for content height changes
+        const resizeObserver = new ResizeObserver(
+            debounce(() => {
+                ScrollTrigger.refresh();
+                lenisRef.current?.lenis?.resize();
+            }, 100)
+        );
+
+        if (ref.current) {
+            resizeObserver.observe(ref.current);
+        }
+
         return () => {
             gsap.ticker.remove(update)
+            lenisRef.current?.lenis?.off('scroll', handleLenisScroll);
             window.removeEventListener('resize', setAppHeight);
             window.removeEventListener('resize', debouncedRefresh);
+            resizeObserver.disconnect();
             ScrollTrigger.clearScrollMemory();
             ScrollTrigger.clearMatchMedia();
         };
     }, []);
+
+    // Handle route changes - refresh scroll calculations
+    useEffect(() => {
+        const handleRouteChange = () => {
+            // Reset scroll position to top on route change
+            lenisRef.current?.lenis?.scrollTo(0, { immediate: true });
+
+            // Refresh ScrollTrigger calculations after content renders
+            const refreshTimer = setTimeout(() => {
+                ScrollTrigger.refresh();
+                // Also refresh Lenis to recalculate scroll height
+                lenisRef.current?.lenis?.resize();
+
+                // Force a more thorough refresh after a longer delay
+                setTimeout(() => {
+                    ScrollTrigger.refresh();
+                    lenisRef.current?.lenis?.resize();
+                }, 200);
+            }, 100);
+
+            return () => clearTimeout(refreshTimer);
+        };
+
+        handleRouteChange();
+    }, [pathname]);
 
 
     const handleLoadingComplete = React.useCallback(() => {
@@ -118,7 +161,6 @@ const Layout = ({ children }: Props) => {
                     position: 'relative',
                     width: '100%',
                     minHeight: 'var(--app-height)',
-                    overflow: 'auto',
                     touchAction: 'pan-y',
                     WebkitOverflowScrolling: 'touch',
                     WebkitTextSizeAdjust: '100%',
@@ -145,7 +187,6 @@ const Layout = ({ children }: Props) => {
                     zIndex={100}
                 />}
                 {children}
-
                 <Scene
                     style={{
                         position: 'fixed',
@@ -161,15 +202,16 @@ const Layout = ({ children }: Props) => {
                     eventPrefix='client'
                 />
 
+                {/* Conditional 3D Content */}
+                {!isLoading && (
+                    <View className="fixed inset-0 z-[10] pointer-events-none">
+                        {render3DComponents.showCommon && <Common />}
+                        {render3DComponents.showParticles && <Particles />}
+                        {render3DComponents.showTransparentPlane && <TransparentPlane />}
+                    </View>
+                )}
                 {isLoading && <LoadingScreen onLoadingComplete={handleLoadingComplete} />}
-
-                {/* @ts-ignore */}
-                <View className="fixed inset-0 z-[-10] pointer-events-none">
-                    <TransparentPlane />
-                </View>
-
                 <Footer />
-
             </div>
         </ReactLenis >
     )
