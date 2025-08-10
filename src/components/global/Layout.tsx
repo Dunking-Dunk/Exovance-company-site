@@ -185,7 +185,7 @@ const Layout = ({ children }: Props) => {
                     WebkitOverflowScrolling: 'touch',
                     WebkitTextSizeAdjust: '100%',
                 }}
-                className='bg-black'
+                className='bg-customBlack'
             >
                 <Header />
                 {!isLoading && <BlobCursor
@@ -223,7 +223,7 @@ const Layout = ({ children }: Props) => {
                 />
 
 
-                <View className="fixed inset-0 pointer-events-none z-[-10]">
+                <View className="fixed inset-0 pointer-events-none z-[0]">
                     {render3DComponents.showCommon && <Common />}
                     {render3DComponents.showParticles && <Particles onReady={handleParticlesReady} />}
                     {render3DComponents.showTransparentPlane && <TransparentPlane />}

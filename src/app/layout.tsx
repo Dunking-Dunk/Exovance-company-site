@@ -43,7 +43,7 @@ interface RootLayoutProps {
 const RootLayout = memo(({ children }: RootLayoutProps) => {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased min-h-screen">
+      <body className="antialiased min-h-screen bg-background">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
