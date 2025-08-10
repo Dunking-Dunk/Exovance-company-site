@@ -5,7 +5,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Instagram, Linkedin } from 'lucide-react';
-import Dither from '../canva/Dither';
+import dynamic from 'next/dynamic';
+
+
+const Dither: any = dynamic(() => import('../canva/Dither').then((mod: any) => mod), {
+    ssr: false
+})
 
 const Footer = () => {
     const currentYear = new Date().getFullYear();
@@ -14,18 +19,16 @@ const Footer = () => {
         <footer className="relative w-full h-full py-24 overflow-hidden text-customGray border-t border-customGrayDark/40">
             <h2 className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[25vw] sm:text-[20vw] z-10 font-semibold text-customGrayDarker opacity-50'>EXOVANCE</h2>
 
-            <div className="absolute inset-0 z-0 opacity-60 pointer-events-none">
-                <Dither
-                    waveColor={[0.35, 0.35, 0.35]}
-                    disableAnimation={false}
-                    enableMouseInteraction={false}
-                    mouseRadius={0.3}
-                    colorNum={4}
-                    waveAmplitude={0.25}
-                    waveFrequency={2.5}
-                    waveSpeed={0.04}
-                />
-            </div>
+            <Dither
+                waveColor={[0.35, 0.35, 0.35]}
+                disableAnimation={false}
+                enableMouseInteraction={false}
+                mouseRadius={0.3}
+                colorNum={4}
+                waveAmplitude={0.25}
+                waveFrequency={2.5}
+                waveSpeed={0.04}
+            />
 
             <div className="relative z-20 mx-6 sm:mx-10 lg:mx-28 h-full">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-y-16 gap-x-12 lg:gap-y-20 lg:gap-x-20 items-start">

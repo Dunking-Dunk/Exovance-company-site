@@ -10,7 +10,7 @@ const Vision = () => {
     useGSAP(() => {
         const sections = gsap.utils.toArray('.pin-section');
 
-        // Initial blur setup
+
         gsap.set(".pin-section-text", {
             filter: "blur(10px)",
             opacity: 0
@@ -30,7 +30,7 @@ const Vision = () => {
                     inertia: false
                 },
                 anticipatePin: 1,
-                id: 'vision-timeline' // Add unique ID to avoid conflicts
+                id: 'vision-timeline'
             }
         });
 
@@ -100,9 +100,7 @@ const Vision = () => {
             }
         });
 
-        // Cleanup function to avoid conflicts
         return () => {
-            // Only kill the specific timeline for this component
             tl.kill();
         };
     }, []);

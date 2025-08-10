@@ -12,6 +12,7 @@ import { useScrollTheme } from "@/components/provider/scroll-theme-provider";
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Service from "@/app/_section/Service";
 import Product from "@/app/_section/Product";
+import Abstract from "./_section/Abstract";
 
 // Preload critical components
 const View = dynamic(() => import("@/components/canva/View").then((mod: any) => mod.View), {
@@ -39,6 +40,7 @@ if (typeof window !== 'undefined') {
 
 export default function Home() {
   const { setScrollTheme } = useScrollTheme();
+  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('dark');
 
   const handleThemeSwitch = useCallback((progress: number) => {
     const visionStart = 0.20;
@@ -52,11 +54,12 @@ export default function Home() {
       targetTheme = 'dark';
     }
 
-
-    if (targetTheme) {
+    if (targetTheme !== currentTheme) {
+      setCurrentTheme(targetTheme);
       setScrollTheme(targetTheme);
     }
-  }, [setScrollTheme]);
+
+  }, [setScrollTheme, currentTheme]);
 
   useEffect(() => {
     const themeScrollTrigger = ScrollTrigger.create({
@@ -103,9 +106,9 @@ export default function Home() {
         <ScrollTextAnimation />
 
         {/* Services */}
-        {/* <div data-section="service">
+        <div data-section="service">
           <Service />
-        </div> */}
+        </div>
 
 
         {/* Team */}
@@ -115,7 +118,7 @@ export default function Home() {
 
 
         {/* Abstract */}
-        {/* <Abstract /> */}
+        <Abstract />
 
 
 

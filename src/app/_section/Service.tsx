@@ -10,7 +10,7 @@ type Props = {}
 
 const Service = (props: Props) => {
     const isMobile = useMobile();
-    console.log(isMobile)
+
     const handleLearnMore = () => {
 
     };

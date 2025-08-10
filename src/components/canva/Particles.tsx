@@ -85,7 +85,6 @@ export const Particles = () => {
         return particles;
     }, []);
 
-    // Memoize uniforms
     const uniforms = useMemo(() => ({
         uPositions: { value: null },
         uColor: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
@@ -97,7 +96,6 @@ export const Particles = () => {
 
     const mouse = useRef(new THREE.Vector3());
 
-    // Fixed mouse position update handler with activity tracking
     const updateMousePosition = useCallback((e: MouseEvent) => {
 
         const x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -120,8 +118,6 @@ export const Particles = () => {
 
 
     useEffect(() => {
-        gsap.registerPlugin(ScrollTrigger);
-
 
         const calculateScrollPositions = () => {
             const heroSection = document.querySelector('[data-section="hero"]');

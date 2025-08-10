@@ -83,6 +83,66 @@ const Abstract = () => {
       delay: 1.1,
       duration: 3.3,
       spring: { stiffness: 85, damping: 18 }
+    },
+    {
+      text: "BUILD",
+      scrollRange: [0.15, 0.55],
+      outputRange: [-70, 70],
+      top: "10%",
+      left: "60%",
+      delay: 0.6,
+      duration: 2.9,
+      spring: { stiffness: 105, damping: 24 }
+    },
+    {
+      text: "CREATE",
+      scrollRange: [0.25, 0.65],
+      outputRange: [-90, 60],
+      top: "35%",
+      left: "55%",
+      delay: 0.7,
+      duration: 3.2,
+      spring: { stiffness: 115, damping: 22 }
+    },
+    {
+      text: "OPTIMIZE",
+      scrollRange: [0.45, 0.8],
+      outputRange: [-100, 50],
+      top: "75%",
+      right: "5%",
+      delay: 0.95,
+      duration: 3.0,
+      spring: { stiffness: 90, damping: 20 }
+    },
+    {
+      text: "AUTOMATE",
+      scrollRange: [0.2, 0.6],
+      outputRange: [-80, 80],
+      top: "50%",
+      left: "5%",
+      delay: 0.85,
+      duration: 3.1,
+      spring: { stiffness: 100, damping: 23 }
+    },
+    {
+      text: "SCALE",
+      scrollRange: [0.3, 0.7],
+      outputRange: [-85, 65],
+      top: "5%",
+      right: "20%",
+      delay: 0.5,
+      duration: 2.8,
+      spring: { stiffness: 110, damping: 21 }
+    },
+    {
+      text: "DEPLOY",
+      scrollRange: [0.4, 0.8],
+      outputRange: [-90, 70],
+      top: "90%",
+      left: "45%",
+      delay: 1.0,
+      duration: 3.3,
+      spring: { stiffness: 95, damping: 26 }
     }
   ];
 
@@ -127,40 +187,7 @@ const Abstract = () => {
         );
       })}
 
-      <div className="w-full">
-        <motion.h1
-          initial={{ opacity: 0, x: -100 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-customGray text-5xl md:text-7xl font-bold leading-tight tracking-wider font-exo2"
-        >
-          <TextGenerateEffect words="PIONEERING INTELLIGENT" duration={2} />
 
-        </motion.h1>
-
-        <div className="relative my-4 text-center">
-          <motion.span
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.4, ease: "easeInOut" }}
-            className="text-4xl md:text-7xl text-customGrayDark"
-          >
-            Solutions for a
-          </motion.span>
-        </div>
-
-        <motion.h1
-          initial={{ opacity: 0, x: 100 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.8, ease: "easeInOut" }}
-          className="text-customGray text-right text-5xl md:text-7xl font-bold tracking-wider font-exo2"
-        >
-          <TextGenerateEffect words="FUTURISTIC WORLD" duration={4} />
-        </motion.h1>
-      </div>
 
       <motion.p
         initial={{ opacity: 0, y: 20 }}
