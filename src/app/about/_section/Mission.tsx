@@ -3,12 +3,6 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
-import dynamic from "next/dynamic";
-
-const View = dynamic(() => import('@/components/canva/View').then(mod => mod.View), { ssr: false });
-
-const Background = dynamic(() => import('@/components/canva/BackgroundHero').then(mod => mod.BackgroundHero), { ssr: false });
-const Common = dynamic(() => import('@/components/canva/View').then(mod => mod.Common), { ssr: false });
 
 const Mission = () => {
     return (
