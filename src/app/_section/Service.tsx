@@ -10,17 +10,16 @@ type Props = {}
 
 const Service = (props: Props) => {
     const isMobile = useMobile();
-
+    console.log(isMobile)
     const handleLearnMore = () => {
-        window.open('/services', '_blank'); // 
+
     };
 
     return (
         <div className="w-full min-h-screen px-4 md:px-32 py-32 relative">
 
-            <div className="absolute inset-0 -z-10 opacity-[0.15] bg-[linear-gradient(to_right,rgba(255,255,255,.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,.06)_1px,transparent_1px)] bg-[size:28px_28px]" />
             <div className={`relative z-10 flex flex-col ${!isMobile ? 'lg:flex-row' : ''} gap-12`}>
-                {/* Left Content Section */}
+
                 <div className={`${!isMobile ? 'lg:w-1/2' : 'w-full'} flex flex-col justify-center`}>
                     <div className="mb-3 inline-flex items-center gap-2 text-customGray">
                         <Sparkles className="h-4 w-4 text-customGrayLight/80" />

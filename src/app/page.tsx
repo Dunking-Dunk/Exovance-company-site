@@ -39,7 +39,6 @@ if (typeof window !== 'undefined') {
 
 export default function Home() {
   const { setScrollTheme } = useScrollTheme();
-  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('dark');
 
   const handleThemeSwitch = useCallback((progress: number) => {
     const visionStart = 0.20;
@@ -54,11 +53,10 @@ export default function Home() {
     }
 
 
-    if (targetTheme !== currentTheme) {
-      setCurrentTheme(targetTheme);
+    if (targetTheme) {
       setScrollTheme(targetTheme);
     }
-  }, [setScrollTheme, currentTheme]);
+  }, [setScrollTheme]);
 
   useEffect(() => {
     const themeScrollTrigger = ScrollTrigger.create({
@@ -105,9 +103,9 @@ export default function Home() {
         <ScrollTextAnimation />
 
         {/* Services */}
-        <div data-section="service">
+        {/* <div data-section="service">
           <Service />
-        </div>
+        </div> */}
 
 
         {/* Team */}
