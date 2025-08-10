@@ -55,7 +55,7 @@ export const BackgroundHero = (props: any) => {
     });
 
     return (
-        <group {...props} dispose={null} >
+        <group {...props} dispose={null} renderOrder={2}>
             <mesh
                 geometry={nodes.mountain.geometry}
                 material={gradientMaterial1}
@@ -80,6 +80,7 @@ export const BackgroundHero = (props: any) => {
             <mesh
                 geometry={nodes.mountain.geometry}
                 material={gradientMaterial3}
+
                 position={[20, -10, -30]}
                 rotation={[Math.PI, 0, 0]}
                 scale={[60, 40.478, 8.834]}

@@ -22,8 +22,8 @@ export default function Home() {
   const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('dark');
 
   const handleThemeSwitch = useCallback((progress: number) => {
-    const visionStart = 0.20;
-    const visionEnd = 0.45;
+    const visionStart = 0.15;
+    const visionEnd = 0.40;
 
     let targetTheme: 'light' | 'dark';
 

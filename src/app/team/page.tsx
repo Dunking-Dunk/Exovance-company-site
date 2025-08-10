@@ -35,7 +35,7 @@ const TeamPage = () => {
             </section>
             <Leadership />
             <CoreTeam />
-            <CommunityAdvisors />
+            {/* <CommunityAdvisors /> */}
             <CultureValues />
             <JoinTeam />
 

@@ -26,7 +26,6 @@ const View = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & {
         <>
             <div ref={localRef} {...props} />
             <Three>
-
                 <ViewImpl track={localRef}>
                     {children}
                     {orbit && <OrbitControls />}

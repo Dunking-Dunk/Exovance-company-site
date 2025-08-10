@@ -46,14 +46,14 @@ const Layout = ({ children }: Props) => {
     const { theme } = useScrollTheme();
     const pathname = usePathname();
 
-    // Determine which 3D components to render based on route
+
     const render3DComponents = useMemo(() => {
         const isHomePage = pathname === '/';
         const isAboutPage = pathname === '/about';
 
         return {
             showParticles: isHomePage,
-            showTransparentPlane: isHomePage || isAboutPage,
+            showTransparentPlane: true,
             showCommon: isHomePage,
         };
     }, [pathname]);
@@ -72,7 +72,7 @@ const Layout = ({ children }: Props) => {
         window.addEventListener('resize', setAppHeight);
         setAppHeight();
 
-        // Ensure ScrollTrigger updates when Lenis scrolls
+
         const handleLenisScroll = () => {
             ScrollTrigger.update();
         };
@@ -85,7 +85,7 @@ const Layout = ({ children }: Props) => {
 
         window.addEventListener('resize', debouncedRefresh);
 
-        // Add ResizeObserver to watch for content height changes
+
         const resizeObserver = new ResizeObserver(
             debounce(() => {
                 ScrollTrigger.refresh();
@@ -108,22 +108,22 @@ const Layout = ({ children }: Props) => {
         };
     }, []);
 
-    // Handle route changes - refresh scroll calculations
+
     useEffect(() => {
         const handleRouteChange = () => {
-            // Reset particles ready state when navigating
+
             setParticlesReady(false);
 
-            // Reset scroll position to top on route change
+
             lenisRef.current?.lenis?.scrollTo(0, { immediate: true });
 
-            // Refresh ScrollTrigger calculations after content renders
+
             const refreshTimer = setTimeout(() => {
                 ScrollTrigger.refresh();
-                // Also refresh Lenis to recalculate scroll height
+
                 lenisRef.current?.lenis?.resize();
 
-                // Force a more thorough refresh after a longer delay
+
                 setTimeout(() => {
                     ScrollTrigger.refresh();
                     lenisRef.current?.lenis?.resize();
@@ -143,8 +143,7 @@ const Layout = ({ children }: Props) => {
     }, []);
 
     const handleLoadingComplete = React.useCallback(() => {
-        // Only complete loading if we're on home page and particles are ready, 
-        // or if we're not on home page (no particles needed)
+
         const shouldWaitForParticles = render3DComponents.showParticles;
 
         if (!shouldWaitForParticles || particlesReady) {
@@ -157,7 +156,6 @@ const Layout = ({ children }: Props) => {
         }
     }, [render3DComponents.showParticles, particlesReady]);
 
-    // Trigger loading completion when particles are ready
     useEffect(() => {
         if (particlesReady || !render3DComponents.showParticles) {
             handleLoadingComplete();
@@ -187,7 +185,7 @@ const Layout = ({ children }: Props) => {
                     WebkitOverflowScrolling: 'touch',
                     WebkitTextSizeAdjust: '100%',
                 }}
-                className='bg-customBlack'
+                className='bg-black'
             >
                 <Header />
                 {!isLoading && <BlobCursor
@@ -224,8 +222,8 @@ const Layout = ({ children }: Props) => {
                     eventPrefix='client'
                 />
 
-                {/* Conditional 3D Content */}
-                <View className="fixed inset-0 z-[10] pointer-events-none">
+
+                <View className="fixed inset-0 pointer-events-none z-[-10]">
                     {render3DComponents.showCommon && <Common />}
                     {render3DComponents.showParticles && <Particles onReady={handleParticlesReady} />}
                     {render3DComponents.showTransparentPlane && <TransparentPlane />}

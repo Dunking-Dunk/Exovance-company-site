@@ -136,7 +136,7 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
                 if (heroSection) {
                     const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
                     positions.heroEnd = heroBottom / totalScrollHeight
-                    positions.heroEnd += 0.12;
+                    positions.heroEnd += 0.07;
                 }
 
                 if (aboutSection) {
