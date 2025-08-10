@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Instagram, Linkedin } from 'lucide-react';
 import Dither from '../canva/Dither';
@@ -10,7 +11,7 @@ const Footer = () => {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="relative w-full h-[80vh] py-24 overflow-hidden text-customGray">
+        <footer className="relative w-full h-full py-24 overflow-hidden text-customGray border-t border-customGrayDark/40">
             <h2 className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[25vw] sm:text-[20vw] z-10 font-semibold text-customGrayDarker opacity-50'>EXOVANCE</h2>
 
             <div className="absolute inset-0 z-0 opacity-60 pointer-events-none">
@@ -29,13 +30,16 @@ const Footer = () => {
             <div className="relative z-20 mx-6 sm:mx-10 lg:mx-28 h-full">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-y-16 gap-x-12 lg:gap-y-20 lg:gap-x-20 items-start">
                     {/* Company */}
-                    <div className='flex flex-col items-start space-y-20'>
+                    <div className='flex flex-col items-start space-y-10 lg:space-y-20'>
                         <div>
-                            <h3 className="text-4xl sm:text-5xl font-semibold text-customGrayLight leading-tight">EXOVANCE</h3>
+                            <div className="mb-6">
+                                <Image src="/logo/only logo white.png" alt="Exovance logo" width={160} height={40} className="h-10 w-auto opacity-90" />
+                            </div>
+                            <h3 className="text-4xl sm:text-5xl font-semibold text-customGrayLight leading-tight relative pb-2 after:content-[''] after:block after:h-[2px] after:w-24 after:bg-customGrayDark/40 after:rounded-full after:mt-2">EXOVANCE</h3>
                             <p className="text-base sm:text-lg text-customGray mt-3 leading-relaxed">Engineering intelligent systems for the real world.</p>
                         </div>
                         <div>
-                            <h4 className="text-sm uppercase tracking-[0.18em] text-customGrayLight/80 mb-3">Location</h4>
+                            <h4 className="text-sm uppercase tracking-[0.18em] text-customGrayLight/80 mb-3 relative pb-1 after:content-[''] after:block after:h-[2px] after:w-16 after:bg-customGrayDark/40 after:rounded-full after:mt-1">Location</h4>
                             <address className="not-italic text-base text-customGray leading-relaxed">
                                 RWD Grand Corridor<br />
                                 Vanagram, Chennai<br />
@@ -43,7 +47,7 @@ const Footer = () => {
                             </address>
                         </div>
                         <div className="space-y-2">
-                            <h4 className="text-sm uppercase tracking-[0.18em] text-customGrayLight/80 mb-3">Contact</h4>
+                            <h4 className="text-sm uppercase tracking-[0.18em] text-customGrayLight/80 mb-3 relative pb-1 after:content-[''] after:block after:h-[2px] after:w-16 after:bg-customGrayDark/40 after:rounded-full after:mt-1">Contact</h4>
                             <a href="mailto:exovancelab@gmail.com" className="text-base hover:text-customGrayLight transition-colors">exovancelab@gmail.com</a><br />
                             <a href="tel:+918056201341" className="text-base hover:text-customGrayLight transition-colors">+91 80562 01341</a>
                         </div>
@@ -51,8 +55,8 @@ const Footer = () => {
                     </div>
 
                     {/* Explore */}
-                    <div className="flex flex-col items-start space-y-20 md:items-center md:justify-self-center">
-                        <h4 className="text-sm uppercase tracking-[0.18em] text-customGrayLight/80">Explore</h4>
+                    <div className="flex flex-col items-start space-y-10 lg:space-y-20 md:items-center md:justify-self-center">
+                        <h4 className="text-sm uppercase tracking-[0.18em] text-customGrayLight/80 relative pb-1 after:content-[''] after:block after:h-[2px] after:w-16 after:bg-customGrayDark/40 after:rounded-full after:mt-1">Explore</h4>
                         <nav className="flex flex-col text-lg sm:text-xl space-y-4">
                             <Link href="/about" className="hover:text-customGrayLight transition-colors">About</Link>
                             <Link href="/product" className="hover:text-customGrayLight transition-colors">Products</Link>
@@ -77,7 +81,7 @@ const Footer = () => {
 
                     {/* Follow */}
                     <div className="flex flex-col items-start space-y-6 md:items-end md:justify-self-end">
-                        <h4 className="text-base font-medium text-customGrayDark tracking-wider">Follow</h4>
+                        <h4 className="text-base font-medium text-customGrayDark tracking-wider relative pb-1 after:content-[''] after:block after:h-[2px] after:w-16 after:bg-customGrayDark/40 after:rounded-full after:mt-1">Follow</h4>
                         <div className="flex space-x-6">
                             <motion.a
                                 href="https://www.instagram.com/exovance"

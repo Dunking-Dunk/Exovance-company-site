@@ -121,6 +121,46 @@ const CardSwap: React.FC<CardSwapProps> = ({
     const intervalRef = useRef<number>();
     const container = useRef<HTMLDivElement>(null);
 
+    // Ensure only the active card's video plays to reduce decode/CPU usage
+    const playOnlyActiveVideo = useRef(() => {
+        const activeIdx = order.current[0];
+        refs.forEach((r, i) => {
+            const root = r.current;
+            if (!root) return;
+            const video = root.querySelector("video") as HTMLVideoElement | null;
+            const source = video?.querySelector("source") as HTMLSourceElement | null;
+            if (!video) return;
+            try {
+                if (i === activeIdx) {
+                    // mark as active for styling/debugging
+                    root.setAttribute("data-active", "true");
+                    // attach src only for active video
+                    const dataSrc = source?.getAttribute("data-src");
+                    if (source && dataSrc && source.getAttribute("src") !== dataSrc) {
+                        source.setAttribute("src", dataSrc);
+                        video.load();
+                    }
+                    video.preload = "auto";
+                    video.muted = true;
+                    // Avoid DOMException on some browsers
+                    const p = video.play();
+                    if (p && typeof p.then === "function") {
+                        p.catch(() => { });
+                    }
+                } else {
+                    root.removeAttribute("data-active");
+                    video.pause();
+                    video.preload = "metadata";
+                    // detach src to free decoder resources
+                    if (source && source.getAttribute("src")) {
+                        source.removeAttribute("src");
+                        video.load();
+                    }
+                }
+            } catch { }
+        });
+    });
+
     useEffect(() => {
         const total = refs.length;
         refs.forEach((r, i) =>
@@ -191,21 +231,31 @@ const CardSwap: React.FC<CardSwapProps> = ({
             tl.call(() => {
                 order.current = [...rest, front];
             });
+            tl.call(() => playOnlyActiveVideo.current());
         };
 
         swap();
+        // After initial layout ensure only one video plays
+        playOnlyActiveVideo.current();
         intervalRef.current = window.setInterval(swap, delay);
+
+        const pause = () => {
+            tlRef.current?.pause();
+            clearInterval(intervalRef.current);
+            // Pause all videos when paused
+            refs.forEach((r) => {
+                const v = r.current?.querySelector("video") as HTMLVideoElement | null;
+                if (v) v.pause();
+            });
+        };
+        const resume = () => {
+            tlRef.current?.play();
+            intervalRef.current = window.setInterval(swap, delay);
+            playOnlyActiveVideo.current();
+        };
 
         if (pauseOnHover) {
             const node = container.current!;
-            const pause = () => {
-                tlRef.current?.pause();
-                clearInterval(intervalRef.current);
-            };
-            const resume = () => {
-                tlRef.current?.play();
-                intervalRef.current = window.setInterval(swap, delay);
-            };
             node.addEventListener("mouseenter", pause);
             node.addEventListener("mouseleave", resume);
             return () => {
@@ -214,7 +264,30 @@ const CardSwap: React.FC<CardSwapProps> = ({
                 clearInterval(intervalRef.current);
             };
         }
-        return () => clearInterval(intervalRef.current);
+        // Pause when tab hidden or component not in view
+        const visHandler = () => {
+            if (document.hidden) pause();
+            else resume();
+        };
+        document.addEventListener("visibilitychange", visHandler);
+
+        // Intersection Observer to pause when off-screen
+        let observer: IntersectionObserver | null = null;
+        if (container.current && "IntersectionObserver" in window) {
+            observer = new IntersectionObserver((entries) => {
+                const entry = entries[0];
+                if (!entry) return;
+                if (entry.isIntersecting) resume();
+                else pause();
+            }, { threshold: 0.1 });
+            observer.observe(container.current);
+        }
+
+        return () => {
+            clearInterval(intervalRef.current);
+            document.removeEventListener("visibilitychange", visHandler);
+            if (observer && container.current) observer.unobserve(container.current);
+        };
     }, [cardDistance, verticalDistance, delay, pauseOnHover, skewAmount, easing]);
 
     const rendered = childArr.map((child, i) =>
@@ -234,7 +307,7 @@ const CardSwap: React.FC<CardSwapProps> = ({
     return (
         <div
             ref={container}
-            className="absolute top-1/3 right-0 transform translate-x-[5%] translate-y-[20%] origin-bottom-right perspective-[900px] overflow-visible max-[768px]:translate-x-[25%] max-[768px]:translate-y-[25%] max-[768px]:scale-[0.75] max-[480px]:translate-x-[25%] max-[480px]:translate-y-[25%] max-[480px]:scale-[0.55]"
+            className="absolute top-1/4 right-0 transform translate-x-[5%] translate-y-[20%] origin-bottom-right perspective-[900px] overflow-visible max-[768px]:translate-x-[25%] max-[768px]:translate-y-[25%] max-[768px]:scale-[0.75] max-[480px]:translate-x-[25%] max-[480px]:translate-y-[25%] max-[480px]:scale-[0.55]"
             style={{ width, height }}
         >
             {rendered}

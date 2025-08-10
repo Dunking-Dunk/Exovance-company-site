@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import { TextGenerateEffect } from '@/components/ui/text-generate-effect'
 import { DotBackground } from '@/components/ui/dot-background'
 import { Button } from '@/components/ui/button'
-import { ArrowRight, Zap, Globe, Users, TrendingUp, Clock, Brain } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import MagicBento from '@/components/ui/MagicBento'
 
 const Product = () => {

@@ -10,7 +10,6 @@ import About from "@/app/_section/About";
 import Hero from "@/app/_section/Hero";
 import { useScrollTheme } from "@/components/provider/scroll-theme-provider";
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Team from "@/app/_section/Team";
 import Service from "@/app/_section/Service";
 import Product from "@/app/_section/Product";
 
@@ -44,7 +43,7 @@ export default function Home() {
 
   const handleThemeSwitch = useCallback((progress: number) => {
     const visionStart = 0.20;
-    const visionEnd = 0.50;
+    const visionEnd = 0.45;
 
     let targetTheme: 'light' | 'dark';
 
@@ -102,6 +101,8 @@ export default function Home() {
         <div data-section="product">
           <Product />
         </div>
+
+        <ScrollTextAnimation />
 
         {/* Services */}
         <div data-section="service">
