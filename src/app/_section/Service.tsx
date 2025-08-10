@@ -85,7 +85,7 @@ const Service = (props: Props) => {
                     </motion.button>
                 </div>
 
-                {/* {!isMobile && (
+                {!isMobile && (
                     <div className="flex items-center justify-center">
                         <CardSwap
                             width={700}
@@ -125,7 +125,7 @@ const Service = (props: Props) => {
                             ))}
                         </CardSwap>
                     </div>
-                )} */}
+                )}
 
 
             </div>
