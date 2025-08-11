@@ -7,8 +7,11 @@ import { DotBackground } from '@/components/ui/dot-background'
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
 import MagicBento from '@/components/ui/MagicBento'
+import { useRouter } from 'next/navigation'
 
 const Product = () => {
+    const router = useRouter()
+
     return (
         <div className="w-full h-full relative z-20" >
 
@@ -161,8 +164,7 @@ const Product = () => {
                                 <Button
                                     className="relative px-10 py-5 bg-customGrayDark text-white hover:bg-customGrayDark/90 transition-all duration-300 flex items-center space-x-3 rounded-xl font-medium text-lg shadow-lg hover:shadow-xl"
                                     onClick={() => {
-
-                                        console.log('Navigate to detailed AIVA product page');
+                                        router.push('/product/aiva')
                                     }}
                                 >
                                     <span>Explore AIVA in Detail</span>
