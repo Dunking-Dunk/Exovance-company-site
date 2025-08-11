@@ -20,7 +20,7 @@ const CoreFunctionalitiesSection = () => {
                     <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-customGrayLight/5 rounded-full blur-3xl"></div>
                 </div>
 
-                <div className="p-8 rounded-3xl bg-gradient-to-br from-customBlackAlt/10 via-transparent to-customBlackAlt/5 backdrop-blur-sm">
+                <div className="md:p-8 rounded-3xl bg-gradient-to-br from-customBlackAlt/10 via-transparent to-customBlackAlt/5 backdrop-blur-sm">
                     <MagicBento
                         textAutoHide={true}
                         enableStars={true}

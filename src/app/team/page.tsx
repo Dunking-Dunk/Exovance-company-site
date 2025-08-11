@@ -7,7 +7,6 @@ import CommunityAdvisors from './_section/CommunityAdvisors'
 import CultureValues from './_section/CultureValues'
 import JoinTeam from './_section/JoinTeam'
 import dynamic from 'next/dynamic'
-import Footer from '@/components/global/Footer'
 
 const View: any = dynamic(() => import("@/components/canva/View").then((mod: any) => mod.View), {
     ssr: false
@@ -23,7 +22,7 @@ const TeamPage = () => {
 
             <section className='w-full h-full py-60'>
                 <div className="px-4 md:px-32">
-                    <TextGenerateEffect className='text-5xl md:text-9xl text-customGrayLight mb-6'
+                    <TextGenerateEffect className='text-7xl md:text-9xl text-customGrayLight mb-6'
                         words='Meet the Innovators <br/> of Exovance'
                     />
                     <p className='text-lg text-customGrayDark max-w-3xl leading-relaxed'

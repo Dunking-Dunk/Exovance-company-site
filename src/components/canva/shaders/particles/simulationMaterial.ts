@@ -140,7 +140,6 @@ const robotVertices = () => {
 
 class SimulationMaterial extends THREE.ShaderMaterial {
     constructor(size) {
-        // Initial sphere positions
         const positionsTexture = new THREE.DataTexture(
             getRandomData(size, size),
             size,
@@ -150,7 +149,6 @@ class SimulationMaterial extends THREE.ShaderMaterial {
         );
         positionsTexture.needsUpdate = true;
 
-        // Brain model positions
         const brainPositions = normalizeAndResizeVertices(brainVertices(), size, 2);
         const positionsBrainTexture = new THREE.DataTexture(
             brainPositions,
@@ -161,7 +159,6 @@ class SimulationMaterial extends THREE.ShaderMaterial {
         );
         positionsBrainTexture.needsUpdate = true;
 
-        // Human head model positions
         const humanPositions = normalizeAndResizeVertices(humanVertices(), size, 1);
         const positionsHumanTexture = new THREE.DataTexture(
             humanPositions,
@@ -172,8 +169,8 @@ class SimulationMaterial extends THREE.ShaderMaterial {
         );
         positionsHumanTexture.needsUpdate = true;
 
-        // Robot model positions with 90-degree rotation
-        const robotPositions = normalizeAndResizeVertices(robotVertices(), size, 0.2, true);
+
+        const robotPositions = normalizeAndResizeVertices(robotVertices(), size, 0.3, true);
         const positionsRobotTexture = new THREE.DataTexture(
             robotPositions,
             size,
