@@ -10,24 +10,24 @@ const Principles = () => {
             title: "IMAGINE",
             description: "We believe every great solution starts with a bold question. We foster a culture of boundless curiosity and creativity.",
             icon: "💭",
-            color: "from-blue-500/20 to-purple-500/20",
-            borderColor: "border-blue-500/30",
+            color: "bg-customBlackAlt/5",
+            borderColor: "border-customGrayDark/30",
             delay: 0.1
         },
         {
             title: "INVENT",
             description: "We are builders and problem-solvers at heart. We are passionate about turning ambitious ideas into tangible, high-quality technology.",
             icon: "🛠️",
-            color: "from-green-500/20 to-emerald-500/20",
-            borderColor: "border-green-500/30",
+            color: "bg-customBlackAlt/5",
+            borderColor: "border-customGrayDark/30",
             delay: 0.3
         },
         {
             title: "ADVANCE",
             description: "We are committed to continuous learning and improvement, pushing both our own skills and the boundaries of what is possible in tech.",
             icon: "🚀",
-            color: "from-orange-500/20 to-red-500/20",
-            borderColor: "border-orange-500/30",
+            color: "bg-customBlackAlt/5",
+            borderColor: "border-customGrayDark/30",
             delay: 0.5
         }
     ];
@@ -37,7 +37,7 @@ const Principles = () => {
 
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <motion.div
-                    className="absolute top-1/4 right-1/4 w-32 h-32 border-2 border-blue-500/20 rotate-45"
+                    className="absolute top-1/4 right-1/4 w-32 h-32 border-2 border-customGrayDark/20 rotate-45"
                     animate={{
                         rotate: [45, 225, 45],
                         scale: [1, 1.1, 1],
@@ -49,7 +49,7 @@ const Principles = () => {
                     }}
                 />
                 <motion.div
-                    className="absolute bottom-1/3 left-1/4 w-24 h-24 rounded-full border-2 border-green-500/20"
+                    className="absolute bottom-1/3 left-1/4 w-24 h-24 rounded-full border-2 border-customGrayDark/20"
                     animate={{
                         scale: [1, 1.2, 1],
                         opacity: [0.3, 0.6, 0.3],
@@ -61,7 +61,7 @@ const Principles = () => {
                     }}
                 />
                 <motion.div
-                    className="absolute top-1/2 left-1/3 w-0 h-0 border-l-[30px] border-r-[30px] border-b-[50px] border-l-transparent border-r-transparent border-b-orange-500/20"
+                    className="absolute top-1/2 left-1/3 w-0 h-0 border-l-[30px] border-r-[30px] border-b-[50px] border-l-transparent border-r-transparent border-b-customGrayDark/20"
                     animate={{
                         rotate: [0, 360],
                     }}
@@ -85,7 +85,7 @@ const Principles = () => {
                     <h2 className="text-4xl md:text-6xl font-bold text-customGrayLight mb-6">
                         Our Guiding Principles
                     </h2>
-                    <div className="text-lg md:text-xl text-indigo-600 dark:text-indigo-400 font-semibold tracking-wider mb-8">
+                    <div className="text-lg md:text-xl text-customGray font-semibold tracking-wider mb-8">
                         THE FOUNDATION OF EVERYTHING WE DO
                     </div>
                     <div className="max-w-3xl mx-auto">
@@ -105,7 +105,7 @@ const Principles = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.8, delay: principle.delay }}
-                            className={`relative p-8 rounded-2xl border ${principle.borderColor} bg-gradient-to-br ${principle.color} backdrop-blur-sm hover:scale-105 transition-all duration-300 group`}
+                            className={`relative p-8 rounded-2xl border ${principle.borderColor} ${principle.color} backdrop-blur-sm hover:scale-105 transition-all duration-300 group`}
                         >
                             {/* Icon */}
                             <div className="text-6xl mb-6 text-center group-hover:scale-110 transition-transform duration-300">
@@ -123,7 +123,7 @@ const Principles = () => {
                             </p>
 
                             {/* Hover effect */}
-                            <div className="absolute inset-0 rounded-2xl bg-white/5 dark:bg-gray-800/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                            <div className="absolute inset-0 rounded-2xl bg-customBlackAlt/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                         </motion.div>
                     ))}
                 </div>
@@ -141,11 +141,11 @@ const Principles = () => {
                             "Innovation happens at the intersection of imagination, invention, and advancement."
                         </blockquote>
                         <div className="flex justify-center items-center space-x-4">
-                            <div className="w-16 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent" />
-                            <div className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 tracking-wider">
+                            <div className="w-16 h-px bg-gradient-to-r from-transparent via-customGrayDark/50 to-transparent" />
+                            <div className="text-sm font-semibold text-customGray tracking-wider">
                                 EXOVANCE
                             </div>
-                            <div className="w-16 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent" />
+                            <div className="w-16 h-px bg-gradient-to-r from-transparent via-customGrayDark/50 to-transparent" />
                         </div>
                     </div>
                 </motion.div>

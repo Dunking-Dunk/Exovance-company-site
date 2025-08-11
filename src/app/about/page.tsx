@@ -12,8 +12,8 @@ const About = () => {
         <main className="w-full h-full relative">
             <Mission />
             <Story />
-            <Community />
-            <Principles />
+            {/* <Community /> */}
+            {/* <Principles /> */}
             <Journey />
         </main>
     )

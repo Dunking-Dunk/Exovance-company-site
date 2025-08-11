@@ -21,24 +21,21 @@ type Founder = {
 
 const founders: Founder[] = [
     {
-        name: "Founder Name",
-        role: "Co-Founder & Lead AI Engineer",
+        name: "Hursun SS",
+        role: "Full-Stack Developer",
         photo: "/team/hursun2.webp",
-        oneLiner:
-            "Architecting scalable machine learning models that bridge the gap between data and discovery.",
-        bio:
-            "Final-year Computer Science student passionate about applied AI. Led projects in model optimization and real-time inference. Focused on building reliable ML systems that deliver measurable outcomes.",
-        expertise: ["Python", "TensorFlow", "NLP", "MLOps", "CUDA"],
+        oneLiner: "A full-stack web developer who builds both the front-end and back-end of websites and apps, with a curiosity for AI and IoT.",
+        bio: "I'm a full-stack web developer with skills in React, Express, React Native, Next.js, Django, and Three.js. I started with web development and then moved into mobile apps. I am curious by nature, so I explored AI and now use it in my projects to make them smarter. I also work with IoT, combining smart devices with AI-powered software. I am the president of the largest tech club at Rajalakshmi Engineering College.",
+        expertise: ["React", "Express", "React Native", "Next.js", "Django", "Three.js", "AI & ML", "IOT"],
         links: {
-            linkedin: "#",
-            github: "#",
-            portfolio: "#",
-        },
+            linkedin: "https://www.linkedin.com/in/hursun-ss-377659233/",
+            github: "https://github.com/Dunking-Dunk"
+        }
     },
     {
         name: "Founder Name",
         role: "Co-Founder & Product Engineer",
-        photo: "/team/dhaya.webp",
+        photo: "/team/dhaya2.webp",
         oneLiner: "Designing and shipping products that are as elegant as they are performant.",
         bio:
             "Final-year Information Technology student with a focus on full‑stack and DX. Built scalable web systems, design systems, and internal tooling to speed up product delivery.",

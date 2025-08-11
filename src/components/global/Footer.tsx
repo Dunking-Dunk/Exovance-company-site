@@ -35,12 +35,16 @@ const Footer = () => {
                     {/* Company */}
                     <div className='flex flex-col items-start space-y-10 lg:space-y-20'>
                         <div>
-                            <div className="mb-6">
-                                <Image src="/logo/only logo white.png" alt="Exovance logo" width={160} height={40} className="h-10 w-auto opacity-90" />
+                            <div className='flex space-x-4'>
+                                <div className="mb-6">
+                                    <Image src="/logo/only logo white.png" alt="Exovance logo" width={160} height={40} className="h-10 w-auto opacity-90" />
+                                </div>
+                                <h3 className="text-4xl sm:text-5xl font-semibold text-customGrayLight leading-tight relative pb-2 after:content-[''] after:block after:h-[2px] after:w-24 after:bg-customGrayDark/40 after:rounded-full after:mt-2">EXOVANCE</h3>
                             </div>
-                            <h3 className="text-4xl sm:text-5xl font-semibold text-customGrayLight leading-tight relative pb-2 after:content-[''] after:block after:h-[2px] after:w-24 after:bg-customGrayDark/40 after:rounded-full after:mt-2">EXOVANCE</h3>
                             <p className="text-base sm:text-lg text-customGray mt-3 leading-relaxed">Engineering intelligent systems for the real world.</p>
                         </div>
+
+
                         <div>
                             <h4 className="text-sm uppercase tracking-[0.18em] text-customGrayLight/80 mb-3 relative pb-1 after:content-[''] after:block after:h-[2px] after:w-16 after:bg-customGrayDark/40 after:rounded-full after:mt-1">Location</h4>
                             <address className="not-italic text-base text-customGray leading-relaxed">

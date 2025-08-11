@@ -15,31 +15,37 @@ type Member = {
 
 const members: Member[] = [
     {
-        name: "Member Name",
-        role: "Frontend Developer",
-        photo: "/team/hursun.webp",
-        bio: "Focused on performant UI and delightful user experiences using React and TypeScript.",
+        name: "Avinash",
+        role: "Hardware Developer",
+        photo: "/team/avinash.webp",
+        bio: "Designs and develops innovative hardware solutions, specializing in embedded systems and IoT devices.",
         links: { linkedin: "#", github: "#" },
     },
     {
-        name: "Member Name",
-        role: "UI/UX Designer",
+        name: "Hursun",
+        role: "Full Stack Developer & AI",
         photo: "/team/hursun2.webp",
-        bio: "Designing intuitive interfaces and systems that scale across platforms.",
+        bio: "Building scalable full-stack applications while developing cutting-edge AI solutions and machine learning models.",
         links: { linkedin: "#" },
     },
     {
-        name: "Member Name",
-        role: "Backend Developer",
-        photo: "/team/dhaya.webp",
-        bio: "Building robust APIs and distributed services with Node.js and PostgreSQL.",
+        name: "Dhayanath",
+        role: "Marketing & Finance",
+        photo: "/team/dhaya2.webp",
+        bio: "Drives strategic marketing initiatives and manages financial operations to fuel company growth and market expansion.",
         links: { github: "#" },
     },
     {
-        name: "Member Name",
-        role: "Mobile Developer",
+        name: "Shantosh",
+        role: "AI Developer",
         photo: "/team/shantosh.webp",
-        bio: "Cross‑platform apps with a focus on DX, performance, and accessibility.",
+        bio: "Developing advanced artificial intelligence algorithms and neural networks for next-generation applications.",
+    },
+    {
+        name: "Mano Vikram",
+        role: "UI/UX Designer & 3D Modeler",
+        photo: "/team/mano.webp",
+        bio: "Creating intuitive user experiences and stunning 3D visualizations that bring digital concepts to life.",
     },
 ];
 

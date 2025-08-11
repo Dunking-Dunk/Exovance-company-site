@@ -3,41 +3,74 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import SpotlightCard from "@/components/ui/SpotlightCard";
 
 const Mission = () => {
     return (
         <section className="relative min-h-screen flex items-center justify-center lg:px-32 py-20 z-[1]">
 
-            <div className="relative z-10 flex flex-col ">
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    className="mb-16"
-                >
+            <div className="relative z-10 flex flex-col items-center justify-center text-center max-w-7xl mx-auto">
 
-                    <TextGenerateEffect
-                        words="Our goal is to build deep tech solutions in India, to push India's standing in tech forward. We build AI solutions and aim to develop robotics in the future."
-                        className="text-2xl md:text-4xl lg:text-7xl text-customGrayDarker"
-                    />
 
-                </motion.div>
-
+                <TextGenerateEffect
+                    words="We build deep tech solutions in AI and robotics to drive global technology innovation, creating meaningful impact worldwide and advancing technological capabilities for the future."
+                    className="text-2xl md:text-4xl lg:text-5xl text-customGrayDarker leading-relaxed"
+                />
 
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: 0.4 }}
-                    className="mb-16"
+                    className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-12"
                 >
-                    <h3 className="text-2xl md:text-3xl font-semibold text-customGray mb-6">
-                        Our Vision
-                    </h3>
-                    <p className="text-lg md:text-xl text-customGrayDarker leading-relaxed max-w-4xl">
-                        We envision India as a global leader in technology innovation, where our deep tech solutions
-                        contribute to advancing the nation's technological capabilities and creating meaningful impact worldwide.
+                    <div className="text-center p-6">
+                        <div className="w-16 h-16 mx-auto mb-4 bg-customBlackAlt/20 rounded-full flex items-center justify-center">
+                            <span className="text-2xl">🤖</span>
+                        </div>
+                        <h3 className="text-lg font-semibold text-customGrayLight mb-3">
+                            AI Innovation
+                        </h3>
+                        <p className="text-customGrayDarker text-sm">
+                            Developing cutting-edge artificial intelligence solutions that solve complex real-world problems
+                        </p>
+                    </div>
+
+                    <div className="text-center p-6">
+                        <div className="w-16 h-16 mx-auto mb-4 bg-customBlackAlt/20 rounded-full flex items-center justify-center">
+                            <span className="text-2xl">⚙️</span>
+                        </div>
+                        <h3 className="text-lg font-semibold text-customGrayLight mb-3">
+                            Robotics Future
+                        </h3>
+                        <p className="text-customGrayDarker text-sm">
+                            Building advanced robotics systems that enhance human capabilities and automate complex tasks
+                        </p>
+                    </div>
+
+                    <div className="text-center p-6">
+                        <div className="w-16 h-16 mx-auto mb-4 bg-customBlackAlt/20 rounded-full flex items-center justify-center">
+                            <span className="text-2xl">🌍</span>
+                        </div>
+                        <h3 className="text-lg font-semibold text-customGrayLight mb-3">
+                            Global Impact
+                        </h3>
+                        <p className="text-customGrayDarker text-sm">
+                            Creating solutions that transcend borders and make a positive difference worldwide
+                        </p>
+                    </div>
+                </motion.div>
+
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.6 }}
+                    className="max-w-3xl mx-auto"
+                >
+                    <p className="text-lg text-customGrayDarker leading-relaxed">
+                        At Exovance, we believe technology should be a force for progress. Our commitment extends beyond just building solutions—we're
+                        dedicated to fostering innovation, empowering communities, and creating a future where technology serves humanity's greatest aspirations.
                     </p>
                 </motion.div>
             </div>

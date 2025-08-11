@@ -13,7 +13,7 @@ const Journey = () => {
                 {[...Array(20)].map((_, i) => (
                     <motion.div
                         key={i}
-                        className="absolute w-1 h-1 bg-violet-400/40 rounded-full"
+                        className="absolute w-1 h-1 bg-customGrayLight/40 rounded-full"
                         style={{
                             left: `${Math.random() * 100}%`,
                             top: `${Math.random() * 100}%`,
@@ -45,7 +45,7 @@ const Journey = () => {
                     <h2 className="text-4xl md:text-6xl font-bold text-customGrayLight mb-6">
                         Join Our Journey
                     </h2>
-                    <div className="text-lg md:text-xl text-violet-600 dark:text-violet-400 font-semibold tracking-wider mb-8">
+                    <div className="text-lg md:text-xl text-customGray font-semibold tracking-wider mb-8">
                         LET'S BUILD THE FUTURE TOGETHER
                     </div>
                 </motion.div>
@@ -78,11 +78,9 @@ const Journey = () => {
                         <motion.button
                             whileHover={{ scale: 1.05, y: -2 }}
                             whileTap={{ scale: 0.95 }}
-                            className="group relative px-8 py-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-full font-semibold text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-violet-500/25"
+                            className="group relative px-8 py-4 bg-customGrayLight text-customBlack rounded-full font-semibold text-lg transition-all duration-300 hover:bg-customGray hover:shadow-lg"
                         >
                             <span className="relative z-10">View Our Services</span>
-                            <div className="absolute inset-0 bg-gradient-to-r from-violet-700 to-purple-700 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                            <div className="absolute -inset-0.5 bg-gradient-to-r from-violet-600 to-purple-600 rounded-full blur opacity-30 group-hover:opacity-50 transition-opacity duration-300" />
                         </motion.button>
                     </Link>
 
@@ -90,10 +88,9 @@ const Journey = () => {
                         <motion.button
                             whileHover={{ scale: 1.05, y: -2 }}
                             whileTap={{ scale: 0.95 }}
-                            className="group relative px-8 py-4 border-2 border-violet-500/50 text-customGrayLight rounded-full font-semibold text-lg transition-all duration-300 hover:border-violet-400 hover:bg-violet-500/10"
+                            className="group relative px-8 py-4 border-2 border-customGrayDark/40 text-customGrayLight rounded-full font-semibold text-lg transition-all duration-300 hover:border-customGrayDark/70 hover:bg-customBlackAlt/10"
                         >
                             <span className="relative z-10">Get in Touch</span>
-                            <div className="absolute inset-0 bg-violet-500/5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         </motion.button>
                     </Link>
                 </motion.div>
@@ -107,7 +104,7 @@ const Journey = () => {
                     className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto"
                 >
                     <div className="text-center p-6">
-                        <div className="w-16 h-16 mx-auto mb-4 bg-violet-500/20 rounded-full flex items-center justify-center">
+                        <div className="w-16 h-16 mx-auto mb-4 bg-customBlackAlt/20 rounded-full flex items-center justify-center">
                             <span className="text-2xl">💡</span>
                         </div>
                         <h3 className="text-lg font-semibold text-customGrayLight mb-2">
@@ -119,7 +116,7 @@ const Journey = () => {
                     </div>
 
                     <div className="text-center p-6">
-                        <div className="w-16 h-16 mx-auto mb-4 bg-cyan-500/20 rounded-full flex items-center justify-center">
+                        <div className="w-16 h-16 mx-auto mb-4 bg-customBlackAlt/20 rounded-full flex items-center justify-center">
                             <span className="text-2xl">🤝</span>
                         </div>
                         <h3 className="text-lg font-semibold text-customGrayLight mb-2">
@@ -131,7 +128,7 @@ const Journey = () => {
                     </div>
 
                     <div className="text-center p-6">
-                        <div className="w-16 h-16 mx-auto mb-4 bg-emerald-500/20 rounded-full flex items-center justify-center">
+                        <div className="w-16 h-16 mx-auto mb-4 bg-customBlackAlt/20 rounded-full flex items-center justify-center">
                             <span className="text-2xl">🚀</span>
                         </div>
                         <h3 className="text-lg font-semibold text-customGrayLight mb-2">
@@ -155,11 +152,11 @@ const Journey = () => {
                         "The future belongs to those who believe in the beauty of their dreams."
                     </blockquote>
                     <div className="mt-6 flex justify-center items-center space-x-4">
-                        <div className="w-12 h-px bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
-                        <div className="text-sm text-violet-600 dark:text-violet-400 font-medium">
+                        <div className="w-12 h-px bg-gradient-to-r from-transparent via-customGrayDark/50 to-transparent" />
+                        <div className="text-sm text-customGray font-medium">
                             Eleanor Roosevelt
                         </div>
-                        <div className="w-12 h-px bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
+                        <div className="w-12 h-px bg-gradient-to-r from-transparent via-customGrayDark/50 to-transparent" />
                     </div>
                 </motion.div>
             </div>

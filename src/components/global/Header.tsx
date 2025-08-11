@@ -179,7 +179,7 @@ const Header = () => {
                             {([
                                 { label: 'Home', key: 'hero', href: '/' },
                                 { label: 'About', key: 'about', href: '/about' },
-                                { label: 'Products', key: 'product', href: '/product' },
+                                { label: 'Products', key: 'product', href: '/product/aiva' },
                                 { label: 'Services', key: 'service', href: '/service' },
                                 { label: 'Team', key: 'team', href: '/team' },
                                 { label: 'Contact', key: 'contact', href: '/contact' },

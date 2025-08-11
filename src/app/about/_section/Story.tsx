@@ -21,7 +21,7 @@ const Story = () => {
             />
 
             <div className="relative z-10 max-w-6xl mx-auto">
-                {/* Section Header */}
+
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -50,12 +50,12 @@ const Story = () => {
                             <h3 className="text-2xl md:text-3xl font-semibold text-customGrayLight mb-6">
                                 The Beginning
                             </h3>
-                            <div className="text-lg text-customGrayDarker leading-relaxed">
-                                <TextGenerateEffect
-                                    words="Exovance was born not in a corporate boardroom, but in the dynamic environment of our final year of university. As a group of passionate students, we saw a gap between theoretical knowledge and the tangible impact we wanted to make. We decided to bridge that gap ourselves."
-                                    className="text-lg text-customGrayDarker"
-                                />
-                            </div>
+                            <p
+                                className="text-lg text-customGrayDarker"
+                            >
+                                Exovance was born not in a corporate boardroom, but in the dynamic environment of our final year of university. As a group of passionate students, we saw a gap between theoretical knowledge and the tangible impact we wanted to make. We decided to bridge that gap ourselves.
+                            </p>
+
                         </div>
 
                         <div>

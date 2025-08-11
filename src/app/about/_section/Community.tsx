@@ -6,10 +6,10 @@ import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 
 const Community = () => {
     const stats = [
-        { number: "500+", label: "Community Members", icon: "👥" },
-        { number: "50+", label: "Active Developers", icon: "💻" },
-        { number: "30+", label: "Designers & Creators", icon: "🎨" },
-        { number: "24/7", label: "Collaborative Support", icon: "🤝" },
+        { number: "3+", label: "Active Chapters", icon: "🏛️" },
+        { number: "500+", label: "Student Members", icon: "�" },
+        { number: "50+", label: "Workshops & Events", icon: "🚀" },
+        { number: "24/7", label: "Learning Support", icon: "🤝" },
     ];
 
     return (
@@ -39,26 +39,22 @@ const Community = () => {
                 ))}
             </div>
 
-            <div className="relative z-10 max-w-7xl mx-auto">
+            <div className="relative z-10">
                 {/* Section Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
-                    className="text-center mb-16"
+                    className="mb-32"
                 >
-                    <h2 className="text-4xl md:text-6xl font-bold text-customGrayLight mb-6">
-                        The Power of Our Community
+                    <h2 className="md:text-7xl  font-bold text-customGray text-center mb-6">
+                        Powered by Devs Society
                     </h2>
-                    <div className="text-lg md:text-xl text-emerald-600 dark:text-emerald-400 font-semibold tracking-wider">
-                        MORE THAN A COMPANY, A COLLECTIVE OF INNOVATORS
-                    </div>
                 </motion.div>
 
                 {/* Main Content */}
                 <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
-                    {/* Left side - Description */}
                     <motion.div
                         initial={{ opacity: 0, x: -50 }}
                         whileInView={{ opacity: 1, x: 0 }}
@@ -68,25 +64,22 @@ const Community = () => {
                     >
                         <div>
                             <h3 className="text-2xl md:text-3xl font-semibold text-customGrayLight mb-6">
-                                Our Vibrant Ecosystem
+                                Our Foundation: Devs Society
                             </h3>
-                            <div className="text-lg text-customGrayDarker leading-relaxed">
-                                <TextGenerateEffect
-                                    words="Exovance is powered by a vibrant and growing tech community of over 500+ students, developers, and designers. This network is our greatest asset, providing a diverse pool of talent, fresh ideas, and rigorous feedback."
-                                    className="text-lg text-customGrayDarker"
-                                />
-                            </div>
-                        </div>
-
+                            <p
+                                className="text-lg text-customGrayDarker"
+                            >
+                                Exovance is built upon the strong foundation of Devs Society - a student-led tech community that fosters innovation, upskills young minds, and builds future-ready talent through hands-on workshops, immersive bootcamps, hackathons, and open-source collaboration
+                            </p>                        </div>
                         <div>
                             <h3 className="text-2xl md:text-3xl font-semibold text-customGrayLight mb-6">
-                                Your Advantage
+                                Community-Driven Excellence
                             </h3>
                             <p className="text-lg text-customGrayDarker leading-relaxed">
-                                When you partner with Exovance, you aren't just hiring our core team; you are tapping
-                                into the collective intelligence of a community dedicated to technological excellence.
-                                This allows us to innovate faster, solve complex problems more effectively, and deliver
-                                truly exceptional results.
+                                Operating under the Community Initiatives wing of WeDigi Studio Pvt. Ltd., Devs Society
+                                spans across multiple engineering colleges with active chapters. When you partner with
+                                Exovance, you benefit from this collaborative environment where technology enthusiasts
+                                learn, share knowledge, and build innovative solutions to real-world problems.
                             </p>
                         </div>
                     </motion.div>
