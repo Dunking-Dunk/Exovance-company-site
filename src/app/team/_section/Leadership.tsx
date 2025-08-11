@@ -12,7 +12,7 @@ const Leadership = () => {
             <div className="px-4 md:px-32">
                 <div className="mb-12 md:mb-16">
                     <h2 className="text-4xl md:text-6xl font-bold text-customGrayLight mb-3">
-                        Our Leadership
+                        Our Core Team
                     </h2>
                     <p className="text-customGrayDarker text-lg">
                         The founding team guiding Exovance with clarity, craftsmanship, and conviction.

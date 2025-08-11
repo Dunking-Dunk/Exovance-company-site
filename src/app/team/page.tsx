@@ -33,7 +33,7 @@ const TeamPage = () => {
                 <TeamCarousel />
             </section>
             <Leadership />
-            <CoreTeam />
+            {/* <CoreTeam /> */}
             {/* <CommunityAdvisors /> */}
             <CultureValues />
             <JoinTeam />

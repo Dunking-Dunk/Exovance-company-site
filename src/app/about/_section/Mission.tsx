@@ -3,21 +3,10 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
-import dynamic from "next/dynamic";
-
-const View: any = dynamic(() => import('@/components/canva/View').then((mod: any) => mod.View), { ssr: false })
-
-const Common: any = dynamic(() => import('@/components/canva/View').then((mod: any) => mod.Common), { ssr: false })
-
-const BackgroundHero = dynamic(() => import('@/components/canva/BackgroundHero').then((_: any) => _.Background), { ssr: false })
 
 const Mission = () => {
     return (
         <section className="relative min-h-screen flex items-center justify-center lg:px-32 py-32 z-[1]">
-            <View className="absolute inset-0 overflow-hidden pointer-events-none">
-                <Common />
-                <BackgroundHero />
-            </View>
 
             <div className="relative z-10 flex flex-col items-center justify-center text-center max-w-7xl mx-auto px-4">
 

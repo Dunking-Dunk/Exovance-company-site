@@ -113,7 +113,7 @@ export const founders: Founder[] = [
         role: "Software & IoT Developer",
         photo: "/team/avinash.webp",
         oneLiner: "An innovative developer focused on IoT systems, custom programming languages, and AI-driven solutions.",
-        bio: "A Computer Science Engineering student specializing in IoT and systems programming[cite: 135]. [cite_start]A Smart India Hackathon 2024 Finalist for developing an IoT-based system for coal mines[cite: 137, 139, 157]. [cite_start]He has also built a custom programming language and compiler from scratch[cite: 140, 141, 142]. [cite_start]He serves as the IoT Lead for the Intellexa Technical Club[cite: 167].",
+        bio: "A Computer Science Engineering student specializing in IoT and systems programming. A Smart India Hackathon 2024 Finalist for developing an IoT-based system for coal mines. He has also built a custom programming language and compiler from scratch.He serves as the IoT Lead for the Intellexa Technical Club.",
         expertise: ["C++", "Go", "Python", "LLVM", "Flex", "Bison", "Docker", "Azure", "IoT", "Arduino", "Esp32"],
         links: {
             linkedin: "https://linkedin.com/in/avinash-s",
@@ -124,8 +124,8 @@ export const founders: Founder[] = [
         name: "MANOVIKRAM K",
         role: "Creative Developer & AI Enthusiast",
         photo: "/team/mano.webp",
-        oneLiner: "A creative developer passionate about solving real-world problems with a blend of technical expertise and design thinking[cite: 6].",
-        bio: "A Mechanical Engineering student with hands-on experience in AI model deployment, full-stack development, and UI/UX design[cite: 7, 9]. Experienced as a 3D Artist and Frontend Intern [cite: 12, 16], with a strong foundation in building intelligent systems using frameworks like YOLOV5 and FastAPI[cite: 7]. Currently serving as the Vice President of the DEVS Club at Rajalakshmi Engineering College[cite: 41].",
+        oneLiner: "A creative developer passionate about solving real-world problems with a blend of technical expertise and design thinking.",
+        bio: "A Mechanical Engineering student with hands-on experience in AI model deployment, full-stack development, and UI/UX design. Experienced as a 3D Artist and Frontend Intern, with a strong foundation in building intelligent systems using frameworks like YOLOV5 and FastAPI. Currently serving as the Vice President of the DEVS Club at Rajalakshmi Engineering College.",
         expertise: ["Python", "FastAPI", "Django", "React", "YOLOV5", "Blender", "Figma"],
         links: {
             linkedin: "https://linkedin.com/in/manovikramk",
