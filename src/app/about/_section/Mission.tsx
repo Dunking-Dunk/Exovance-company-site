@@ -9,7 +9,7 @@ const View: any = dynamic(() => import('@/components/canva/View').then((mod: any
 
 const Common: any = dynamic(() => import('@/components/canva/View').then((mod: any) => mod.Common), { ssr: false })
 
-const BackgroundHero = dynamic(() => import('@/components/canva/BackgroundHero').then((_: any) => _.BackgroundHero), { ssr: false })
+const BackgroundHero = dynamic(() => import('@/components/canva/Backgroundhero').then((_: any) => _.BackgroundHero), { ssr: false })
 
 const Mission = () => {
     return (
