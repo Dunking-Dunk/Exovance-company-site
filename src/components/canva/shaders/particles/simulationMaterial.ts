@@ -10,6 +10,7 @@ import { useGLTF } from '@react-three/drei';
 useGLTF.preload('/3d/brain_3d.glb')
 useGLTF.preload('/3d/human_head.glb')
 useGLTF.preload('/3d/spider_robot.glb')
+useGLTF.preload('/3d/dna.glb')
 
 const getRandomData = (width, height) => {
     const length = width * height * 4;
@@ -24,7 +25,7 @@ const getRandomData = (width, height) => {
     return data;
 };
 
-const normalizeAndResizeVertices = (vertices, size, scale) => {
+const normalizeAndResizeVertices = (vertices, size, scale, applyRotation = false) => {
     const normalizedData = new Float32Array(size * size * 4);
     const vertexCount = vertices.length / 3;
     const totalParticles = size * size;
@@ -33,13 +34,15 @@ const normalizeAndResizeVertices = (vertices, size, scale) => {
         return normalizedData;
     }
 
-    // Enhanced sampling strategy for better coverage
+    // 90-degree rotation matrix around Y-axis (if applyRotation is true)
+    const cos90 = Math.cos(Math.PI / 2);
+    const sin90 = Math.sin(Math.PI / 2);
+
     for (let i = 0; i < totalParticles; i++) {
         const targetIdx = i * 4;
         let sourceIdx;
 
         if (totalParticles >= vertexCount) {
-            // More particles than vertices: use multiple passes with offset
             const passes = Math.ceil(totalParticles / vertexCount);
             const currentPass = Math.floor(i / vertexCount);
             const indexInPass = i % vertexCount;
@@ -59,12 +62,24 @@ const normalizeAndResizeVertices = (vertices, size, scale) => {
             sourceIdx = Math.min(baseIndex + quasiRandomOffset, vertexCount - 1) * 3;
         }
 
-        // Ensure we don't exceed the vertices array bounds
+
         sourceIdx = Math.min(sourceIdx, vertices.length - 3);
 
-        normalizedData[targetIdx] = vertices[sourceIdx] * scale;
-        normalizedData[targetIdx + 1] = vertices[sourceIdx + 1] * scale;
-        normalizedData[targetIdx + 2] = vertices[sourceIdx + 2] * scale;
+        let x = vertices[sourceIdx] * scale;
+        let y = vertices[sourceIdx + 1] * scale;
+        let z = vertices[sourceIdx + 2] * scale;
+
+
+        if (applyRotation) {
+            const rotatedX = cos90 * x - sin90 * z;
+            const rotatedZ = sin90 * x + cos90 * z;
+            x = rotatedX;
+            z = rotatedZ;
+        }
+
+        normalizedData[targetIdx] = x;
+        normalizedData[targetIdx + 1] = y;
+        normalizedData[targetIdx + 2] = z;
         normalizedData[targetIdx + 3] = 1.0;
     }
     return normalizedData;
@@ -90,32 +105,35 @@ const humanVertices = () => {
 
 
 const robotVertices = () => {
-    const { nodes } = useGLTF('/3d/spider_robot.glb');
+    const { nodes } = useGLTF('/3d/dna.glb');
 
-    let allVertices = [];
-    const collectVertices = (object) => {
+    const positions = nodes.Scene.children[0].geometry.attributes.position.array;
+    return positions;
 
-        for (let i of object) {
-            if (i.geometry && i.geometry.attributes.position.array) {
-                const positions = Array.from(i.geometry.attributes.position.array);
-                allVertices.push(...positions);
-            }
+    // let allVertices = [];
+    // const collectVertices = (object) => {
 
-            if (i.children) {
-                collectVertices(i.children)
-            }
-        }
-    };
+    //     for (let i of object) {
+    //         if (i.geometry && i.geometry.attributes.position.array) {
+    //             const positions = Array.from(i.geometry.attributes.position.array);
+    //             allVertices.push(...positions);
+    //         }
 
-    if (nodes.Sketchfab_model) {
-        if (nodes.Sketchfab_model.children) {
-            collectVertices(nodes.Sketchfab_model.children)
-        }
-    }
+    //         if (i.children) {
+    //             collectVertices(i.children)
+    //         }
+    //     }
+    // };
+
+    // if (nodes.Sketchfab_model) {
+    //     if (nodes.Sketchfab_model.children) {
+    //         collectVertices(nodes.Sketchfab_model.children)
+    //     }
+    // }
 
 
 
-    return allVertices.length > 0 ? new Float32Array(allVertices) : new Float32Array();
+    // return allVertices.length > 0 ? new Float32Array(allVertices) : new Float32Array();
 };
 
 
@@ -154,8 +172,8 @@ class SimulationMaterial extends THREE.ShaderMaterial {
         );
         positionsHumanTexture.needsUpdate = true;
 
-        // Robot model positions
-        const robotPositions = normalizeAndResizeVertices(robotVertices(), size, 1.);
+        // Robot model positions with 90-degree rotation
+        const robotPositions = normalizeAndResizeVertices(robotVertices(), size, 0.2, true);
         const positionsRobotTexture = new THREE.DataTexture(
             robotPositions,
             size,
