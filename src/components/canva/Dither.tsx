@@ -238,8 +238,6 @@ function DitheredWaves({
     const mesh = useRef<THREE.Mesh>(null);
     const mouseRef = useRef(new THREE.Vector2());
     const { viewport, size, gl } = useThree();
-    const pathname = usePathname();
-    console.log(pathname)
 
     const waveUniformsRef = useRef<WaveUniforms>({
         time: new THREE.Uniform(0),
