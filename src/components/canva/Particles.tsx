@@ -153,8 +153,8 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
 
 
                 positions.aboutEnd = Math.max(positions.heroEnd + 0.05, positions.aboutEnd);
-                positions.visionStart = Math.max(positions.aboutEnd + 0.03, positions.visionStart);
-                positions.visionEnd = Math.max(positions.visionStart + 0.1, positions.visionEnd);
+                positions.visionStart = Math.max(positions.aboutEnd + 0.02, positions.visionStart);
+                positions.visionEnd = Math.max(positions.visionStart, positions.visionEnd);
             }
 
             scrollPositions.current = positions;
@@ -190,13 +190,13 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
                     const visionProgress = (progress - visionStart) / (visionEnd - visionStart);
                     if (visionProgress < 0.5) {
                         currentPosition = 'B-C';
-                        transitionProgress = Math.min(1, visionProgress * 6); // Faster transition
+                        transitionProgress = Math.min(1, visionProgress * 6);
                         radiusScale = 2.5;
                     } else {
                         currentPosition = 'C-D';
                         const secondHalf = (visionProgress - 0.5) / 0.5;
                         transitionProgress = Math.min(1, secondHalf * 3);
-                        radiusScale = 2 - (secondHalf * 0.5); // Gradually reduce from 2 to 1.5
+                        radiusScale = 2 - (secondHalf * 0.5);
                     }
                 }
             } else {
@@ -210,7 +210,7 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
                 radiusScale = 1.5;
 
                 const scrollAfterStop = progress - stopScrollPosition.current;
-                particleOffset.current = scrollAfterStop * 40;
+                particleOffset.current = scrollAfterStop * 60;
             }
 
             simulationMaterialRef.current.uniforms.uTransitionProgress.value = transitionProgress;

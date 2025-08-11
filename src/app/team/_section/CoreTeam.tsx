@@ -4,50 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-
-type Member = {
-    name: string;
-    role: string;
-    photo: string;
-    bio: string;
-    links?: { linkedin?: string; github?: string };
-};
-
-const members: Member[] = [
-    {
-        name: "Avinash",
-        role: "Hardware Developer",
-        photo: "/team/avinash.webp",
-        bio: "Designs and develops innovative hardware solutions, specializing in embedded systems and IoT devices.",
-        links: { linkedin: "#", github: "#" },
-    },
-    {
-        name: "Hursun",
-        role: "Full Stack Developer & AI",
-        photo: "/team/hursun2.webp",
-        bio: "Building scalable full-stack applications while developing cutting-edge AI solutions and machine learning models.",
-        links: { linkedin: "#" },
-    },
-    {
-        name: "Dhayanath",
-        role: "Marketing & Finance",
-        photo: "/team/dhaya2.webp",
-        bio: "Drives strategic marketing initiatives and manages financial operations to fuel company growth and market expansion.",
-        links: { github: "#" },
-    },
-    {
-        name: "Shantosh",
-        role: "AI Developer",
-        photo: "/team/shantosh.webp",
-        bio: "Developing advanced artificial intelligence algorithms and neural networks for next-generation applications.",
-    },
-    {
-        name: "Mano Vikram",
-        role: "UI/UX Designer & 3D Modeler",
-        photo: "/team/mano.webp",
-        bio: "Creating intuitive user experiences and stunning 3D visualizations that bring digital concepts to life.",
-    },
-];
+import { members } from '@/lib/data';
 
 const CoreTeam = () => {
     return (

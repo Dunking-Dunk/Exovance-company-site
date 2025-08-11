@@ -172,7 +172,7 @@ const Layout = ({ children }: Props) => {
                 smoothWheel: true,
                 syncTouch: true,
                 autoRaf: false,
-                lerp: 0.09
+                lerp: 0.07
             }}
         >
             <div

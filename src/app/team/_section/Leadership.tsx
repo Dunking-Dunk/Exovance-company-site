@@ -3,62 +3,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { founders } from '@/lib/data'
 import Link from "next/link";
-
-type Founder = {
-    name: string;
-    role: string;
-    photo: string; // public path
-    oneLiner: string;
-    bio: string;
-    expertise: string[];
-    links?: {
-        linkedin?: string;
-        github?: string;
-        portfolio?: string;
-    };
-};
-
-const founders: Founder[] = [
-    {
-        name: "Hursun SS",
-        role: "Full-Stack Developer",
-        photo: "/team/hursun2.webp",
-        oneLiner: "A full-stack web developer who builds both the front-end and back-end of websites and apps, with a curiosity for AI and IoT.",
-        bio: "I'm a full-stack web developer with skills in React, Express, React Native, Next.js, Django, and Three.js. I started with web development and then moved into mobile apps. I am curious by nature, so I explored AI and now use it in my projects to make them smarter. I also work with IoT, combining smart devices with AI-powered software. I am the president of the largest tech club at Rajalakshmi Engineering College.",
-        expertise: ["React", "Express", "React Native", "Next.js", "Django", "Three.js", "AI & ML", "IOT"],
-        links: {
-            linkedin: "https://www.linkedin.com/in/hursun-ss-377659233/",
-            github: "https://github.com/Dunking-Dunk"
-        }
-    },
-    {
-        name: "Founder Name",
-        role: "Co-Founder & Product Engineer",
-        photo: "/team/dhaya2.webp",
-        oneLiner: "Designing and shipping products that are as elegant as they are performant.",
-        bio:
-            "Final-year Information Technology student with a focus on full‑stack and DX. Built scalable web systems, design systems, and internal tooling to speed up product delivery.",
-        expertise: ["TypeScript", "Next.js", "Node.js", "PostgreSQL", "UX"],
-        links: {
-            linkedin: "#",
-            github: "#",
-        },
-    },
-    {
-        name: "Founder Name",
-        role: "Co-Founder & Robotics Engineer",
-        photo: "/team/shantosh.webp",
-        oneLiner: "Where hardware meets intelligence—building systems that move and think.",
-        bio:
-            "Electronics and Communication student specializing in embedded systems and control. Worked on autonomous navigation, motor control, and perception pipelines.",
-        expertise: ["ROS", "C++", "Embedded", "SLAM", "Control"],
-        links: {
-            linkedin: "#",
-            github: "#",
-        },
-    },
-];
 
 const Leadership = () => {
     return (
