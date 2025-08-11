@@ -10,7 +10,7 @@ import { useGLTF } from '@react-three/drei';
 useGLTF.preload('/3d/brain_3d.glb')
 useGLTF.preload('/3d/human_head.glb')
 useGLTF.preload('/3d/spider_robot.glb')
-useGLTF.preload('/3d/dna.glb')
+useGLTF.preload('/3d/dna_3.glb')
 
 const getRandomData = (width, height) => {
     const length = width * height * 4;
@@ -105,7 +105,7 @@ const humanVertices = () => {
 
 
 const robotVertices = () => {
-    const { nodes } = useGLTF('/3d/dna.glb');
+    const { nodes } = useGLTF('/3d/dna_3.glb');
 
     const positions = nodes.Scene.children[0].geometry.attributes.position.array;
     return positions;

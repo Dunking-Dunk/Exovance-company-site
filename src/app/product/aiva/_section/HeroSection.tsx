@@ -17,64 +17,9 @@ const HeroSection = () => {
     };
 
     return (
-        <div className="relative grid lg:grid-cols-2 gap-12 lg:gap-16 items-center max-w-7xl mx-auto">
+        <div className="relative grid lg:grid-cols-2 gap-12 lg:gap-16 items-center max-w-7xl mx-auto py-10 md:py-20">
             <Spotlight2 className='absolute top-10' />
-            <div className="space-y-8">
-                <div>
-                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-customGrayLight mb-4">
-                        AIVA
-                    </h1>
-                    <div className="w-24 h-1 bg-customGrayLight"></div>
-                </div>
 
-                <div>
-                    <p className="text-lg md:text-xl text-customGrayDarker leading-relaxed">
-                        AIVA is an AI-powered virtual sales assistant designed to enhance customer engagement and sales
-                        in both in-store and online retail environments. More than just AI, AIVA revolutionizes the
-                        future of selling through emotional intelligence and seamless customer interactions.
-                    </p>
-                </div>
-
-                {/* Waitlist Form */}
-                <div className="max-w-md">
-                    {!isSubmitted ? (
-                        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4">
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="Enter your email"
-                                required
-                                className="flex-1 px-6 py-4 rounded-full bg-customBlackAlt/10 border border-customGrayDark/30 text-customGrayLight placeholder-customGrayDarker focus:outline-none focus:border-customGrayLight transition-colors"
-                            />
-                            <button
-                                type="submit"
-                                className="px-8 py-4 bg-customGrayLight text-customBlack rounded-full font-semibold hover:bg-customGray transition-colors"
-                            >
-                                Join Waitlist
-                            </button>
-                        </form>
-                    ) : (
-                        <div className="p-6 rounded-xl bg-customBlackAlt/10 border border-customGrayDark/30">
-                            <div className="text-2xl mb-2">🎉</div>
-                            <h3 className="text-lg font-semibold text-customGrayLight mb-2">
-                                You're on the list!
-                            </h3>
-                            <p className="text-customGrayDarker">
-                                We'll notify you when AIVA is ready for early access.
-                            </p>
-                        </div>
-                    )}
-                </div>
-
-                <div>
-                    <span className="inline-block px-6 py-2 border border-customGrayDark/40 text-customGray text-sm font-medium rounded-full">
-                        Coming Soon
-                    </span>
-                </div>
-            </div>
-
-            {/* Right Column - Video */}
             <div className="relative">
                 <div className="relative w-full h-[60vh] md:h-[70vh] lg:h-[80vh] rounded-2xl overflow-hidden group">
                     <video
@@ -133,6 +78,63 @@ const HeroSection = () => {
                     </button>
                 </div>
             </div>
+
+            <div className="space-y-8">
+                <div>
+                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-customGrayLight mb-4">
+                        AIVA
+                    </h1>
+                    <div className="w-24 h-1 bg-customGrayLight"></div>
+                </div>
+
+                <div>
+                    <p className="text-lg md:text-xl text-customGrayDarker leading-relaxed">
+                        AIVA is an AI-powered virtual sales assistant designed to enhance customer engagement and sales
+                        in both in-store and online retail environments. More than just AI, AIVA revolutionizes the
+                        future of selling through emotional intelligence and seamless customer interactions.
+                    </p>
+                </div>
+
+
+                <div className="max-w-md">
+                    {!isSubmitted ? (
+                        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4">
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Enter your email"
+                                required
+                                className="flex-1 px-6 py-4 rounded-full bg-customBlackAlt/10 border border-customGrayDark/30 text-customGrayLight placeholder-customGrayDarker focus:outline-none focus:border-customGrayLight transition-colors"
+                            />
+                            <button
+                                type="submit"
+                                className="px-8 py-4 bg-customGrayLight text-customBlack rounded-full font-semibold hover:bg-customGray transition-colors"
+                            >
+                                Join Waitlist
+                            </button>
+                        </form>
+                    ) : (
+                        <div className="p-6 rounded-xl bg-customBlackAlt/10 border border-customGrayDark/30">
+                            <div className="text-2xl mb-2">🎉</div>
+                            <h3 className="text-lg font-semibold text-customGrayLight mb-2">
+                                You're on the list!
+                            </h3>
+                            <p className="text-customGrayDarker">
+                                We'll notify you when AIVA is ready for early access.
+                            </p>
+                        </div>
+                    )}
+                </div>
+
+                <div>
+                    <span className="inline-block px-6 py-2 border border-customGrayDark/40 text-customGray text-sm font-medium rounded-full">
+                        Coming Soon
+                    </span>
+                </div>
+            </div>
+
+
         </div>
     );
 };

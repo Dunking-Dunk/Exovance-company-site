@@ -7,9 +7,9 @@ import SpotlightCard from "@/components/ui/SpotlightCard";
 
 const Mission = () => {
     return (
-        <section className="relative min-h-screen flex items-center justify-center lg:px-32 py-20 z-[1]">
+        <section className="relative min-h-screen flex items-center justify-center lg:px-32 py-32 z-[1]">
 
-            <div className="relative z-10 flex flex-col items-center justify-center text-center max-w-7xl mx-auto">
+            <div className="relative z-10 flex flex-col items-center justify-center text-center max-w-7xl mx-auto px-4">
 
 
                 <TextGenerateEffect
@@ -22,7 +22,7 @@ const Mission = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: 0.4 }}
-                    className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-12"
+                    className="grid md:grid-cols-3 md:gap-8 max-w-5xl mx-auto mb-12"
                 >
                     <div className="text-center p-6">
                         <div className="w-16 h-16 mx-auto mb-4 bg-customBlackAlt/20 rounded-full flex items-center justify-center">

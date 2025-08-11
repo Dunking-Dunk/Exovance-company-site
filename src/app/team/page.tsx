@@ -20,7 +20,7 @@ const TeamPage = () => {
     return (
         <main className='w-full h-full relative z-10'>
 
-            <section className='w-full h-full py-60'>
+            <section className='w-full h-full py-20 md:py-60'>
                 <div className="px-4 md:px-32">
                     <TextGenerateEffect className='text-7xl md:text-9xl text-customGrayLight mb-6'
                         words='Meet the Innovators <br/> of Exovance'
