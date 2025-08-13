@@ -17,7 +17,7 @@ const FinalCTASection = () => {
                 <div className="max-w-5xl mx-auto relative">
                     {/* Status indicator with enhanced styling */}
                     <div className="inline-flex items-center justify-center mb-8">
-                        <div className="relative p-8 rounded-3xl bg-gradient-to-br from-customBlackAlt/20 via-customBlackAlt/10 to-transparent border border-customGrayDark/30 backdrop-blur-sm">
+                        <div className="relative p-8 rounded-3xl border border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-md backdrop-saturate-150">
                             {/* Animated status light */}
                             <div className="absolute -top-2 -right-2 flex items-center justify-center w-8 h-8 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full border-2 border-customBlack shadow-lg">
                                 <div className="w-3 h-3 bg-yellow-300 rounded-full animate-pulse"></div>
@@ -104,17 +104,17 @@ const FinalCTASection = () => {
 
                     {/* Additional info cards */}
                     <div className="grid md:grid-cols-3 gap-6 mt-16">
-                        <div className="p-6 rounded-2xl bg-gradient-to-br from-customBlackAlt/10 to-transparent border border-customGrayDark/30 backdrop-blur-sm">
+                        <div className="p-6 rounded-2xl border border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-md backdrop-saturate-150">
                             <div className="text-2xl mb-3">🚀</div>
                             <h4 className="text-lg font-semibold text-customGrayLight mb-2">Early Access</h4>
                             <p className="text-customGrayDarker text-sm">Be among the first to experience AIVA's revolutionary capabilities</p>
                         </div>
-                        <div className="p-6 rounded-2xl bg-gradient-to-br from-customBlackAlt/10 to-transparent border border-customGrayDark/30 backdrop-blur-sm">
+                        <div className="p-6 rounded-2xl border border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-md backdrop-saturate-150">
                             <div className="text-2xl mb-3">💼</div>
                             <h4 className="text-lg font-semibold text-customGrayLight mb-2">Custom Implementation</h4>
                             <p className="text-customGrayDarker text-sm">Tailored solutions for your specific business needs and requirements</p>
                         </div>
-                        <div className="p-6 rounded-2xl bg-gradient-to-br from-customBlackAlt/10 to-transparent border border-customGrayDark/30 backdrop-blur-sm">
+                        <div className="p-6 rounded-2xl border border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-md backdrop-saturate-150">
                             <div className="text-2xl mb-3">🤝</div>
                             <h4 className="text-lg font-semibold text-customGrayLight mb-2">Partnership Opportunities</h4>
                             <p className="text-customGrayDarker text-sm">Explore collaboration possibilities and strategic partnerships</p>

@@ -27,7 +27,7 @@ const KeyFeaturesSection = () => {
             {/* Enhanced feature cards */}
             <div className="grid md:grid-cols-3 gap-8 lg:gap-10">
                 <SpotlightCard
-                    className="group text-center p-10 bg-gradient-to-br from-customBlackAlt/10 via-customBlackAlt/5 to-transparent border border-customGrayDark/30 rounded-3xl hover:border-customGrayLight/40 transition-all duration-500 hover:scale-105 relative overflow-hidden"
+                    className="group text-center p-10 rounded-3xl border border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-md backdrop-saturate-150 relative overflow-hidden transition-colors"
                     spotlightColor="rgba(160, 160, 160, 0.15)"
                 >
                     {/* Background pattern */}
@@ -64,7 +64,7 @@ const KeyFeaturesSection = () => {
                 </SpotlightCard>
 
                 <SpotlightCard
-                    className="group text-center p-10 bg-gradient-to-br from-customBlackAlt/10 via-customBlackAlt/5 to-transparent border border-customGrayDark/30 rounded-3xl hover:border-customGrayLight/40 transition-all duration-500 hover:scale-105 relative overflow-hidden"
+                    className="group text-center p-10 rounded-3xl border border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-md backdrop-saturate-150 relative overflow-hidden transition-colors"
                     spotlightColor="rgba(160, 160, 160, 0.15)"
                 >
                     <div className="absolute inset-0 opacity-5">
@@ -100,7 +100,7 @@ const KeyFeaturesSection = () => {
                 </SpotlightCard>
 
                 <SpotlightCard
-                    className="group text-center p-10 bg-gradient-to-br from-customBlackAlt/10 via-customBlackAlt/5 to-transparent border border-customGrayDark/30 rounded-3xl hover:border-customGrayLight/40 transition-all duration-500 hover:scale-105 relative overflow-hidden"
+                    className="group text-center p-10 rounded-3xl border border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-md backdrop-saturate-150 relative overflow-hidden transition-colors"
                     spotlightColor="rgba(160, 160, 160, 0.15)"
                 >
                     <div className="absolute inset-0 opacity-5">

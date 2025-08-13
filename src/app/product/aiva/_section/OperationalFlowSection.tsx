@@ -26,7 +26,7 @@ const OperationalFlowSection = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <div className="relative">
                     <SpotlightCard
-                        className="group h-full text-center p-8 bg-gradient-to-br from-customBlackAlt/10 via-customBlackAlt/5 to-transparent border border-customGrayDark/30 rounded-2xl hover:border-customGrayLight/40 transition-all duration-500 hover:scale-105"
+                        className="group h-full text-center p-8 rounded-2xl border border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-md backdrop-saturate-150 transition-colors"
                         spotlightColor="rgba(160, 160, 160, 0.15)"
                     >
                         <div className="relative">
@@ -53,7 +53,7 @@ const OperationalFlowSection = () => {
 
                 <div className="relative">
                     <SpotlightCard
-                        className="group h-full text-center p-8 bg-gradient-to-br from-customBlackAlt/10 via-customBlackAlt/5 to-transparent border border-customGrayDark/30 rounded-2xl hover:border-customGrayLight/40 transition-all duration-500 hover:scale-105"
+                        className="group h-full text-center p-8 rounded-2xl border border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-md backdrop-saturate-150 transition-colors"
                         spotlightColor="rgba(160, 160, 160, 0.15)"
                     >
                         <div className="relative">
@@ -79,7 +79,7 @@ const OperationalFlowSection = () => {
 
                 <div className="relative">
                     <SpotlightCard
-                        className="group h-full text-center p-8 bg-gradient-to-br from-customBlackAlt/10 via-customBlackAlt/5 to-transparent border border-customGrayDark/30 rounded-2xl hover:border-customGrayLight/40 transition-all duration-500 hover:scale-105"
+                        className="group h-full text-center p-8 rounded-2xl border border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-md backdrop-saturate-150 transition-colors"
                         spotlightColor="rgba(160, 160, 160, 0.15)"
                     >
                         <div className="relative">
@@ -105,7 +105,7 @@ const OperationalFlowSection = () => {
 
                 <div className="relative">
                     <SpotlightCard
-                        className="group h-full text-center p-8 bg-gradient-to-br from-customBlackAlt/10 via-customBlackAlt/5 to-transparent border border-customGrayDark/30 rounded-2xl hover:border-customGrayLight/40 transition-all duration-500 hover:scale-105"
+                        className="group h-full text-center p-8 rounded-2xl border border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-md backdrop-saturate-150 transition-colors"
                         spotlightColor="rgba(160, 160, 160, 0.15)"
                     >
                         <div className="relative">

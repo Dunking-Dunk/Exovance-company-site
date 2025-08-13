@@ -21,7 +21,7 @@ const DataAnalyticsSection = () => {
             {/* Enhanced grid layout */}
             <div className="grid md:grid-cols-2 md:grid-rows-2 gap-8 lg:gap-12">
                 <SpotlightCard
-                    className="group p-8 bg-gradient-to-br from-customBlackAlt/10 via-customBlackAlt/5 to-transparent border border-customGrayDark/30 rounded-2xl hover:border-customGrayLight/40 transition-all duration-500 hover:scale-[1.02]"
+                    className="group p-8 rounded-2xl border border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-md backdrop-saturate-150 transition-colors"
                     spotlightColor="rgba(160, 160, 160, 0.15)"
                 >
                     <div className="flex items-start space-x-4">
@@ -48,7 +48,7 @@ const DataAnalyticsSection = () => {
                 </SpotlightCard>
 
                 <SpotlightCard
-                    className="group p-8 bg-gradient-to-br from-customBlackAlt/10 via-customBlackAlt/5 to-transparent border border-customGrayDark/30 rounded-2xl hover:border-customGrayLight/40 transition-all duration-500 hover:scale-[1.02]"
+                    className="group p-8 rounded-2xl border border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-md backdrop-saturate-150 transition-colors"
                     spotlightColor="rgba(160, 160, 160, 0.15)"
                 >
                     <div className="flex items-start space-x-4">
@@ -75,7 +75,7 @@ const DataAnalyticsSection = () => {
                 </SpotlightCard>
 
                 <SpotlightCard
-                    className="group p-8 bg-gradient-to-br from-customBlackAlt/10 via-customBlackAlt/5 to-transparent border border-customGrayDark/30 rounded-2xl hover:border-customGrayLight/40 transition-all duration-500 hover:scale-[1.02]"
+                    className="group p-8 rounded-2xl border border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-md backdrop-saturate-150 transition-colors"
                     spotlightColor="rgba(160, 160, 160, 0.15)"
                 >
                     <div className="flex items-start space-x-4">
@@ -102,7 +102,7 @@ const DataAnalyticsSection = () => {
                 </SpotlightCard>
 
                 <SpotlightCard
-                    className="group p-8 bg-gradient-to-br from-customBlackAlt/10 via-customBlackAlt/5 to-transparent border border-customGrayDark/30 rounded-2xl hover:border-customGrayLight/40 transition-all duration-500 hover:scale-[1.02]"
+                    className="group p-8 rounded-2xl border border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-md backdrop-saturate-150 transition-colors"
                     spotlightColor="rgba(160, 160, 160, 0.15)"
                 >
                     <div className="flex items-start space-x-4">
