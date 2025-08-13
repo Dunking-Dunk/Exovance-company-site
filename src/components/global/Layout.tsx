@@ -23,13 +23,13 @@ gsap.registerPlugin(useGSAP);
 const Scene: any = dynamic(() => import('@/components/canva/Scene'), { ssr: false })
 const View: any = dynamic(() => import('@/components/canva/View').then((mod: any) => mod.View), { ssr: false })
 const Common: any = dynamic(() => import('@/components/canva/View').then((mod: any) => mod.Common), { ssr: false })
-// const Particles: any = dynamic(() => import('@/components/canva/Particles').then((mod: any) => mod.Particles), { ssr: false })
+const Particles: any = dynamic(() => import('@/components/canva/Particles').then((mod: any) => mod.Particles), { ssr: false })
 const TransparentPlane: any = dynamic(() => import('@/components/canva/TransparentPlane').then((mod: any) => mod.TransparentPlane), { ssr: false })
 
-// Preload 3D components for better performance
+
 if (typeof window !== 'undefined') {
     import('@/components/canva/View');
-    // import('@/components/canva/Particles');
+    import('@/components/canva/Particles');
     import('@/components/canva/TransparentPlane');
 }
 
@@ -42,7 +42,7 @@ const Layout = ({ children }: Props) => {
     const lenisRef = useRef<any>(null)
     const [isLoading, setIsLoading] = React.useState(true)
     const [sceneReady, setSceneReady] = React.useState(false)
-    const [particlesReady, setParticlesReady] = React.useState(true)
+    const [particlesReady, setParticlesReady] = React.useState(false)
     const { theme } = useScrollTheme();
     const pathname = usePathname();
 
@@ -225,7 +225,7 @@ const Layout = ({ children }: Props) => {
 
                 <View className="fixed inset-0 pointer-events-none z-[0]">
                     {render3DComponents.showCommon && <Common />}
-                    {/* {render3DComponents.showParticles && <Particles onReady={handleParticlesReady} />} */}
+                    {render3DComponents.showParticles && <Particles onReady={handleParticlesReady} />}
                     {render3DComponents.showTransparentPlane && <TransparentPlane />}
                 </View>
                 {isLoading && <LoadingScreen onLoadingComplete={handleLoadingComplete} />}

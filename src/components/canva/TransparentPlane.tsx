@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect, useMemo, useState } from 'react'
 import { useScrollTheme } from '@/components/provider/scroll-theme-provider'
+import { useMobile } from '@/hooks/useMobile'
 import * as THREE from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useFBO } from '@react-three/drei'
@@ -134,17 +135,16 @@ const densityShader = `
     }
 `
 
-// Final render shader with dark black and white gradient effects
-const renderShader = `
+// Desktop shader (richer detail)
+const renderShaderDesktop = `
     uniform sampler2D uDensity;
     uniform sampler2D uVelocity;
     uniform vec2 uResolution;
     uniform float uTime;
     uniform float uOpacity;
-    uniform float uThemeValue; // Use float value for smooth interpolation
+    uniform float uThemeValue;
     varying vec2 vUv;
-    
-    // Enhanced noise function for more fluid patterns
+
     vec3 hash(vec3 p) {
         p = vec3(dot(p, vec3(127.1, 311.7, 74.7)),
                  dot(p, vec3(269.5, 183.3, 246.1)),
@@ -156,7 +156,6 @@ const renderShader = `
         vec3 i = floor(p);
         vec3 f = fract(p);
         vec3 u = f * f * (3.0 - 2.0 * f);
-        
         return mix(mix(mix(dot(hash(i + vec3(0.0, 0.0, 0.0)), f - vec3(0.0, 0.0, 0.0)),
                            dot(hash(i + vec3(1.0, 0.0, 0.0)), f - vec3(1.0, 0.0, 0.0)), u.x),
                        mix(dot(hash(i + vec3(0.0, 1.0, 0.0)), f - vec3(0.0, 1.0, 0.0)),
@@ -167,71 +166,36 @@ const renderShader = `
                            dot(hash(i + vec3(1.0, 1.0, 1.0)), f - vec3(1.0, 1.0, 1.0)), u.x), u.y), u.z);
     }
 
-    // Enhanced fractal noise with more octaves
     float fbm(vec3 p) {
         float value = 0.0;
         float amplitude = 0.5;
         float frequency = 1.0;
-        
-        // 6 octaves for more detailed noise
-        value += amplitude * noise(p * frequency);
-        amplitude *= 0.5;
-        frequency *= 2.0;
-        
-        value += amplitude * noise(p * frequency);
-        amplitude *= 0.5;
-        frequency *= 2.0;
-        
-        value += amplitude * noise(p * frequency);
-        amplitude *= 0.5;
-        frequency *= 2.0;
-        
-        value += amplitude * noise(p * frequency);
-        amplitude *= 0.5;
-        frequency *= 2.0;
-        
-        value += amplitude * noise(p * frequency);
-        amplitude *= 0.5;
-        frequency *= 2.0;
-        
-        value += amplitude * noise(p * frequency);
-        
+        for (int i = 0; i < 6; i++) {
+            value += amplitude * noise(p * frequency);
+            amplitude *= 0.5;
+            frequency *= 2.0;
+        }
         return value;
     }
 
-    // Grainy noise function for texture
-    float grainNoise(vec2 uv, float time) {
-        vec2 grain_uv = uv * 800.0 + time * 0.1;
-        return fract(sin(dot(grain_uv, vec2(12.9898, 78.233))) * 43758.5453) * 2.0 - 1.0;
-    }
-    
-    // Authentic film grain noise function
     float filmGrain(vec2 uv, float time) {
-        // Create moving grain coordinates
         vec2 grainUv = uv + time * 0.02;
-        
-        // Multiple hash functions for realistic grain texture
         float hash1 = fract(sin(dot(grainUv * 512.0, vec2(12.9898, 78.233))) * 43758.5453);
         float hash2 = fract(sin(dot(grainUv * 256.0 + 1.0, vec2(269.5, 183.3))) * 43758.5453);
         float hash3 = fract(sin(dot(grainUv * 1024.0 + 2.0, vec2(419.2, 371.9))) * 43758.5453);
-        
-        // Combine multiple scales for realistic film grain
         float grain = 0.0;
-        grain += (hash1 - 0.5) * 0.6;  // Main grain structure
-        grain += (hash2 - 0.5) * 0.3;  // Medium grain details
-        grain += (hash3 - 0.5) * 0.1;  // Fine grain details
-        
+        grain += (hash1 - 0.5) * 0.6;
+        grain += (hash2 - 0.5) * 0.3;
+        grain += (hash3 - 0.5) * 0.1;
         return grain;
     }
-    
-    // Additional noise layers for grain complexity
+
     float layeredGrainNoise(vec2 uv, float time, float scale) {
         vec2 noiseUv = uv * scale + time * 0.01;
         float hash = fract(sin(dot(noiseUv, vec2(127.1, 311.7))) * 43758.5453);
-        return (hash - 0.5) * 2.0; // Center around 0 with range -1 to 1
+        return (hash - 0.5) * 2.0;
     }
 
-    // Wavy noise function for flowing patterns
     float wavyNoise(vec2 uv, float time) {
         vec2 wave1 = vec2(
             sin(uv.x * 8.0 + time * 1.2) * 0.1,
@@ -245,19 +209,15 @@ const renderShader = `
             sin(uv.x * 16.0 + uv.y * 4.0 + time * 0.7) * 0.03,
             cos(uv.y * 14.0 + uv.x * 3.0 + time * 1.3) * 0.03
         );
-        
         vec2 waveUv = uv + wave1 + wave2 + wave3;
         return noise(vec3(waveUv * 4.0, time * 0.3));
     }
 
-    // Enhanced wavy fractal noise
     float wavyFbm(vec3 p) {
         vec2 uv = p.xy;
         float value = 0.0;
         float amplitude = 0.5;
         float frequency = 1.0;
-        
-        // Apply wavy distortion to each octave
         for (int i = 0; i < 4; i++) {
             vec2 wavyUv = uv + vec2(
                 sin(uv.x * frequency * 0.5 + uTime * 0.8) * 0.1 / frequency,
@@ -267,128 +227,132 @@ const renderShader = `
             amplitude *= 0.5;
             frequency *= 2.0;
         }
-        
         return value;
     }
 
     void main() {
         vec4 density = texture2D(uDensity, vUv);
         vec2 velocity = texture2D(uVelocity, vUv).xy;
-        
-        // Enhanced fluid distortion with more noise layers
-        vec2 fluidUv = vUv;
-        fluidUv += velocity * 10.;
-        
-        // Multiple detailed noise layers with wavy patterns
+        vec2 fluidUv = vUv + velocity * 10.0;
         float detailNoise1 = wavyFbm(vec3(fluidUv * 8.0, uTime * 0.1));
         float detailNoise2 = wavyFbm(vec3(fluidUv * 16.0 + 50.0, uTime * 0.08));
         float detailNoise3 = wavyNoise(fluidUv * 32.0 + 100.0, uTime * 0.12);
         float detailNoise4 = wavyNoise(fluidUv * 64.0 + 150.0, uTime * 0.06);
-        
-        // Add flowing wavy patterns
         float wavyPattern1 = wavyNoise(fluidUv * 6.0, uTime * 0.4);
         float wavyPattern2 = wavyNoise(fluidUv * 12.0 + 200.0, uTime * 0.3);
-        
-        // Combine multiple noise layers for rich detail
         float combinedNoise = detailNoise1 * 0.3 + detailNoise2 * 0.25 + detailNoise3 * 0.2 + detailNoise4 * 0.15;
-        combinedNoise += (wavyPattern1 + wavyPattern2) * 0.05; // Add wavy influence
-        
-        // Create flowing gradient with wavy distortion
-        vec2 gradient = fluidUv;
-        gradient += vec2(combinedNoise * 0.2);
-        gradient += velocity * 1.5;
-        
-        // Add wavy distortion to gradient
-        gradient += vec2(
-            wavyPattern1 * 0.1,
-            wavyPattern2 * 0.08
-        );
-        
-        // Velocity magnitude for dynamic effects
+        combinedNoise += (wavyPattern1 + wavyPattern2) * 0.05;
+
+        vec2 gradient = fluidUv + vec2(combinedNoise * 0.2) + velocity * 1.5;
+        gradient += vec2(wavyPattern1 * 0.1, wavyPattern2 * 0.08);
         float velocityMag = length(velocity);
-        float fluidStrength = velocityMag * 3.0 + combinedNoise * 0.2; // Reduced noise influence
-        
-        // Gradient calculation with more noise detail
+        float fluidStrength = velocityMag * 3.0 + combinedNoise * 0.2;
+
         float gradientValue = 0.0;
-        gradientValue += smoothstep(-0.3, 1.3, gradient.x + gradient.y + combinedNoise * 0.2) * 0.3; // Reduced noise
-        gradientValue += smoothstep(-0.2, 1.2, gradient.x - gradient.y + combinedNoise * 0.15) * 0.3; // Reduced noise
-        gradientValue += smoothstep(0.0, 1.0, length(gradient - 0.5) * 1.5 + combinedNoise * 0.15) * 0.2; // Reduced noise
-        gradientValue += combinedNoise * 0.15; // Reduced direct noise contribution
-        
-        // Add fluid motion and density influence
+        gradientValue += smoothstep(-0.3, 1.3, gradient.x + gradient.y + combinedNoise * 0.2) * 0.3;
+        gradientValue += smoothstep(-0.2, 1.2, gradient.x - gradient.y + combinedNoise * 0.15) * 0.3;
+        gradientValue += smoothstep(0.0, 1.0, length(gradient - 0.5) * 1.5 + combinedNoise * 0.15) * 0.2;
+        gradientValue += combinedNoise * 0.15;
+
         gradientValue += fluidStrength * 0.3;
-        gradientValue += density.a * 0.8; // Stronger density influence
-        
-        // Authentic film grain effect covering the entire plane
+        gradientValue += density.a * 0.8;
+
         float movieGrain = filmGrain(vUv, uTime);
-        
-        // Multiple grain layers for different frequencies
-        float grainLayer1 = layeredGrainNoise(vUv, uTime, 800.0);  // Coarse grain
-        float grainLayer2 = layeredGrainNoise(vUv, uTime * 1.2, 1200.0); // Medium grain
-        float grainLayer3 = layeredGrainNoise(vUv, uTime * 0.8, 1600.0); // Fine grain
-        float grainLayer4 = layeredGrainNoise(vUv, uTime * 1.5, 2000.0); // Ultra fine grain
-        
-        // Combine all grain layers for realistic film texture
-        float combinedGrain = movieGrain * 0.5 + 
-                                  grainLayer1 * 0.25 + 
-                                  grainLayer2 * 0.15 + 
-                                  grainLayer3 * 0.08 + 
-                                  grainLayer4 * 0.02;
-        
-        // Intensify grain for visibility - make it much more prominent
-        float grainIntensity = 0.4; // High intensity for visible effect
-        float finalGrain = combinedGrain * grainIntensity;
-        
-        // Apply film grain effect across entire plane with smooth interpolation
+        float grainLayer1 = layeredGrainNoise(vUv, uTime, 800.0);
+        float grainLayer2 = layeredGrainNoise(vUv, uTime * 1.2, 1200.0);
+        float grainLayer3 = layeredGrainNoise(vUv, uTime * 0.8, 1600.0);
+        float grainLayer4 = layeredGrainNoise(vUv, uTime * 1.5, 2000.0);
+        float combinedGrain = movieGrain * 0.5 + grainLayer1 * 0.25 + grainLayer2 * 0.15 + grainLayer3 * 0.08 + grainLayer4 * 0.02;
+        float finalGrain = combinedGrain * 0.4;
+
         vec3 baseColor;
-        
-        // Calculate light mode version
-        float lightGradientValue = 1.0 - gradientValue; // Invert
-        lightGradientValue = pow(lightGradientValue, 2.8); // Strong contrast
-        float lightDarkGrayRange = 0.15 + lightGradientValue * 0.1; // Very dark range: 0.15 to 0.25 (very dark gray)
-        vec3 lightBaseColor = vec3(lightDarkGrayRange);
-        lightBaseColor += vec3(finalGrain * 0.7); // Slightly reduced but still intense grain in light mode
+        float lightGradientValue = pow(1.0 - gradientValue, 2.8);
+        float lightDarkGrayRange = 0.15 + lightGradientValue * 0.1;
+        vec3 lightBaseColor = vec3(lightDarkGrayRange) + vec3(finalGrain * 0.7);
         float lightShadow = smoothstep(0.95, 1.0, (1.0 - lightGradientValue) + fluidStrength);
-        lightBaseColor -= vec3(lightShadow * 0.05); // Minimal shadows to stay very dark
-        
-        // Calculate dark mode version
-        float darkGradientValue = pow(gradientValue, 3.0); // Very strong contrast to push almost everything to black
-        float darkBlackRange = darkGradientValue * 0.3; // Extremely limited range: 0.0 to 0.08 (ultra dark)
-        vec3 darkBaseColor = vec3(darkBlackRange);
-        darkBaseColor += vec3(finalGrain); // Full intensity film grain in dark mode
+        lightBaseColor -= vec3(lightShadow * 0.05);
+
+        float darkGradientValue = pow(gradientValue, 3.0);
+        float darkBlackRange = darkGradientValue * 0.3;
+        vec3 darkBaseColor = vec3(darkBlackRange) + vec3(finalGrain);
         float darkHighlight = smoothstep(0.98, 1.0, darkGradientValue + fluidStrength);
-        darkBaseColor += vec3(darkHighlight * 0.05); // Very minimal highlights
-        
-        // Smooth interpolation between light and dark modes
+        darkBaseColor += vec3(darkHighlight * 0.05);
+
         baseColor = mix(lightBaseColor, darkBaseColor, uThemeValue);
-        
-        // Add extremely subtle flowing patterns with wavy noise
-        float wavyFlow1 = wavyNoise(gradient * 15.0, uTime * 2.0);
-        float wavyFlow2 = wavyNoise(gradient * 20.0 + 300.0, uTime * 1.5);
-        
-        float flowPattern = sin(gradient.x * 25.0 + uTime * 2.0 + combinedNoise * 8.0 + finalGrain * 10.0 + wavyFlow1 * 5.0) * cos(gradient.y * 20.0 + uTime * 1.5 + combinedNoise * 6.0 + finalGrain * 8.0 + wavyFlow2 * 4.0);
-        flowPattern *= (velocityMag * 1.5 + 0.05) * combinedNoise;
-        
-        // Add very subtle wavy flow contribution with smooth interpolation
-        float pureWavyFlow = (wavyFlow1 + wavyFlow2) * 0.5;
-        
-        // Calculate light mode flow effects
-        vec3 lightFlowEffect = vec3(flowPattern * 0.005) + vec3(pureWavyFlow * 0.003);
-        
-        // Calculate dark mode flow effects   
-        vec3 darkFlowEffect = vec3(-flowPattern * 0.003) + vec3(-pureWavyFlow * 0.002);
-        
-        // Smooth interpolation between light and dark flow effects
-        baseColor += mix(lightFlowEffect, darkFlowEffect, uThemeValue);
-        
-        // Film grain stays consistent across all effects
         baseColor = clamp(baseColor, 0.0, 1.0);
-        
-        // Dynamic opacity
+
         float dynamicOpacity = uOpacity * (0.3 + velocityMag * 1.5 + density.a * 0.5);
-        dynamicOpacity = clamp(dynamicOpacity, 0.0, 0.8); // Cap maximum opacity
-        
+        dynamicOpacity = clamp(dynamicOpacity, 0.0, 0.8);
+
         gl_FragColor = vec4(baseColor, dynamicOpacity);
+    }
+`
+
+// Mobile shader (optimized)
+const renderShaderMobile = `
+    uniform sampler2D uDensity;
+    uniform sampler2D uVelocity;
+    uniform vec2 uResolution;
+    uniform float uTime;
+    uniform float uOpacity;
+    uniform float uThemeValue;
+    varying vec2 vUv;
+    
+    // Lightweight 2D noise
+    float hash21(vec2 p) {
+        p = fract(p * vec2(123.34, 345.45));
+        p += dot(p, p + 34.345);
+        return fract(p.x * p.y);
+    }
+
+    float noise(vec2 p) {
+        vec2 i = floor(p);
+        vec2 f = fract(p);
+        vec2 u = f * f * (3.0 - 2.0 * f);
+        float a = hash21(i + vec2(0.0, 0.0));
+        float b = hash21(i + vec2(1.0, 0.0));
+        float c = hash21(i + vec2(0.0, 1.0));
+        float d = hash21(i + vec2(1.0, 1.0));
+        return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
+    }
+
+    float fbm2(vec2 p) {
+        float v = 0.0;
+        float a = 0.5;
+        for (int i = 0; i < 3; i++) {
+            v += a * noise(p);
+            p = p * 2.0 + 13.37;
+            a *= 0.5;
+        }
+        return v;
+    }
+
+    void main() {
+        vec4 density = texture2D(uDensity, vUv);
+        vec2 velocity = texture2D(uVelocity, vUv).xy;
+        
+        // Low-cost flow and texture
+        vec2 uv = vUv + velocity * 6.0;
+        float n = fbm2(uv * 6.0 + uTime * 0.05);
+        float m = fbm2((uv + n) * 3.0 - uTime * 0.03);
+
+        float gradient = 0.4 * n + 0.3 * m + 0.3 * density.a + length(velocity) * 0.25;
+
+        // Theme-aware tones (brighter for visibility)
+        float lightTone = clamp(0.28 + (1.0 - gradient) * 0.20, 0.25, 0.60);
+        float darkTone = clamp(0.12 + gradient * 0.20, 0.12, 0.45);
+        vec3 base = mix(vec3(lightTone), vec3(darkTone), uThemeValue);
+
+        // Lightweight grain
+        float grain = hash21(vUv * (uResolution * 0.5) + uTime * 10.0) - 0.5;
+        base += grain * 0.10;
+        base = clamp(base, 0.0, 1.0);
+
+        // Simplified opacity (higher baseline)
+        float alpha = uOpacity * (0.35 + 0.5 * length(velocity) + 0.5 * density.a);
+        alpha = clamp(alpha, 0.15, 0.30);
+
+        gl_FragColor = vec4(base, alpha);
     }
 `
 
@@ -417,7 +381,6 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
         }
     }, [theme]);
 
-    // Optimized resolution - reduced from 512x512 to 256x256 for better performance
     const resolution = useMemo(() => new THREE.Vector2(256, 256), [])
 
     // Optimized FBO settings - reduced precision and simplified filtering
@@ -492,13 +455,15 @@ export const TransparentPlane = (props: TransparentPlaneProps) => {
         uniforms: densityUniforms,
     }), [densityUniforms])
 
+    const isMobile = useMobile()
+
     const renderMaterial = useMemo(() => new THREE.ShaderMaterial({
         vertexShader,
-        fragmentShader: renderShader,
+        fragmentShader: isMobile ? renderShaderMobile : renderShaderDesktop,
         uniforms: renderUniforms,
         transparent: true,
         depthWrite: false,
-    }), [renderUniforms])
+    }), [isMobile, renderUniforms])
 
     // Scene and camera for FBO rendering
     const scene = useMemo(() => new THREE.Scene(), [])
