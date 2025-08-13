@@ -97,7 +97,8 @@ const Service = () => {
                                     ))}
                                 </div>
 
-                                <button
+                                <Link
+                                    href={'/service'}
                                     onClick={handleLearnMore}
                                     className="group relative px-8 py-4 bg-customGrayDark text-customGrayLight font-semibold rounded-lg overflow-hidden transition-all duration-300 hover:bg-customGray transform hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(255,255,255,0.08)] max-w-fit border border-customGray"
                                 >
@@ -113,7 +114,7 @@ const Service = () => {
                                         </svg>
                                     </span>
                                     <div className="absolute inset-0 bg-customGray transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-                                </button>
+                                </Link>
                             </div>
 
                             <div className="lg:w-1/2 flex items-center justify-center">
@@ -250,7 +251,7 @@ const Service = () => {
                                     {/* Enhanced CTA button */}
                                     <div className="pt-6">
                                         <Link
-                                            href={project.link || "#"}
+                                            href={'/service'}
                                             className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-customGrayDark/60 to-customGrayDark/40 text-customGrayLight rounded-xl hover:from-customGray/30 hover:to-customGray/20 transition-all duration-500 transform hover:scale-[1.02] hover:shadow-[0_8px_32px_rgba(255,255,255,0.1)] border border-customGrayDark/30 backdrop-blur-sm"
                                         >
                                             <span className="font-medium">Explore Project</span>
@@ -416,7 +417,7 @@ const Service = () => {
 
                                     <div className="pt-6">
                                         <Link
-                                            href={project.link || "#"}
+                                            href={'/service'}
                                             className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-customGrayDark/60 to-customGrayDark/40 text-customGrayLight rounded-xl hover:from-customGray/30 hover:to-customGray/20 transition-all duration-500 transform hover:scale-[1.02] hover:shadow-[0_8px_32px_rgba(255,255,255,0.1)] border border-customGrayDark/30 backdrop-blur-sm"
                                         >
                                             <span className="font-medium">Explore Project</span>

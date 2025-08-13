@@ -33,7 +33,7 @@ const Journey = () => {
 
                 {/* Call-to-action buttons */}
                 <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-                    <Link href="/product">
+                    <Link href="/service">
                         <button className="group relative px-8 py-4 bg-customGrayLight text-customBlack rounded-full font-semibold text-lg transition-all duration-300 hover:bg-customGray hover:shadow-lg">
                             <span className="relative z-10">View Our Services</span>
                         </button>
