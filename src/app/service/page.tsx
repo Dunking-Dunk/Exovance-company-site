@@ -1,6 +1,7 @@
 import React from 'react'
 import ServiceOverview from './_section/ServiceOverview'
 import AIAutomationIntro from './_section/AIAutomationIntro'
+import AIPoweredTeam from './_section/AIPoweredTeam'
 import AIUseCases from './_section/AIUseCases'
 import AgentProcess from './_section/AgentProcess'
 import EngagementCTA from './_section/EngagementCTA'
@@ -17,6 +18,7 @@ const Page = (props: Props) => {
             <AIAutomationIntro />
             <AIVoiceAgent />
             <AIUseCases />
+            <AIPoweredTeam />
             <AgentProcess />
             <ServiceProjects />
             <EngagementCTA />

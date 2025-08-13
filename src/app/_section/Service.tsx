@@ -53,7 +53,7 @@ const Service = () => {
             {!isMobile ? (
                 <div
                     ref={sectionsRef}
-                    className="flex w-[300%] h-screen"
+                    className="flex w-[500%] h-screen"
                 >
                     <div className="w-1/3 min-h-screen px-4 md:px-32 py-32 flex items-center">
                         <div className="w-full flex flex-col lg:flex-row gap-12">

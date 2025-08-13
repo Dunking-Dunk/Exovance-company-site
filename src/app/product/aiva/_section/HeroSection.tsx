@@ -29,12 +29,12 @@ const HeroSection = () => {
                         muted
                         playsInline
                     >
-                        <source src="/video/Kiosk_With_Wheels.mp4" type="video/mp4" />
+                        <source src="/video/aiva.mp4" type="video/mp4" />
                         Your browser does not support the video tag.
                     </video>
 
                     {/* Video Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-customBlack/60 via-transparent to-customBlack/20"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20"></div>
 
                     <div className="absolute inset-0 flex flex-col justify-end p-4 md:p-8">
                         <div className="max-w-md">

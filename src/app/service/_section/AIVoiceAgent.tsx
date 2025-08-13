@@ -112,7 +112,7 @@ const AIVoiceAgent = () => {
                     </div>
                 </div>
 
-                <div>
+                {/* <div>
                     <h3 className="text-xl font-semibold text-customGrayLight mb-3">How voice integrates with your agents</h3>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {Integration.map(({ icon: Icon, title, desc }) => (
@@ -125,7 +125,7 @@ const AIVoiceAgent = () => {
                             </div>
                         ))}
                     </div>
-                </div>
+                </div> */}
             </div>
         </section>
     )

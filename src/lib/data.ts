@@ -85,20 +85,20 @@ export const founders: Founder[] = [
         }
     },
     {
-        name: "Shantosh",
-        role: "Co-Founder & Robotics Engineer",
+        name: "Shanthosh S",
+        role: "AI & Machine Learning Engineer",
         photo: "/team/shantosh.webp",
-        oneLiner: "Where hardware meets intelligence—building systems that move and think.",
-        bio: "Electronics and Communication student specializing in embedded systems and control. Worked on autonomous navigation, motor control, and perception pipelines.",
-        expertise: ["ROS", "C++", "Embedded", "SLAM", "Control"],
+        oneLiner: "An AI and Machine Learning engineer with a track record of developing impactful solutions for industrial applications and disaster management.",
+        bio: "A Computer Science student contributing to software solutions for industrial weld metal analysis and mobile phone detection using computer vision.As a Smart India Hackathon 2024 Finalist, he developed several AI and RAG models for coal mining operations.He also serves as the Technical Lead for the Intellexa club, where he has overseen its growth to over 1600 members.",
+        expertise: ["Python", "TensorFlow", "LangChain", "FastAPI", "YOLOv8", "Scikit-Learn", "GCP"],
         links: {
-            linkedin: "#",
-            github: "#",
+            linkedin: "https://www.linkedin.com/in/shanthosh-s-3a1930257/",
+            github: "https://github.com/aijurist",
         },
     },
     {
         name: "Dhayananth",
-        role: "Co-Founder & Product Engineer",
+        role: "Product Engineer",
         photo: "/team/dhaya2.webp",
         oneLiner: "Designing and shipping products that are as elegant as they are performant.",
         bio: "Final-year Information Technology student with a focus on full‑stack and DX. Built scalable web systems, design systems, and internal tooling to speed up product delivery.",
@@ -177,6 +177,36 @@ export const projects: Project[] = [
             "Implemented an analytics dashboard for administrators with powerful tools for managing rooms, tracking finances, and viewing real-time occupancy data."
         ],
         link: "/projects/rec-hostel-booking-app"
+    },
+    {
+        id: "agentic-iot-ai",
+        title: "Agentic AI for Document & IoT Data Integration",
+        category: "AI Automation & IoT",
+        description: "Developed a single-user MVP of an agentic AI system capable of referencing uploaded documents and dynamically retrieving IoT sensor data from an Apache Kafka service. Integrated real-time data visualization by generating PNG-based statistical summaries of coal mine conditions sourced directly from IoT devices.",
+        briefDescription: "Agentic AI that integrates document analysis with live IoT data from Apache Kafka, visualizing real-time coal mine conditions.",
+        image: "/service/ai-mine-assistant/image-1.webp",
+        technologies: ["Agentic AI", "Apache Kafka", "Python", "Pandas", "Matplotlib", "IoT"],
+        features: [
+            "Developed an agentic AI capable of understanding and referencing user-uploaded documents to inform its decision-making process.",
+            "Engineered dynamic retrieval of IoT sensor data from an Apache Kafka service, allowing the AI to access real-time information on demand.",
+            "Implemented real-time data visualization by generating PNG-based statistical summaries of coal mine conditions, providing instant insights from live IoT data."
+        ],
+        link: "/projects/agentic-iot-ai"
+    },
+    {
+        id: "hotel-booking-assistant",
+        title: "Hotel Booking Assistant",
+        category: "AI Chatbots & API Integration",
+        description: "Built an agentic AI chatbot capable of retrieving live hotel booking statuses via the Trivago API, recommending tailored holiday plans for selected destinations, and assisting in hotel reservations. Supported both speech-based interaction and advanced natural language understanding (NLU) for a smooth and intuitive user experience.",
+        briefDescription: "AI-powered conversational chatbot that uses the Trivago API for live hotel bookings, offers personalized travel plans, and supports voice commands.",
+        image: "/service/hotel-assistant/image-1.webp",
+        technologies: ["Agentic AI", "Trivago API", "Python", "Rasa", "NLU", "Speech Recognition"],
+        features: [
+            "Integrated the Trivago API to enable the AI agent to retrieve live hotel booking statuses and availability in real-time.",
+            "Developed a recommendation engine to generate tailored holiday plans and suggest suitable hotels based on user preferences and selected destinations.",
+            "Implemented advanced Natural Language Understanding (NLU) and speech-based interaction for a seamless, intuitive, and hands-free user experience in travel planning and booking."
+        ],
+        link: "/projects/hotel-booking-assistant"
     }
 ];
 
