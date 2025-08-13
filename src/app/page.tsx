@@ -15,7 +15,6 @@ import Abstract from "./_section/Abstract";
 import Footer from "@/components/global/Footer";
 
 
-// 3D components are now handled in Layout component
 
 export default function Home() {
   const { setScrollTheme } = useScrollTheme();
