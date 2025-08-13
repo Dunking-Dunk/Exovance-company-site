@@ -17,7 +17,7 @@ const AIAutomationIntro = () => {
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
             </div>
 
-            <div className="relative z-10 mx-auto">
+            <div className="relative z-10 max-w-7xl mx-auto">
                 <div className="mb-10">
                     <div className="flex items-center gap-2 text-customGray">
                         <Sparkles className="w-4 h-4 text-customGrayLight/70" />
