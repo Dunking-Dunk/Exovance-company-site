@@ -1,51 +1,28 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 
 const Story = () => {
     return (
         <section className="relative min-h-screen flex items-center justify-center px-4 md:px-16 lg:px-32 py-20">
 
-            <motion.div
-                className="absolute top-1/4 left-1/4 w-64 h-64 border border-gray-300/20 dark:border-gray-600/20 rounded-full"
-                animate={{
-                    rotate: 360,
-                    scale: [1, 1.1, 1],
-                }}
-                transition={{
-                    rotate: { duration: 50, repeat: Infinity, ease: "linear" },
-                    scale: { duration: 10, repeat: Infinity, ease: "easeInOut" },
-                }}
-            />
+            <div className="absolute top-1/4 left-1/4 w-64 h-64 border border-gray-300/20 dark:border-gray-600/20 rounded-full" />
 
             <div className="relative z-10 max-w-6xl mx-auto">
 
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    className="text-center mb-16"
-                >
+                <div className="text-center mb-16">
                     <h2 className="text-4xl md:text-6xl font-bold text-customGrayLight mb-6">
                         Our Story
                     </h2>
                     <div className="text-lg md:text-xl text-purple-600 dark:text-purple-400 font-semibold tracking-wider">
                         FROM CLASSROOM TO CREATION
                     </div>
-                </motion.div>
+                </div>
 
                 <div className="grid lg:grid-cols-2 gap-16 items-center">
                     {/* Story Content */}
-                    <motion.div
-                        initial={{ opacity: 0, x: -50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8 }}
-                        className="space-y-8"
-                    >
+                    <div className="space-y-8">
                         <div>
                             <h3 className="text-2xl md:text-3xl font-semibold text-customGrayLight mb-6">
                                 The Beginning
@@ -68,16 +45,10 @@ const Story = () => {
                                 practical innovation is the foundation of everything we do.
                             </p>
                         </div>
-                    </motion.div>
+                    </div>
 
                     {/* Visual Timeline */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                        className="relative"
-                    >
+                    <div className="relative">
                         <div className="space-y-8">
                             {/* Timeline items */}
                             <div className="relative pl-8 border-l-2 border-purple-500/30">
@@ -110,21 +81,15 @@ const Story = () => {
                                 </div>
                             </div>
                         </div>
-                    </motion.div>
+                    </div>
                 </div>
 
                 {/* Quote section */}
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.4 }}
-                    className="text-center mt-20"
-                >
+                <div className="text-center mt-20">
                     <blockquote className="text-2xl md:text-3xl font-light text-customGrayDarker italic leading-relaxed max-w-4xl mx-auto">
                         "We don't just build technology; we craft experiences that transform ideas into reality."
                     </blockquote>
-                </motion.div>
+                </div>
             </div>
         </section>
     );

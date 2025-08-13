@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 
 const Mission = () => {
@@ -10,68 +9,39 @@ const Mission = () => {
 
             <div className="relative z-10 flex flex-col items-center justify-center text-center max-w-7xl mx-auto px-4">
 
-
                 <TextGenerateEffect
                     words="We build deep tech solutions in AI and robotics to drive global technology innovation, creating meaningful impact worldwide and advancing technological capabilities for the future."
                     className="text-2xl md:text-4xl lg:text-5xl text-customGrayDarker leading-relaxed"
                 />
 
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.4 }}
-                    className="grid md:grid-cols-3 md:gap-8 max-w-5xl mx-auto mb-12"
-                >
-                    <div className="text-center p-6">
-                        <div className="w-16 h-16 mx-auto mb-4 bg-customBlackAlt/20 rounded-full flex items-center justify-center">
-                            <span className="text-2xl">🤖</span>
+                <div className="grid md:grid-cols-3 md:gap-8 max-w-5xl mx-auto mb-12 mt-8">
+                    {[{
+                        emoji: '🤖', title: 'AI Innovation', desc: 'Developing cutting-edge artificial intelligence solutions that solve complex real-world problems'
+                    }, {
+                        emoji: '⚙️', title: 'Robotics Future', desc: 'Building advanced robotics systems that enhance human capabilities and automate complex tasks'
+                    }, {
+                        emoji: '🌍', title: 'Global Impact', desc: 'Creating solutions that transcend borders and make a positive difference worldwide'
+                    }].map(item => (
+                        <div key={item.title} className="text-center p-6 rounded-2xl border border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-md backdrop-saturate-150">
+                            <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center border border-white/20 dark:border-white/10 bg-white/10">
+                                <span className="text-2xl">{item.emoji}</span>
+                            </div>
+                            <h3 className="text-lg font-semibold text-customGrayLight mb-3">
+                                {item.title}
+                            </h3>
+                            <p className="text-customGrayDarker text-sm">
+                                {item.desc}
+                            </p>
                         </div>
-                        <h3 className="text-lg font-semibold text-customGrayLight mb-3">
-                            AI Innovation
-                        </h3>
-                        <p className="text-customGrayDarker text-sm">
-                            Developing cutting-edge artificial intelligence solutions that solve complex real-world problems
-                        </p>
-                    </div>
+                    ))}
+                </div>
 
-                    <div className="text-center p-6">
-                        <div className="w-16 h-16 mx-auto mb-4 bg-customBlackAlt/20 rounded-full flex items-center justify-center">
-                            <span className="text-2xl">⚙️</span>
-                        </div>
-                        <h3 className="text-lg font-semibold text-customGrayLight mb-3">
-                            Robotics Future
-                        </h3>
-                        <p className="text-customGrayDarker text-sm">
-                            Building advanced robotics systems that enhance human capabilities and automate complex tasks
-                        </p>
-                    </div>
-
-                    <div className="text-center p-6">
-                        <div className="w-16 h-16 mx-auto mb-4 bg-customBlackAlt/20 rounded-full flex items-center justify-center">
-                            <span className="text-2xl">🌍</span>
-                        </div>
-                        <h3 className="text-lg font-semibold text-customGrayLight mb-3">
-                            Global Impact
-                        </h3>
-                        <p className="text-customGrayDarker text-sm">
-                            Creating solutions that transcend borders and make a positive difference worldwide
-                        </p>
-                    </div>
-                </motion.div>
-
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.6 }}
-                    className="max-w-3xl mx-auto"
-                >
+                <div className="max-w-3xl mx-auto">
                     <p className="text-lg text-customGrayDarker leading-relaxed">
                         At Exovance, we believe technology should be a force for progress. Our commitment extends beyond just building solutions—we're
                         dedicated to fostering innovation, empowering communities, and creating a future where technology serves humanity's greatest aspirations.
                     </p>
-                </motion.div>
+                </div>
             </div>
         </section >
     );
