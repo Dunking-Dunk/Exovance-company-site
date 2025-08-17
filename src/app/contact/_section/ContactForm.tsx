@@ -235,26 +235,6 @@ const ContactForm = () => {
                             >
                                 <Linkedin className="h-6 w-6" />
                             </a>
-                            <a
-                                href="https://twitter.com/exovance"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="p-3 rounded-lg border border-customGrayDark/20 hover:border-customGrayDark/40 text-customGray hover:text-customGrayLight transition-all"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-6 w-6 fill-current">
-                                    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53A4.48 4.48 0 0 0 12 7.47v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
-                                </svg>
-                            </a>
-                            <a
-                                href="https://www.youtube.com/@exovance"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="p-3 rounded-lg border border-customGrayDark/20 hover:border-customGrayDark/40 text-customGray hover:text-customGrayLight transition-all"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-6 w-6 fill-current">
-                                    <path d="M23.498 6.186a2.998 2.998 0 0 0-2.112-2.12C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.386.566A2.998 2.998 0 0 0 .502 6.186 31.08 31.08 0 0 0 0 12a31.08 31.08 0 0 0 .502 5.814 2.998 2.998 0 0 0 2.112 2.12C4.5 20.5 12 20.5 12 20.5s7.5 0 9.386-.566a2.998 2.998 0 0 0 2.112-2.12A31.08 31.08 0 0 0 24 12a31.08 31.08 0 0 0-.502-5.814zM9.75 15.5v-7l6 3.5-6 3.5z" />
-                                </svg>
-                            </a>
                         </div>
                     </SpotlightCard>
 

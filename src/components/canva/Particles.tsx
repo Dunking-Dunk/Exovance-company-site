@@ -136,7 +136,7 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
                 if (heroSection) {
                     const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
                     positions.heroEnd = heroBottom / totalScrollHeight
-                    positions.heroEnd += 0.07;
+                    positions.heroEnd += 0.05;
                 }
 
                 if (aboutSection) {
@@ -153,7 +153,7 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
 
 
                 positions.aboutEnd = Math.max(positions.heroEnd + 0.05, positions.aboutEnd);
-                positions.visionStart = Math.max(positions.aboutEnd + 0.02, positions.visionStart);
+                positions.visionStart = Math.max(positions.aboutEnd, positions.visionStart);
                 positions.visionEnd = Math.max(positions.visionStart, positions.visionEnd);
             }
 

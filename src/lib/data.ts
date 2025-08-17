@@ -34,7 +34,7 @@ export const foundingTeam: FoundingTeamMember[] = [
     {
         name: "Shantosh",
         role: "CTO",
-        image: "/team/shantosh.webp",
+        image: "/team/shan-placeholder.jpg",
         description: "AI architect, innovation leader with 10+ years in machine learning"
     },
     {
@@ -87,7 +87,7 @@ export const founders: Founder[] = [
     {
         name: "Shanthosh S",
         role: "AI & Machine Learning Engineer",
-        photo: "/team/shantosh.webp",
+        photo: "/team/shan-placeholder.jpg",
         oneLiner: "An AI and Machine Learning engineer with a track record of developing impactful solutions for industrial applications and disaster management.",
         bio: "A Computer Science student contributing to software solutions for industrial weld metal analysis and mobile phone detection using computer vision.As a Smart India Hackathon 2024 Finalist, he developed several AI and RAG models for coal mining operations.He also serves as the Technical Lead for the Intellexa club, where he has overseen its growth to over 1600 members.",
         expertise: ["Python", "TensorFlow", "LangChain", "FastAPI", "YOLOv8", "Scikit-Learn", "GCP"],
@@ -97,9 +97,9 @@ export const founders: Founder[] = [
         },
     },
     {
-        name: "Dhayananth",
+        name: "Dhayananth C",
         role: "Product Engineer",
-        photo: "/team/dhaya2.webp",
+        photo: "/team/dhaya3.webp",
         oneLiner: "Designing and shipping products that are as elegant as they are performant.",
         bio: "Final-year Information Technology student with a focus on full‑stack and DX. Built scalable web systems, design systems, and internal tooling to speed up product delivery.",
         expertise: ["TypeScript", "Next.js", "Node.js", "PostgreSQL", "UX"],
