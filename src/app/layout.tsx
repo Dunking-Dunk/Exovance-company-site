@@ -53,8 +53,8 @@ export const metadata: Metadata = {
     title: "Exovance — Technology & Innovation",
     description:
       "Pioneers and innovators in technology and innovation. We build AI, web, and mobile solutions.",
-    site: "@exovance", // TODO
-    creator: "@exovance", // TODO
+    site: "@exovance",
+    creator: "@exovance",
     images: ["/og/og-image.png"],
   },
   icons: {
