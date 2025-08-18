@@ -162,22 +162,22 @@ export const projects: Project[] = [
         ],
         link: "/projects/university-management-platform"
     },
-    {
-        id: "rec-hostel-booking-app",
-        title: "Full-Stack Hostel Management System",
-        category: "Web Development & Digital Solutions",
-        description: "Developed a comprehensive web application to digitize and automate the entire hostel accommodation process for Rajalakshmi Engineering College, from student booking to administrative oversight.",
-        briefDescription: "Engineered a secure backend using Django REST Framework and a dynamic front end with React (Vite.js), featuring real-time room availability, integrated payment processing, and an analytics dashboard for staff.",
-        image: "/service/hostel/image-1.webp",
-        technologies: ["Django", "Django REST Framework", "React", "Vite.js", "PostgreSQL", "Payment Gateway"],
-        features: [
-            "Built a modern, full-stack application to replace the manual hostel booking system at Rajalakshmi Engineering College.",
-            "Developed secure backend APIs using Django REST Framework with real-time room availability tracking and user authentication.",
-            "Created an intuitive React frontend with Vite.js for seamless student experience including online room selection and integrated payment processing.",
-            "Implemented an analytics dashboard for administrators with powerful tools for managing rooms, tracking finances, and viewing real-time occupancy data."
-        ],
-        link: "/projects/rec-hostel-booking-app"
-    },
+    // {
+    //     id: "rec-hostel-booking-app",
+    //     title: "Full-Stack Hostel Management System",
+    //     category: "Web Development & Digital Solutions",
+    //     description: "Developed a comprehensive web application to digitize and automate the entire hostel accommodation process for Rajalakshmi Engineering College, from student booking to administrative oversight.",
+    //     briefDescription: "Engineered a secure backend using Django REST Framework and a dynamic front end with React (Vite.js), featuring real-time room availability, integrated payment processing, and an analytics dashboard for staff.",
+    //     image: "/service/hostel/image-1.webp",
+    //     technologies: ["Django", "Django REST Framework", "React", "Vite.js", "PostgreSQL", "Payment Gateway"],
+    //     features: [
+    //         "Built a modern, full-stack application to replace the manual hostel booking system at Rajalakshmi Engineering College.",
+    //         "Developed secure backend APIs using Django REST Framework with real-time room availability tracking and user authentication.",
+    //         "Created an intuitive React frontend with Vite.js for seamless student experience including online room selection and integrated payment processing.",
+    //         "Implemented an analytics dashboard for administrators with powerful tools for managing rooms, tracking finances, and viewing real-time occupancy data."
+    //     ],
+    //     link: "/projects/rec-hostel-booking-app"
+    // },
     {
         id: "agentic-iot-ai",
         title: "Agentic AI for Document & IoT Data Integration",
