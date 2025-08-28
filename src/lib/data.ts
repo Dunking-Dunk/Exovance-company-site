@@ -132,6 +132,18 @@ export const founders: Founder[] = [
             github: "https://github.com/manov-ik",
         },
     },
+    {
+        name: "Ajjay Adhithya V",
+        role: "Full-Stack & AI Developer",
+        photo: "/team/ajjay.webp",
+        oneLiner: "A versatile full-stack developer with expertise in building AI-driven applications and IoT systems.",
+        bio: "A Computer Science student at VIT Chennai with a strong foundation in full-stack development, AI, and IoT.He has developed an adaptive traffic signal system using Reinforcement Learning, an Ed-Tech platform on AWS and a smart irrigation system.His experience includes a full-stack internship at InstiBuzz and a developer role at the CodeChef VIT-Chennai Chapter.",
+        expertise: ["MERN Stack", "Python", "AWS Services", "Reinforcement Learning", "IoT", "Oracle SQL"],
+        links: {
+            linkedin: "https://www.linkedin.com/in/ajjay-adhithya-v-434b43258/",
+            github: "https://github.com/AjjayAdhithyaV"
+        }
+    }
 ];
 
 export interface Project {

@@ -14,6 +14,7 @@ import LoadingScreen from './loading-screen'
 import { debounce } from '@/lib/utils'
 import { useScrollTheme } from '@/components/provider/scroll-theme-provider'
 import Footer from './Footer'
+import { AdaptiveDpr } from '@react-three/drei'
 
 
 gsap.registerPlugin(ScrollTrigger)
@@ -227,6 +228,7 @@ const Layout = ({ children }: Props) => {
                     {render3DComponents.showCommon && <Common />}
                     {render3DComponents.showParticles && <Particles onReady={handleParticlesReady} />}
                     {render3DComponents.showTransparentPlane && <TransparentPlane />}
+                    <AdaptiveDpr pixelated />
                 </View>
                 {isLoading && <LoadingScreen onLoadingComplete={handleLoadingComplete} />}
                 <Footer />

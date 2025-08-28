@@ -2,7 +2,13 @@
 
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import dynamic from "next/dynamic";
+
+const View = dynamic(() => import('../../components/canva/View').then((mod) => mod.View), { ssr: false });
+
+const ExovanceLogo = dynamic(() => import('../../components/canva/ExovanceLogo').then((mod) => mod.ExovanceLogo), { ssr: false });
+
+const Common = dynamic(() => import('../../components/canva/View').then((mod) => mod.Common), { ssr: false });
 
 const Abstract = () => {
   const container = useRef(null);
@@ -148,6 +154,11 @@ const Abstract = () => {
 
   return (
     <div className="relative h-[100dvh] z-10 overflow-hidden flex items-center justify-center px-4 md:px-16 lg:px-80 md:py-60 py-10" ref={container}>
+      {/* @ts-ignore */}
+      <View className="absolute inset-0">
+        <ExovanceLogo />
+        <Common />
+      </View>
       {tagVariants.map(({ text, scrollRange, outputRange, top, left, right, delay, duration, spring }, index) => {
         const x = useTransform(scrollYProgress, scrollRange, outputRange);
 

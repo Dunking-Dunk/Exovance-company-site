@@ -17,7 +17,7 @@ const ContactCTA = () => {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <a
-                            href="mailto:exovancelab@gmail.com"
+                            href="mailto:contact@exovance.in"
                             className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-customGrayLight text-customBlack hover:bg-customGray transition-colors"
                         >
                             Start a Project

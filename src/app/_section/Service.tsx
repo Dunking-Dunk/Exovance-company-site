@@ -164,7 +164,7 @@ const Service = () => {
 
                             <div className="absolute inset-0 pointer-events-none">
 
-                                <div className="absolute right-[-20%] top-[55%] transform -translate-y-1/2 -rotate-90 origin-center">
+                                <div className="absolute xl:block hidden right-[-20%] top-[55%] transform -translate-y-1/2 -rotate-90 origin-center">
                                     <div className="text-8xl md:text-9xl font-black text-customGrayDark/5 tracking-[0.2em] whitespace-nowrap">
                                         EXOVANCE
                                     </div>

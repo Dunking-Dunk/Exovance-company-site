@@ -78,7 +78,7 @@ const ContactSection = () => {
 
                 {/* Quick contact */}
                 <div className="mt-10 flex flex-col sm:flex-row gap-4 text-sm">
-                    <a href="mailto:exovancelab@gmail.com" className="text-white/90 hover:text-white underline underline-offset-4">exovancelab@gmail.com</a>
+                    <a href="mailto:contact@exovance.in" className="text-white/90 hover:text-white underline underline-offset-4">contact@exovance.in</a>
                     <span className="hidden sm:inline text-white/30">|</span>
                     <a href="tel:+918056201341" className="text-white/90 hover:text-white">+91 80562 01341</a>
                 </div>

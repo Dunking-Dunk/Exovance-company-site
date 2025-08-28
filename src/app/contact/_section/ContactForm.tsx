@@ -30,7 +30,7 @@ const ContactForm = () => {
 
         try {
             // Create mailto link
-            const mailtoLink = `mailto:exovancelab@gmail.com?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(
+            const mailtoLink = `mailto:contact@exovance.in?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(
                 `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
             )}`;
 
@@ -181,10 +181,10 @@ const ContactForm = () => {
                             <div>
                                 <h3 className="font-medium text-customGrayLight">Email</h3>
                                 <a
-                                    href="mailto:exovancelab@gmail.com"
+                                    href="mailto:contact@exovance.in"
                                     className="text-customGray hover:text-customGrayLight transition-colors"
                                 >
-                                    exovancelab@gmail.com
+                                    contact@exovance.in
                                 </a>
                             </div>
                         </div>
