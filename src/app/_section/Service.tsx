@@ -8,6 +8,7 @@ import { CheckCircle2, Cpu, BarChart3, Workflow, Sparkles, ExternalLink, ArrowRi
 import { gsap } from 'gsap'
 import Image from 'next/image'
 import Link from 'next/link'
+import Product from './Product'
 
 const Service = () => {
     const isMobile = useMobile();
@@ -248,7 +249,6 @@ const Service = () => {
                                         </div>
                                     </div>
 
-                                    {/* Enhanced CTA button */}
                                     <div className="pt-6">
                                         <Link
                                             href={project.link ? project.link : '/service'}
@@ -417,7 +417,7 @@ const Service = () => {
 
                                     <div className="pt-6">
                                         <Link
-                                            href={'/service'}
+                                            href={project.link ? project.link : '/service'}
                                             className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-customGrayDark/60 to-customGrayDark/40 text-customGrayLight rounded-xl hover:from-customGray/30 hover:to-customGray/20 transition-all duration-500 transform hover:scale-[1.02] hover:shadow-[0_8px_32px_rgba(255,255,255,0.1)] border border-customGrayDark/30 backdrop-blur-sm"
                                         >
                                             <span className="font-medium">Explore Project</span>
