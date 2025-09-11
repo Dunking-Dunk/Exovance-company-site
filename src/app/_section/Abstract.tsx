@@ -200,7 +200,7 @@ const Abstract = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 1, ease: "easeOut" }}
-        className="text-customGrayDarker absolute left-[10%] bottom-[15%] mt-8 mx-auto text-sm"
+        className="text-customGray absolute left-[10%] bottom-[15%] mt-8 mx-auto text-sm"
       >
         Innovate. Automate. Elevate. Cutting-edge AI, web, and <br /> mobile solutions to shape the future.
       </motion.p>

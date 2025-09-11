@@ -53,9 +53,9 @@ const Service = () => {
             {!isMobile ? (
                 <div
                     ref={sectionsRef}
-                    className="flex w-[400%] h-screen"
+                    className="flex w-[500%] h-screen"
                 >
-                    <div className="w-1/3 min-h-screen px-4 md:px-32 py-32 flex items-center">
+                    <div className="w-1/5 min-h-screen px-4 md:px-32 py-32 flex items-center">
                         <div className="w-full flex flex-col lg:flex-row gap-12">
                             <div className="lg:w-1/2 flex flex-col justify-center">
                                 <div className="mb-3 inline-flex items-center gap-2 text-customGray">
@@ -160,15 +160,15 @@ const Service = () => {
                     </div>
 
                     {projects.map((project, index) => (
-                        <div key={index} className="w-1/3 min-h-screen px-4 md:px-16 h-full relative">
+                        <div key={index} className="w-1/5 min-h-screen px-4 md:px-16 h-full relative">
 
                             <div className="absolute inset-0 pointer-events-none">
 
-                                <div className="absolute xl:block hidden right-[-20%] top-[55%] transform -translate-y-1/2 -rotate-90 origin-center">
-                                    <div className="text-8xl md:text-9xl font-black text-customGrayDark/5 tracking-[0.2em] whitespace-nowrap">
+                                {/* <div className="absolute 2xl:block hidden right-[-20%] top-[55%] transform -translate-y-1/2 -rotate-90 origin-center">
+                                    <div className="sm:text-5xl md:text-9xl font-black text-customGrayDark/5 tracking-[0.2em] whitespace-nowrap">
                                         EXOVANCE
                                     </div>
-                                </div>
+                                </div> */}
 
 
                                 <div className="absolute top-20 right-10 w-32 h-32 border border-customGrayDark/10 rounded-full animate-pulse"></div>
@@ -251,7 +251,7 @@ const Service = () => {
                                     {/* Enhanced CTA button */}
                                     <div className="pt-6">
                                         <Link
-                                            href={'/service'}
+                                            href={project.link ? project.link : '/service'}
                                             className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-customGrayDark/60 to-customGrayDark/40 text-customGrayLight rounded-xl hover:from-customGray/30 hover:to-customGray/20 transition-all duration-500 transform hover:scale-[1.02] hover:shadow-[0_8px_32px_rgba(255,255,255,0.1)] border border-customGrayDark/30 backdrop-blur-sm"
                                         >
                                             <span className="font-medium">Explore Project</span>

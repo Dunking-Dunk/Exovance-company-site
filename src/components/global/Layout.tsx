@@ -193,7 +193,7 @@ const Layout = ({ children }: Props) => {
                     blobType="circle"
                     fillColor={theme === 'dark' ? '#fff' : '#000'}
                     trailCount={3}
-                    sizes={[50, 115, 65]}
+                    sizes={[50, 95, 60]}
                     innerSizes={[20, 35, 25]}
                     innerColor="rgba(0, 0, 0, 0.3)"
                     opacities={[0.4, 0.3, 0.2]}
