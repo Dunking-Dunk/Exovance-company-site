@@ -29,23 +29,19 @@ const ContactForm = () => {
         setSubmitStatus('idle');
 
         try {
-            // Create mailto link
-            const mailtoLink = `mailto:contact@exovance.in?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(
-                `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
-            )}`;
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
 
-            // Open default email client
-            window.location.href = mailtoLink;
+            if (!res.ok) throw new Error('Failed to send');
 
-            // Reset form after a short delay
-            setTimeout(() => {
-                setFormData({ name: '', email: '', subject: '', message: '' });
-                setSubmitStatus('success');
-                setIsSubmitting(false);
-            }, 1000);
-
+            setFormData({ name: '', email: '', subject: '', message: '' });
+            setSubmitStatus('success');
         } catch (error) {
             setSubmitStatus('error');
+        } finally {
             setIsSubmitting(false);
         }
     };
