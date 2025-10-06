@@ -230,7 +230,7 @@ const Layout = ({ children }: Props) => {
                     {render3DComponents.showTransparentPlane && <TransparentPlane />}
                     <AdaptiveDpr pixelated />
                 </View>
-                {isLoading && <LoadingScreen onLoadingComplete={handleLoadingComplete} />}
+                {isLoading && <LoadingScreen onLoadingComplete={handleLoadingComplete} blockUntilParticlesReady={render3DComponents.showParticles} particlesReady={particlesReady} />}
                 <Footer />
             </div>
         </ReactLenis >

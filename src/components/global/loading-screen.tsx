@@ -7,16 +7,19 @@ import { useGLTF } from '@react-three/drei'
 
 type Props = {
     onLoadingComplete?: () => void;
+    blockUntilParticlesReady?: boolean;
+    particlesReady?: boolean;
 }
 
-const LoadingScreen = ({ onLoadingComplete }: Props) => {
+const LoadingScreen = ({ onLoadingComplete, blockUntilParticlesReady = false, particlesReady = false }: Props) => {
     const { progress, active, loaded, total } = useProgress();
     const [displayProgress, setDisplayProgress] = useState(0);
     const [isCompleting, setIsCompleting] = useState(false);
     const [assetsReady, setAssetsReady] = useState(false);
+    // New state to track whether particles (if requested) are ready
+    const [localParticlesReady, setLocalParticlesReady] = useState(false);
     const completionCalledRef = useRef(false);
     const startTimeRef = useRef(Date.now());
-
     useEffect(() => {
         const preloadAssets = async () => {
             try {
@@ -48,6 +51,34 @@ const LoadingScreen = ({ onLoadingComplete }: Props) => {
         preloadAssets();
     }, []);
 
+    // Keep a ref if we're currently waiting for particles to be ready before finishing
+    const waitingForParticlesRef = useRef(false);
+
+    // Sync incoming particlesReady prop into a local effect and trigger completion if we were waiting
+    useEffect(() => {
+        if (particlesReady) {
+            setLocalParticlesReady(true);
+            if (waitingForParticlesRef.current && !completionCalledRef.current) {
+                // complete now if we were waiting for particles
+                completeNow();
+            }
+        } else {
+            setLocalParticlesReady(false);
+        }
+    }, [particlesReady]);
+
+    // Helper to perform the final completion actions
+    const completeNow = () => {
+        if (completionCalledRef.current) return;
+        completionCalledRef.current = true;
+        setIsCompleting(true);
+        setDisplayProgress(100);
+        setTimeout(() => {
+            if (onLoadingComplete) onLoadingComplete();
+            startExitAnimation();
+        }, 400);
+    };
+
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -73,7 +104,7 @@ const LoadingScreen = ({ onLoadingComplete }: Props) => {
 
             setDisplayProgress(prev => {
                 const diff = targetProgress - prev;
-                const step = Math.max(0.3, diff * 0.08); // Slower, more controlled progress
+                const step = Math.max(0.3, diff * 0.08);
                 return Math.min(targetProgress, prev + step);
             });
 
@@ -87,16 +118,14 @@ const LoadingScreen = ({ onLoadingComplete }: Props) => {
             ) || elapsed > 7000;
 
             if (shouldComplete && !completionCalledRef.current) {
-                completionCalledRef.current = true;
-                setIsCompleting(true);
-                setDisplayProgress(100);
+                if (blockUntilParticlesReady && !particlesReady) {
+                    waitingForParticlesRef.current = true;
 
-
-                setTimeout(() => {
-
-                    if (onLoadingComplete) onLoadingComplete();
-                    startExitAnimation();
-                }, 400);
+                    setIsCompleting(true);
+                    setDisplayProgress(100);
+                } else {
+                    completeNow();
+                }
             }
         }, 20);
 

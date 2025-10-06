@@ -19,7 +19,8 @@ import { damp } from "three/src/math/MathUtils.js";
 extend({ SimulationMaterial: SimulationMaterial });
 
 
-const SIZE = 90;
+// Reduce simulation size for performance; 64 offers better speed while keeping decent density
+const SIZE = 64;
 const POSITIONS = new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0]);
 const UVS = new Float32Array([0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0]);
 
@@ -96,6 +97,9 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
     }), []);
 
     const mouse = useRef(new THREE.Vector3());
+    // Frame skipping to reduce costly FBO renders. Render every N frames.
+    const renderSkip = useRef(1); // set to 1 to render every frame by default
+    const frameCounter = useRef(0);
 
     const updateMousePosition = useCallback((e: MouseEvent) => {
 
@@ -313,11 +317,15 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
         simulationMaterialRef.current.uniforms.uMouseActive.value = mouseActive.current;
         simulationMaterialRef.current.uniforms.uTime.value = elapsedTime;
 
-        // Render FBO
-        gl.setRenderTarget(renderTarget);
-        gl.clear();
-        gl.render(scene, camera);
-        gl.setRenderTarget(null);
+        // Render FBO with simple frame skipping to reduce GPU load
+        frameCounter.current++;
+        if (frameCounter.current >= renderSkip.current) {
+            frameCounter.current = 0;
+            gl.setRenderTarget(renderTarget);
+            gl.clear();
+            gl.render(scene, camera);
+            gl.setRenderTarget(null);
+        }
 
 
         currentColor.current.lerp(targetColor.current, 0.05);
