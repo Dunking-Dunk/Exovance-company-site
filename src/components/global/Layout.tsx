@@ -143,7 +143,7 @@ const Layout = ({ children }: Props) => {
         setParticlesReady(true);
     }, []);
 
-    // Fallback: if particles never signal ready, force them ready after 5s to avoid loader hang
+
     useEffect(() => {
         let fallbackTimer: any = null;
         if (!particlesReady && render3DComponents.showParticles) {

@@ -177,7 +177,6 @@ const LoadingScreen = ({ onLoadingComplete, blockUntilParticlesReady = false, pa
                 {Math.round(displayProgress)}%
             </div>
 
-            {/* Debug info in development */}
             {process.env.NODE_ENV === 'development' && (
                 <div className="absolute bottom-4 left-4 text-xs text-gray-500">
                     <div>Progress: {Math.round(progress)}%</div>
