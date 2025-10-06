@@ -293,10 +293,17 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
         // Check if particles are ready and notify parent
         if (!isReady && simulationMaterialRef.current && points.current) {
             setIsReady(true);
-            if (onReady) {
-                // Add a small delay to ensure everything is properly initialized
+            // Ensure parent is notified reliably when the particle simulation is initialized.
+            if (typeof onReady === 'function') {
+                // Small delay to ensure render targets / materials are fully created,
+                // but still call the callback in a safe try/catch wrapper.
                 setTimeout(() => {
-                    onReady();
+                    try {
+                        onReady();
+                        console.log('Particles: onReady() called');
+                    } catch (err) {
+                        console.error('Particles: onReady callback threw', err);
+                    }
                 }, 100);
             }
         }

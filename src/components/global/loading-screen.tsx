@@ -51,15 +51,14 @@ const LoadingScreen = ({ onLoadingComplete, blockUntilParticlesReady = false, pa
         preloadAssets();
     }, []);
 
-    // Keep a ref if we're currently waiting for particles to be ready before finishing
     const waitingForParticlesRef = useRef(false);
 
-    // Sync incoming particlesReady prop into a local effect and trigger completion if we were waiting
+
     useEffect(() => {
         if (particlesReady) {
             setLocalParticlesReady(true);
             if (waitingForParticlesRef.current && !completionCalledRef.current) {
-                // complete now if we were waiting for particles
+
                 completeNow();
             }
         } else {
@@ -67,7 +66,6 @@ const LoadingScreen = ({ onLoadingComplete, blockUntilParticlesReady = false, pa
         }
     }, [particlesReady]);
 
-    // Helper to perform the final completion actions
     const completeNow = () => {
         if (completionCalledRef.current) return;
         completionCalledRef.current = true;
@@ -164,11 +162,11 @@ const LoadingScreen = ({ onLoadingComplete, blockUntilParticlesReady = false, pa
                 console.log('Emergency loading completion - assets may still be loading');
                 completionCalledRef.current = true;
                 setDisplayProgress(100);
-                setAssetsReady(true); // Force assets ready
+                setAssetsReady(true);
                 if (onLoadingComplete) onLoadingComplete();
                 startExitAnimation();
             }
-        }, 8000);
+        }, 6000);
 
         return () => clearTimeout(emergencyTimer);
     }, [onLoadingComplete]);

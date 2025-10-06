@@ -143,6 +143,21 @@ const Layout = ({ children }: Props) => {
         setParticlesReady(true);
     }, []);
 
+    // Fallback: if particles never signal ready, force them ready after 5s to avoid loader hang
+    useEffect(() => {
+        let fallbackTimer: any = null;
+        if (!particlesReady && render3DComponents.showParticles) {
+            fallbackTimer = setTimeout(() => {
+                console.warn('Particles did not signal ready in time — forcing ready to avoid loader hang');
+                setParticlesReady(true);
+            }, 5000);
+        }
+
+        return () => {
+            if (fallbackTimer) clearTimeout(fallbackTimer);
+        };
+    }, [particlesReady, render3DComponents.showParticles]);
+
     const handleLoadingComplete = React.useCallback(() => {
 
         const shouldWaitForParticles = render3DComponents.showParticles;
