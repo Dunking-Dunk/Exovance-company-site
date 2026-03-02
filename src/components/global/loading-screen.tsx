@@ -1,9 +1,8 @@
-"use client"
+﻿"use client"
 
 import React, { useEffect, useState, useRef } from 'react'
 import gsap from 'gsap'
-import { useProgress } from '@react-three/drei'
-import { useGLTF } from '@react-three/drei'
+import { useProgress, useGLTF } from '@react-three/drei'
 
 type Props = {
     onLoadingComplete?: () => void;
@@ -11,65 +10,59 @@ type Props = {
     particlesReady?: boolean;
 }
 
-const LoadingScreen = ({ onLoadingComplete, blockUntilParticlesReady = false, particlesReady = false }: Props) => {
+const LoadingScreen = ({ onLoadingComplete }: Props) => {
     const { progress, active, loaded, total } = useProgress();
     const [displayProgress, setDisplayProgress] = useState(0);
-    const [isCompleting, setIsCompleting] = useState(false);
     const [assetsReady, setAssetsReady] = useState(false);
-    // New state to track whether particles (if requested) are ready
-    const [localParticlesReady, setLocalParticlesReady] = useState(false);
     const completionCalledRef = useRef(false);
     const startTimeRef = useRef(Date.now());
+
+    // Preload all 3D assets up-front
     useEffect(() => {
         const preloadAssets = async () => {
             try {
-
-                const preloadPromises = [
+                await Promise.all([
                     useGLTF.preload('/3d/brain_3d.glb'),
                     useGLTF.preload('/3d/human_head.glb'),
                     useGLTF.preload('/3d/spider_robot.glb'),
                     useGLTF.preload('/3d/vertebral.glb'),
-                    useGLTF.preload('/3d/lost_orb_in_the_mountains-transformed.glb')
-                ];
-
-                await Promise.all(preloadPromises);
-
-                setTimeout(() => {
-                    console.log('All 3D assets loaded and ready');
-                    setAssetsReady(true);
-                }, 800);
-
-            } catch (error) {
-                console.error('Error preloading assets:', error);
-                // Continue anyway after timeout
-                setTimeout(() => {
-                    setAssetsReady(true);
-                }, 1500);
+                ]);
+                setTimeout(() => setAssetsReady(true), 600);
+            } catch {
+                setTimeout(() => setAssetsReady(true), 1200);
             }
         };
-
         preloadAssets();
     }, []);
 
-    const waitingForParticlesRef = useRef(false);
-
-
-    useEffect(() => {
-        if (particlesReady) {
-            setLocalParticlesReady(true);
-            if (waitingForParticlesRef.current && !completionCalledRef.current) {
-
-                completeNow();
-            }
-        } else {
-            setLocalParticlesReady(false);
+    const startExitAnimation = () => {
+        gsap.set('.revealer svg', { scale: 0 });
+        const revealer = document.querySelector('.revealer svg');
+        const loader = document.querySelector('.loader');
+        if (revealer) {
+            gsap.to(revealer, {
+                scale: 45,
+                duration: 1.2,
+                ease: 'power3.out',
+                onComplete: () => {
+                    if (loader) {
+                        gsap.to(loader, {
+                            opacity: 0,
+                            duration: 0.4,
+                            ease: 'power4.out',
+                            onComplete: () => {
+                                document.querySelector('.loader')?.remove();
+                            },
+                        });
+                    }
+                },
+            });
         }
-    }, [particlesReady]);
+    };
 
     const completeNow = () => {
         if (completionCalledRef.current) return;
         completionCalledRef.current = true;
-        setIsCompleting(true);
         setDisplayProgress(100);
         setTimeout(() => {
             if (onLoadingComplete) onLoadingComplete();
@@ -77,118 +70,73 @@ const LoadingScreen = ({ onLoadingComplete, blockUntilParticlesReady = false, pa
         }, 400);
     };
 
-
+    // Smoothly animate display progress and auto-complete
     useEffect(() => {
         const interval = setInterval(() => {
             const elapsed = Date.now() - startTimeRef.current;
-            const timeBasedProgress = Math.min(80, (elapsed / 2500) * 100);
-            const actualProgress = Math.min(100, progress);
+            const timeBased = Math.min(80, (elapsed / 2500) * 100);
+            const actual = Math.min(100, progress);
 
-
-            let targetProgress;
+            let target: number;
             if (assetsReady && !active && loaded >= total && total > 0) {
-
-                targetProgress = 100;
+                target = 100;
             } else if (assetsReady && !active) {
-
-                targetProgress = Math.min(95, Math.max(timeBasedProgress, actualProgress));
+                target = Math.min(95, Math.max(timeBased, actual));
             } else if (assetsReady) {
-
-                targetProgress = Math.min(90, Math.max(timeBasedProgress, actualProgress * 0.9));
+                target = Math.min(90, Math.max(timeBased, actual * 0.9));
             } else {
-
-                targetProgress = Math.min(75, Math.max(timeBasedProgress * 0.8, actualProgress * 0.7));
+                target = Math.min(75, Math.max(timeBased * 0.8, actual * 0.7));
             }
 
             setDisplayProgress(prev => {
-                const diff = targetProgress - prev;
+                const diff = target - prev;
                 const step = Math.max(0.3, diff * 0.08);
-                return Math.min(targetProgress, prev + step);
+                return Math.min(target, prev + step);
             });
 
-
-            const minElapsed = 2000;
-            const shouldComplete = (
-                displayProgress >= 98 &&
-                assetsReady &&
-                !active &&
-                elapsed > minElapsed
-            ) || elapsed > 7000;
+            const shouldComplete =
+                (displayProgress >= 98 && assetsReady && !active && elapsed > 2000) ||
+                elapsed > 5000;
 
             if (shouldComplete && !completionCalledRef.current) {
-                if (blockUntilParticlesReady && !particlesReady) {
-                    waitingForParticlesRef.current = true;
-
-                    setIsCompleting(true);
-                    setDisplayProgress(100);
-                } else {
-                    completeNow();
-                }
+                completeNow();
             }
         }, 20);
 
         return () => clearInterval(interval);
-    }, [progress, active, loaded, total, assetsReady, displayProgress, onLoadingComplete]);
+    }, [progress, active, loaded, total, assetsReady, displayProgress]);
 
-    const startExitAnimation = () => {
-        gsap.set(".revealer svg", { scale: 0 });
-
-        const revealer = document.querySelector(".revealer svg");
-        const loader = document.querySelector(".loader");
-        if (revealer) {
-            gsap.to(revealer, {
-                scale: 45,
-                duration: 1.2,
-                ease: "power3.out",
-                onComplete: () => {
-                    if (loader) {
-                        gsap.to(loader, {
-                            opacity: 0,
-                            duration: 0.4,
-                            ease: "power4.out",
-                            onComplete: () => {
-                                document.querySelector(".loader")?.remove();
-                            }
-                        });
-                    }
-                }
-            });
-        }
-    };
-
+    // Hard emergency ceiling — never stay stuck beyond 4 s
     useEffect(() => {
-        const emergencyTimer = setTimeout(() => {
+        const t = setTimeout(() => {
             if (!completionCalledRef.current) {
-                console.log('Emergency loading completion - assets may still be loading');
                 completionCalledRef.current = true;
                 setDisplayProgress(100);
                 setAssetsReady(true);
                 if (onLoadingComplete) onLoadingComplete();
                 startExitAnimation();
             }
-        }, 6000);
-
-        return () => clearTimeout(emergencyTimer);
+        }, 4000);
+        return () => clearTimeout(t);
     }, [onLoadingComplete]);
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-customBlack text-customGray loader">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[#06060c] text-customGray loader">
             <div className="text-9xl font-light">
                 {Math.round(displayProgress)}%
             </div>
 
             {process.env.NODE_ENV === 'development' && (
-                <div className="absolute bottom-4 left-4 text-xs text-gray-500">
-                    <div>Progress: {Math.round(progress)}%</div>
-                    <div>Assets Ready: {assetsReady ? 'Yes' : 'No'}</div>
-                    <div>Active: {active ? 'Yes' : 'No'}</div>
-                    <div>Loaded: {loaded}/{total}</div>
+                <div className="absolute bottom-4 left-4 text-xs text-gray-500 space-y-1">
+                    <div>Three.js: {Math.round(progress)}% ({loaded}/{total})</div>
+                    <div>Assets: {assetsReady ? 'ready' : 'loading'}</div>
+                    <div>Active: {active ? 'yes' : 'no'}</div>
                 </div>
             )}
 
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 revealer">
                 <svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="scale-0">
-                    <circle cx="100" cy="100" r="50" className="fill-customGray stroke-customBlack stroke-[3]" />
+                    <circle cx="100" cy="100" r="50" className="fill-customGray stroke-[#06060c] stroke-[3]" />
                 </svg>
             </div>
         </div>

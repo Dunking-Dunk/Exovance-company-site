@@ -19,13 +19,12 @@ import { damp } from "three/src/math/MathUtils.js";
 extend({ SimulationMaterial: SimulationMaterial });
 
 
-// Reduce simulation size for performance; 64 offers better speed while keeping decent density
-const SIZE = 64;
+// Increase simulation size to 128 for a much denser, "Active Theory" style effect (16,384 particles)
+const SIZE = 128;
 const POSITIONS = new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0]);
 const UVS = new Float32Array([0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0]);
 
 export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
-    const { theme } = useScrollTheme();
     const points = useRef();
     const simulationMaterialRef = useRef();
     const [isReady, setIsReady] = useState(false);
@@ -40,22 +39,14 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
     const mouseActive = useRef(0);
     const lastMouseMove = useRef(0);
     const canvasRef = useRef(null);
-    const currentColor = useRef(new THREE.Vector3(1.0, 1.0, 1.0)); // Start with white
-    const targetColor = useRef(new THREE.Vector3(1.0, 1.0, 1.0));
+    const currentColor = useRef(new THREE.Vector3(1.0, 1.0, 1.0));
+    // uColor is no longer used for theme switching — kept in uniforms for API compat
 
 
     const particleOffset = useRef(0);
     const isParticleStopped = useRef(false);
     const stopScrollPosition = useRef(0);
     const scrollPositions = useRef({ heroEnd: 0.35, aboutEnd: 0.43, visionStart: 0.50, visionEnd: 0.65 });
-
-    useEffect(() => {
-        if (theme === 'dark') {
-            targetColor.current.set(1.0, 1.0, 1.0);
-        } else {
-            targetColor.current.set(0.0, 0.0, 0.0);
-        }
-    }, [theme]);
 
     // Memoize scroll transform
     const { scrollYProgress } = useScroll();
@@ -90,10 +81,13 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
     const uniforms = useMemo(() => ({
         uPositions: { value: null },
         uColor: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
+        uTime: { value: 0 },
         uTransitionProgress: { value: 0 },
-        uRadiusScale: { value: 1 },
+        uRadiusScale: { value: 3.2 },  // match scatter radiusScale so frame-1 is already spread out
         uCurrentPosition: { value: 0 },
-        uParticleOffset: { value: 0 }
+        uParticleOffset: { value: 0 },
+        uMouse: { value: new THREE.Vector3(-9, -9, 0) },
+        uMouseActive: { value: 0 },
     }), []);
 
     const mouse = useRef(new THREE.Vector3());
@@ -117,8 +111,8 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
         }
 
 
-        mousePosition.current.targetX += (x - mousePosition.current.targetX) * 0.2;
-        mousePosition.current.targetY += (y - mousePosition.current.targetY) * 0.2;
+        mousePosition.current.targetX += (x - mousePosition.current.targetX) * 0.05;
+        mousePosition.current.targetY += (y - mousePosition.current.targetY) * 0.05;
     }, []);
 
 
@@ -178,29 +172,30 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
                 isParticleStopped.current = false;
 
                 if (progress < heroEnd) {
-                    currentPosition = 'A';
-                    transitionProgress = 0;
-                    radiusScale = 1 + (progress * 12);
-                } else if (progress < aboutEnd) {
+                    // START TRANSITION IMMEDIATELY from first scroll pixel.
+                    // Map 0→heroEnd linearly to transitionProgress 0→1
+                    // so the sand-in-air morph begins the instant the user scrolls.
+                    const heroProgress = progress / heroEnd;
                     currentPosition = 'A-B';
-                    const sectionProgress = (progress - heroEnd) / (aboutEnd - heroEnd);
-                    transitionProgress = Math.min(1, sectionProgress * 3);
-                    radiusScale = 5;
-                } else if (progress < visionStart) {
+                    transitionProgress = Math.min(1, heroProgress);
+                    // Smoothly shrink scatter scale as brain forms
+                    radiusScale = 3.2 - transitionProgress * 1.7;
+                } else if (progress < aboutEnd) {
                     currentPosition = 'B';
                     transitionProgress = 1;
-                    radiusScale = 2.5;
+                    radiusScale = 1.5;
                 } else if (progress < visionEnd) {
                     const visionProgress = (progress - visionStart) / (visionEnd - visionStart);
                     if (visionProgress < 0.5) {
                         currentPosition = 'B-C';
-                        transitionProgress = Math.min(1, visionProgress * 6);
-                        radiusScale = 2.5;
+                        // Use the full half-section, no multiplier
+                        transitionProgress = Math.min(1, visionProgress * 2);
+                        radiusScale = 1.5;
                     } else {
                         currentPosition = 'C-D';
                         const secondHalf = (visionProgress - 0.5) / 0.5;
-                        transitionProgress = Math.min(1, secondHalf * 3);
-                        radiusScale = 2 - (secondHalf * 0.5);
+                        transitionProgress = Math.min(1, secondHalf * 2);
+                        radiusScale = 1.5 - secondHalf * 0.5;
                     }
                 }
             } else {
@@ -227,17 +222,26 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
                                 currentPosition === 'C' ? 2 :
                                     currentPosition === 'C-D' ? 3 :
                                         currentPosition === 'D' ? 3 : 0;
+
+            // CRITICAL: also sync the points (vertex) shader uniforms —
+            // without this the vertex shader is always stuck at initial values
+            // and every shape looks like a sphere/circle.
+            uniforms.uTransitionProgress.value = transitionProgress;
+            uniforms.uRadiusScale.value = radiusScale;
+            uniforms.uCurrentPosition.value = simulationMaterialRef.current.uniforms.uCurrentPosition.value;
         };
 
-        // Initial calculation
-        const initTimer = setTimeout(calculateScrollPositions, 100);
-
+        // Fire measurements at multiple delays so dynamic imports (Vision, Product, etc.) are included
+        const initTimer  = setTimeout(calculateScrollPositions, 300);
+        const initTimer2 = setTimeout(() => { calculateScrollPositions(); ScrollTrigger.refresh(); }, 1500);
+        const initTimer3 = setTimeout(() => { calculateScrollPositions(); ScrollTrigger.refresh(); }, 3000);
 
         const particlesScrollTrigger = ScrollTrigger.create({
             trigger: 'body',
             start: 'top top',
             end: 'bottom bottom',
-            scrub: 1,
+            // 0.3 = tight follow; particles lag ~0.3 s behind scroll (was 1 s — felt totally unsynced)
+            scrub: 0.3,
             onUpdate: (self) => updatePositionState(self.progress),
             id: 'particles-animation',
             refreshPriority: -1,
@@ -263,6 +267,8 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
             resizeObserver.disconnect();
             window.removeEventListener('resize', handleResize);
             clearTimeout(initTimer);
+            clearTimeout(initTimer2);
+            clearTimeout(initTimer3);
         };
     }, []);
 
@@ -279,8 +285,8 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
 
         prevMouse.current.set(mouse.current.x, mouse.current.y, 0);
 
-        mousePosition.current.x += (mousePosition.current.targetX - mousePosition.current.x) * 0.15;
-        mousePosition.current.y += (mousePosition.current.targetY - mousePosition.current.y) * 0.15;
+        mousePosition.current.x += (mousePosition.current.targetX - mousePosition.current.x) * 0.04;
+        mousePosition.current.y += (mousePosition.current.targetY - mousePosition.current.y) * 0.04;
 
         mouse.current.set(
             mousePosition.current.x,
@@ -335,10 +341,13 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
         }
 
 
-        currentColor.current.lerp(targetColor.current, 0.05);
+        // Theme switching removed — single dark palette, always AdditiveBlending
         points.current.material.uniforms.uPositions.value = renderTarget.texture;
         points.current.material.uniforms.uColor.value = currentColor.current;
+        points.current.material.uniforms.uTime.value = elapsedTime;
         points.current.material.uniforms.uParticleOffset.value = particleOffset.current;
+        points.current.material.uniforms.uMouse.value = mouse.current;
+        points.current.material.uniforms.uMouseActive.value = mouseActive.current;
     });
 
     try {

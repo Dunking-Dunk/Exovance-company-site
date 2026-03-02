@@ -144,39 +144,24 @@ const Layout = ({ children }: Props) => {
     }, []);
 
 
+    // Particles fallback: if the onReady signal never fires (e.g. WebGL error), force-unblock after 3 s
     useEffect(() => {
-        let fallbackTimer: any = null;
-        if (!particlesReady && render3DComponents.showParticles) {
-            fallbackTimer = setTimeout(() => {
-                console.warn('Particles did not signal ready in time — forcing ready to avoid loader hang');
-                setParticlesReady(true);
-            }, 5000);
-        }
-
-        return () => {
-            if (fallbackTimer) clearTimeout(fallbackTimer);
-        };
+        if (particlesReady || !render3DComponents.showParticles) return;
+        const fallbackTimer = setTimeout(() => {
+            console.warn('Particles onReady timeout — forcing ready');
+            setParticlesReady(true);
+        }, 3000);
+        return () => clearTimeout(fallbackTimer);
     }, [particlesReady, render3DComponents.showParticles]);
 
+    // Always dismiss the loader — never block on particlesReady here.
+    // The particles fallback timer above ensures particlesReady becomes true within 3 s.
     const handleLoadingComplete = React.useCallback(() => {
-
-        const shouldWaitForParticles = render3DComponents.showParticles;
-
-        if (!shouldWaitForParticles || particlesReady) {
-            setTimeout(() => {
-                setIsLoading(false);
-                setTimeout(() => {
-                    setSceneReady(true);
-                }, 500);
-            }, 300);
-        }
-    }, [render3DComponents.showParticles, particlesReady]);
-
-    useEffect(() => {
-        if (particlesReady || !render3DComponents.showParticles) {
-            handleLoadingComplete();
-        }
-    }, [particlesReady, render3DComponents.showParticles, handleLoadingComplete]);
+        setTimeout(() => {
+            setIsLoading(false);
+            setTimeout(() => setSceneReady(true), 500);
+        }, 300);
+    }, []);
 
     return (
         <ReactLenis
@@ -201,7 +186,7 @@ const Layout = ({ children }: Props) => {
                     WebkitOverflowScrolling: 'touch',
                     WebkitTextSizeAdjust: '100%',
                 }}
-                className='bg-customBlack'
+                className='bg-[#06060c]'
             >
                 <Header />
                 {!isLoading && <BlobCursor

@@ -1,0 +1,2 @@
+[     549ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ https://activetheory.net/:0
+[    7130ms] [WARNING] CookieNotice not ready. wait for `await CookieNotice.ready()` before calling. @ https://activetheory.net/assets/js/app.1746999829739.js:0

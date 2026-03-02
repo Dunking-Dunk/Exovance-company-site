@@ -8,37 +8,19 @@
 
 @layer base {
   :root {
-    --custom-black: #F2F4F4;
-    --custom-gray-light: #E0E0E0;
-    --custom-gray: #C0C0C0;
-    --custom-gray-dark: #A0A0A0;
-    --custom-gray-darker: #808080;
-    --custom-black-alt: #3A3A3A;
+    /* Single permanent dark palette — no light/dark switching */
+    --custom-black: #06060c;
+    --custom-gray-light: #e8e8f0;
+    --custom-gray: #c8c8d8;
+    --custom-gray-dark: #9898aa;
+    --custom-gray-darker: #606070;
+    --custom-black-alt: #1a1a28;
     --app-height: 100vh;
-  }
-
-  .light {
-    --custom-black: #F2F4F4;
-    --custom-gray-light: #292929;
-    --custom-gray: #030303;
-    --custom-gray-dark: #222222;
-    --custom-gray-darker: #606060;
-    --custom-black-alt: #5C5C5C;
-  }
-
-  .dark {
-    --custom-black: #000000;
-    --custom-gray-light: #F2F4F4;
-    --custom-gray: #D3D3D4;
-    --custom-gray-dark: #B4B5B4;
-    --custom-gray-darker: #959695;
-    --custom-black-alt: #5C5C5C;
   }
 }
 
 * {
-  transition: background-color 0.4s ease, text-color 0.4s ease;
-
+  box-sizing: border-box;
 }
 
 html {
@@ -53,11 +35,35 @@ html {
 body {
   position: relative;
   min-height: var(--app-height);
+  /* Deep near-black with a barely-perceptible cool/blue tint — Active Theory style */
+  background-color: #06060c;
   color: var(--custom-gray);
   font-family: "Exo", serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Minimal full-page gradient overlay: one faint violet bloom fixed at top-center.
+   Gives depth without being obvious — exactly like Active Theory. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    /* Primary violet bloom — top-center */
+    radial-gradient(ellipse 80% 45% at 50% -8%, rgba(120, 0, 255, 0.18) 0%, transparent 100%),
+    /* Secondary softer bloom — offset right */
+    radial-gradient(ellipse 50% 32% at 78% 12%, rgba(160, 32, 255, 0.09) 0%, transparent 100%),
+    /* Tertiary left counter-bloom */
+    radial-gradient(ellipse 45% 28% at 18% 18%, rgba(90, 0, 220, 0.07) 0%, transparent 100%),
+    /* Bottom purple footer glow — ties sections together */
+    radial-gradient(ellipse 60% 20% at 50% 105%, rgba(100, 0, 200, 0.06) 0%, transparent 100%);
+  transition: opacity 0.7s ease;
+}
+
+/* Light mode overrides removed — single dark theme only */
 
 @layer utilities {
   .text-balance {

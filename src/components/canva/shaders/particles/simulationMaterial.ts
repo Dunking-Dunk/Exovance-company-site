@@ -195,7 +195,7 @@ class SimulationMaterial extends THREE.ShaderMaterial {
                 uMouseRadius: { value: 0.2 },
                 uScroll: { value: 0 },
                 uTransitionProgress: { value: 0 },
-                uRadiusScale: { value: 1 },
+                uRadiusScale: { value: 3.2 },
                 uCurrentPosition: { value: 0 }
             },
             vertexShader: simulationVertexShader,

@@ -274,9 +274,15 @@ const renderShaderDesktop = `
 
         float darkGradientValue = pow(gradientValue, 3.0);
         float darkBlackRange = darkGradientValue * 0.3;
-        vec3 darkBaseColor = vec3(darkBlackRange) + vec3(finalGrain);
+        // Vivid purple mixing: noticeable purple-violet tint in the fluid abstraction
+        vec3 darkBaseColor = vec3(
+            darkBlackRange * 0.85 + 0.045,
+            darkBlackRange * 0.05 + 0.003,
+            darkBlackRange * 1.10 + 0.075
+        ) + vec3(finalGrain);
         float darkHighlight = smoothstep(0.98, 1.0, darkGradientValue + fluidStrength);
-        darkBaseColor += vec3(darkHighlight * 0.05);
+        // Purple-violet highlight flash
+        darkBaseColor += vec3(darkHighlight * 0.07, darkHighlight * 0.01, darkHighlight * 0.12);
 
         baseColor = mix(lightBaseColor, darkBaseColor, uThemeValue);
         baseColor = clamp(baseColor, 0.0, 1.0);
@@ -341,7 +347,9 @@ const renderShaderMobile = `
         // Theme-aware tones (brighter for visibility)
         float lightTone = clamp(0.28 + (1.0 - gradient) * 0.20, 0.25, 0.60);
         float darkTone = clamp(0.12 + gradient * 0.20, 0.12, 0.45);
-        vec3 base = mix(vec3(lightTone), vec3(darkTone), uThemeValue);
+        // Vivid purple mixing on mobile: noticeable purple-violet ambient
+        vec3 darkPurple = vec3(darkTone * 0.82 + 0.045, darkTone * 0.05 + 0.003, darkTone * 1.08 + 0.075);
+        vec3 base = mix(vec3(lightTone), darkPurple, uThemeValue);
 
         // Lightweight grain
         float grain = hash21(vUv * (uResolution * 0.5) + uTime * 10.0) - 0.5;

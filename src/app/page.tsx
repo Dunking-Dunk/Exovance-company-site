@@ -1,59 +1,18 @@
 "use client"
 
 import dynamic from "next/dynamic";
-import { useState, useEffect, useCallback } from "react";
-import Vision from "@/app/_section/Vision";
-import ScrollTextAnimation from "@/components/global/Marquee";
-import ContactPage from "@/app/_section/Contact";
-import About from "@/app/_section/About";
 import Hero from "@/app/_section/Hero";
-import { useScrollTheme } from "@/components/provider/scroll-theme-provider";
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Service from "@/app/_section/Service";
-import Product from "@/app/_section/Product";
-import Abstract from "./_section/Abstract";
-import Footer from "@/components/global/Footer";
+import About from "@/app/_section/About";
 
-
+const Vision = dynamic(() => import("@/app/_section/Vision"), { ssr: false });
+const ScrollTextAnimation = dynamic(() => import("@/components/global/Marquee"), { ssr: false });
+const ContactPage = dynamic(() => import("@/app/_section/Contact"), { ssr: false });
+const Service = dynamic(() => import("@/app/_section/Service"), { ssr: false });
+const Product = dynamic(() => import("@/app/_section/Product"), { ssr: false });
+const Abstract = dynamic(() => import("./_section/Abstract"), { ssr: false });
+const Footer = dynamic(() => import("@/components/global/Footer"), { ssr: false });
 
 export default function Home() {
-  const { setScrollTheme } = useScrollTheme();
-  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('dark');
-
-  const handleThemeSwitch = useCallback((progress: number) => {
-    const visionStart = 0.10;
-    const visionEnd = 0.30;
-
-    let targetTheme: 'light' | 'dark';
-
-    if (progress >= visionStart && progress <= visionEnd) {
-      targetTheme = 'light';
-    } else {
-      targetTheme = 'dark';
-    }
-
-    if (targetTheme !== currentTheme) {
-      setCurrentTheme(targetTheme);
-      setScrollTheme(targetTheme);
-    }
-
-  }, [setScrollTheme, currentTheme]);
-
-  useEffect(() => {
-    const themeScrollTrigger = ScrollTrigger.create({
-      trigger: 'body',
-      start: 'top top',
-      end: 'bottom bottom',
-      onUpdate: (self) => handleThemeSwitch(self.progress),
-      id: 'theme-switcher',
-      refreshPriority: -1
-    });
-
-    return () => {
-      themeScrollTrigger.kill();
-    };
-  }, [handleThemeSwitch]);
-
   return (
     <>
       <div className="w-full h-full relative overflow-x-hidden" >
@@ -77,16 +36,16 @@ export default function Home() {
         </div>
 
         {/* Products */}
-        <div data-section="product">
+        {/* <div data-section="product">
           <Product />
-        </div>
+        </div> */}
 
         <ScrollTextAnimation />
 
         {/* Services */}
-        <div data-section="service">
+        {/* <div data-section="service">
           <Service />
-        </div>
+        </div> */}
 
 
         {/* Team */}

@@ -10,7 +10,6 @@ const About = () => {
         <div className="w-full min-h-screen relative overflow-hidden z-20">
 
             <div className="absolute inset-0 z-0">
-                <DotBackground />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-customBlack/5 to-transparent" />
             </div>
 

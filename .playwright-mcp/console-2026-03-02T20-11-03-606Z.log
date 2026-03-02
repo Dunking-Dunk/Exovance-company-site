@@ -1,0 +1,183 @@
+[    5839ms] Invalid or unexpected token
+[    7305ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/site.webmanifest:0
+[    7307ms] [ERROR] Manifest fetch from http://localhost:3001/site.webmanifest failed, code 404 @ http://localhost:3001/:0
+[    7307ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:3001/:0
+[   78654ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/site.webmanifest:0
+[   78656ms] [ERROR] Manifest fetch from http://localhost:3001/site.webmanifest failed, code 404 @ http://localhost:3001/:0
+[   79029ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/site.webmanifest:0
+[   79029ms] [ERROR] Manifest fetch from http://localhost:3001/site.webmanifest failed, code 404 @ http://localhost:3001/:0
+[   79068ms] [WARNING] Image with src "/logo/only logo white.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio. @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/shared/lib/utils/warn-once.js:15
+[   79077ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:3001/:0
+[   79496ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ webpack-internal:///(app-pages-browser)/./node_modules/framer-motion/dist/es/utils/warn-once.mjs:8
+[  102917ms] [WARNING] Particles did not signal ready in time — forcing ready to avoid loader hang @ webpack-internal:///(app-pages-browser)/./src/components/global/Layout.tsx:177
+[  105831ms] [ERROR] Failed to fetch RSC payload for http://localhost:3001/. Falling back to browser navigation. TypeError: Failed to fetch
+    at fetchServerResponse (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/router-reducer/fetch-server-response.js:58:27)
+    at fastRefreshReducerImpl (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/router-reducer/reducers/fast-refresh-reducer.js:33:67)
+    at clientReducer (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/router-reducer/router-reducer.js:41:67)
+    at Object.action (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/shared/lib/router/action-queue.js:150:55)
+    at runAction (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/shared/lib/router/action-queue.js:56:38)
+    at dispatchAction (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/shared/lib/router/action-queue.js:113:9)
+    at Object.dispatch (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/shared/lib/router/action-queue.js:145:40)
+    at eval (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/use-reducer-with-devtools.js:130:21)
+    at eval (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/app-router.js:304:25)
+    at startTransition (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react/cjs/react.development.js:2597:25)
+    at Object.fastRefresh (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/app-router.js:303:48)
+    at processMessage (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:297:31)
+    at WebSocket.handler (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:395:17) @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/app-index.js:32
+[  105832ms] [WARNING] [Fast Refresh] performing full reload
+
+Fast Refresh will perform a full reload when you edit a file that's imported by modules outside of the React rendering tree.
+You might have a file which exports a React component but also exports a value that is imported by a non-React component file.
+Consider migrating the non-React component export to a separate file and importing it into both files.
+
+It is also possible the parent component of the component you edited is a class component, which disables Fast Refresh.
+Fast Refresh requires at least one parent function component in your React tree. @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:112
+[  105840ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/:0
+[  106772ms] Error: Cannot find module './948.js'
+Require stack:
+- C:\Users\admin\Desktop\Exovance\Exovance-company-site\.next\server\webpack-runtime.js
+- C:\Users\admin\Desktop\Exovance\Exovance-company-site\.next\server\app\_not-found\page.js
+- C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\require.js
+- C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\load-components.js
+- C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\build\utils.js
+- C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\lib\start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1453:15)
+    at <unknown> (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\require-hook.js:55:36)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1064:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1069:22)
+    at Module._load (node:internal/modules/cjs/loader:1239:25)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1553:12)
+    at mod.require (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\.next\server\webpack-runtime.js:198:28)
+    at <unknown> (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\.next\server\webpack-runtime.js:111:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\.next\server\webpack-runtime.js:110:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\.next\server\webpack-runtime.js:162:22)
+    at <unknown> (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\.next\server\app\page.js:1:15948)
+    at Object.<anonymous> (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\.next\server\app\page.js:1:16006)
+    at Module._compile (node:internal/modules/cjs/loader:1809:14)
+    at Object..js (node:internal/modules/cjs/loader:1940:10)
+    at Module.load (node:internal/modules/cjs/loader:1530:32)
+    at Module._load (node:internal/modules/cjs/loader:1332:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1553:12)
+    at mod.require (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\require.js:109:84)
+    at <unknown> (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\load-components.js:103:84)
+    at async loadComponentsImpl (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\load-components.js:103:26)
+    at async DevServer.findPageComponentsImpl (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\next-server.js:714:36)
+    at async DevServer.findPageComponents (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\dev\next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\base-server.js:1910:24)
+    at async DevServer.renderToResponseImpl (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\base-server.js:818:17)
+    at async (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\dev\next-dev-server.js:339:20)
+    at async Span.traceAsyncFn (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\lib\router-server.js:173:21)
+    at async handleRequest (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\lib\router-server.js:350:24)
+    at async requestHandlerImpl (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\lib\router-server.js:374:13)
+    at async Server.requestListener (file://C:\Users\admin\Desktop\Exovance\Exovance-company-site\node_modules\next\dist\server\lib\start-server.js:141:13)
+[  107666ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/favicon.ico:0
+[  110202ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/css/app/layout.css?v=1772482373628:0
+[  110224ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/site.webmanifest:0
+[  110233ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/main-app.js?v=1772482373628:0
+[  110234ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app-pages-internals.js:0
+[  110234ms] [ERROR] Manifest fetch from http://localhost:3001/site.webmanifest failed, code 404 @ http://localhost:3001/:0
+[  110234ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app/page.js:0
+[  110235ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app/layout.js:0
+[  110256ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/favicon.ico:0
+[  110256ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/site.webmanifest:0
+[  110260ms] [ERROR] Manifest fetch from http://localhost:3001/site.webmanifest failed, code 404 @ http://localhost:3001/:0
+[  110260ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:3001/:0
+[  110267ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/favicon.ico:0
+[  112163ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/css/app/layout.css?v=1772482375674:0
+[  112172ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/site.webmanifest:0
+[  112187ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/main-app.js?v=1772482375674:0
+[  112187ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app-pages-internals.js:0
+[  112188ms] [ERROR] Manifest fetch from http://localhost:3001/site.webmanifest failed, code 404 @ http://localhost:3001/:0
+[  112188ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app/page.js:0
+[  112189ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app/layout.js:0
+[  112219ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/favicon.ico:0
+[  112219ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/site.webmanifest:0
+[  112222ms] [ERROR] Manifest fetch from http://localhost:3001/site.webmanifest failed, code 404 @ http://localhost:3001/:0
+[  112222ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:3001/:0
+[  112231ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/favicon.ico:0
+[  112701ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/css/app/layout.css?v=1772482376217:0
+[  112710ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/site.webmanifest:0
+[  112744ms] [ERROR] Manifest fetch from http://localhost:3001/site.webmanifest failed, code 404 @ http://localhost:3001/:0
+[  112745ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/main-app.js?v=1772482376217:0
+[  112745ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app-pages-internals.js:0
+[  112745ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app/page.js:0
+[  112746ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app/layout.js:0
+[  112768ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/favicon.ico:0
+[  112768ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/site.webmanifest:0
+[  112771ms] [ERROR] Manifest fetch from http://localhost:3001/site.webmanifest failed, code 404 @ http://localhost:3001/:0
+[  112772ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:3001/:0
+[  112779ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/favicon.ico:0
+[  112943ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/css/app/layout.css?v=1772482376426:0
+[  112947ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/site.webmanifest:0
+[  112971ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/main-app.js?v=1772482376426:0
+[  112972ms] [ERROR] Manifest fetch from http://localhost:3001/site.webmanifest failed, code 404 @ http://localhost:3001/:0
+[  112972ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app-pages-internals.js:0
+[  112973ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app/page.js:0
+[  112974ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app/layout.js:0
+[  112992ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/site.webmanifest:0
+[  112998ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/favicon.ico:0
+[  113000ms] [ERROR] Manifest fetch from http://localhost:3001/site.webmanifest failed, code 404 @ http://localhost:3001/:0
+[  113000ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:3001/:0
+[  113066ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/css/app/layout.css?v=1772482376607:0
+[  113076ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/site.webmanifest:0
+[  113103ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/main-app.js?v=1772482376607:0
+[  113103ms] [ERROR] Manifest fetch from http://localhost:3001/site.webmanifest failed, code 404 @ http://localhost:3001/:0
+[  113104ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app-pages-internals.js:0
+[  113104ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app/page.js:0
+[  113105ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app/layout.js:0
+[  113123ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/favicon.ico:0
+[  113125ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/site.webmanifest:0
+[  113129ms] [ERROR] Manifest fetch from http://localhost:3001/site.webmanifest failed, code 404 @ http://localhost:3001/:0
+[  113130ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:3001/:0
+[  113136ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/favicon.ico:0
+[  113284ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/css/app/layout.css?v=1772482376792:0
+[  113293ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/site.webmanifest:0
+[  113333ms] [ERROR] Manifest fetch from http://localhost:3001/site.webmanifest failed, code 404 @ http://localhost:3001/:0
+[  113335ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/main-app.js?v=1772482376792:0
+[  113335ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app-pages-internals.js:0
+[  113336ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app/page.js:0
+[  113338ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app/layout.js:0
+[  113359ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/site.webmanifest:0
+[  113366ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/favicon.ico:0
+[  113367ms] [ERROR] Manifest fetch from http://localhost:3001/site.webmanifest failed, code 404 @ http://localhost:3001/:0
+[  113367ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:3001/:0
+[  113376ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/favicon.ico:0
+[  114046ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/css/app/layout.css?v=1772482377567:0
+[  114087ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/site.webmanifest:0
+[  114089ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/main-app.js?v=1772482377567:0
+[  114090ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app/page.js:0
+[  114090ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app/layout.js:0
+[  114090ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app-pages-internals.js:0
+[  114091ms] [ERROR] Manifest fetch from http://localhost:3001/site.webmanifest failed, code 404 @ http://localhost:3001/:0
+[  114092ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:3001/:0
+[  114099ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/favicon.ico:0
+[  114108ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/favicon.ico:0
+[  123204ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/css/app/layout.css?v=1772482386748:0
+[  123231ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/site.webmanifest:0
+[  123259ms] [ERROR] Manifest fetch from http://localhost:3001/site.webmanifest failed, code 404 @ http://localhost:3001/:0
+[  123260ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/main-app.js?v=1772482386748:0
+[  123261ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app-pages-internals.js:0
+[  123262ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app/page.js:0
+[  123263ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/chunks/app/layout.js:0
+[  123284ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/site.webmanifest:0
+[  123290ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/favicon.ico:0
+[  123292ms] [ERROR] Manifest fetch from http://localhost:3001/site.webmanifest failed, code 404 @ http://localhost:3001/:0
+[  123292ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:3001/:0
+[  123301ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/favicon.ico:0

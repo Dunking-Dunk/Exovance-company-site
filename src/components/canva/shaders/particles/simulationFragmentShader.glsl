@@ -241,164 +241,29 @@ float snoise(vec3 v){
                 );
             }
             
-            // Enhanced position calculation with ultra-slow elastic spring behavior
+            // Full-screen galaxy scatter for hero state.
+            // Returns positions in ±0.8 range (same magnitude as old sphere) so the vertex
+            // shader's uRadiusScale and per-state mix math is completely unchanged.
+            // The vertex radiusScale is set to 3.5 (constant) in Particles.tsx for scatter,
+            // giving a visible spread of ±0.8 × 3.5 = ±2.8 world units from page load.
             vec3 calculatePositionA(vec3 tempPos,float time,float radius){
-                // Pre-calculate common values
-                vec3 spherePos=curlNoise(tempPos*uFrequency)*1.5;
-                vec2 mouse=vec2(uMouse.x,uMouse.y)*2.;// Scale to match particle space
-                vec2 prevMouse=vec2(uPrevMouse.x,uPrevMouse.y)*2.;
-                vec2 mouseVelocity=mouse-prevMouse;
-                float mouseSpeed=length(mouseVelocity)*SLOW_MOTION_FACTOR;// Apply slow motion to velocity
-                
-                float dist=length(tempPos.xy-mouse);
-                vec2 dir=normalize(tempPos.xy-mouse);
-                
-                // Calculate original position that particles should return to
-                vec3 originalPos=mix(tempPos,spherePos,.1);
-                originalPos=normalize(originalPos)*radius;
-                
-                // Enhanced mouse interaction with ultra-slow elastic behavior
-                vec3 mouseRepulsion=vec3(0.);
-                float mouseActive=uMouseActive;
-                
-                // Custom easing for super slow elastic return
-                float returnProgress=0.;
-                float elasticFactor=0.;
-                
-                if(mouseActive>0.){
-                    // Super slow time calculation
-                    float timeSinceActive=(time-mouseActive)*SLOW_MOTION_FACTOR;
-                    returnProgress=clamp(timeSinceActive/RETURN_DELAY,0.,1.);
-                    
-                    // Create complex elastic return pattern
-                    // First phase: extremely slow outward movement
-                    if(returnProgress<.1){
-                        elasticFactor=1.-returnProgress*2.;
-                    }
-                    // Second phase: ultra-slow return with minimal oscillations
-                    else{
-                        // Normalized time for elastic function (0-1 range for the return portion)
-                        float elasticTime=(returnProgress-.1)/.9;
-                        
-                        // Calculate base return factor with slow decay
-                        float baseReturn=pow(1.-elasticTime,EASING_POWER)*(1.-elasticTime*.3);
-                        
-                        // Add very subtle oscillations with long period
-                        float oscillation=sin(elasticTime*OSCILLATION_FREQUENCY*PI)*
-                        exp(-elasticTime*.5)*
-                        OSCILLATION_STRENGTH;
-                        
-                        // Combine for slow elastic effect
-                        elasticFactor=baseReturn+oscillation;
-                        
-                        // Apply subtle elastic bounce pattern for late stages
-                        if(elasticTime>.7){
-                            float bounceFactor=elasticBounceEase(elasticTime)*.05;
-                            elasticFactor+=bounceFactor*(1.-elasticTime);
-                        }
-                    }
-                }
-                
-                // Only apply repulsion if mouse is active
-                if(mouseActive>0.){
-                    float smoothDist=smoothstep(uMouseRadius*2.5,0.,dist);
-                    
-                    // Add directional velocity based on mouse movement (slowed down)
-                    vec2 velocityEffect=vec2(0.);
-                    if(mouseSpeed>.0005){
-                        velocityEffect=normalize(mouseVelocity)*mouseSpeed*2.;
-                    }
-                    
-                    // Ultra-amplified displacement with slow motion
-                    mouseRepulsion.xy=(dir+velocityEffect*.3)*
-                    MOUSE_INFLUENCE*
-                    smoothDist*
-                    elasticFactor*
-                    DISPLACEMENT_AMPLIFIER;
-                    
-                    // Add very slow vertical displacement
-                    mouseRepulsion.z=smoothDist*
-                    elasticFactor*
-                    (1.+sin(dist*3.+time*.5)*.7);
-                    
-                    // Add slow spiral movement during initial displacement
-                    if(returnProgress<.2){
-                        float spiralAngle=returnProgress*5.;
-                        vec2 spiral=vec2(cos(spiralAngle),sin(spiralAngle))*.2*(.2-returnProgress);
-                        mouseRepulsion.xy+=spiral*smoothDist;
-                    }
-                }
-                
-                // Calculate displaced position with ultra-slow motion
-                vec3 tempTarget=originalPos+mouseRepulsion;
-                
-                // Apply super weak spring physics for extremely slow return
-                if(mouseActive>0.&&returnProgress>0.&&returnProgress<.999){
-                    // Calculate distance for strength adjustment
-                    float distFromOriginal=length(tempTarget-originalPos);
-                    
-                    // Extremely weak spring for ultra-slow return
-                    float adaptiveSpringStrength=SPRING_STRENGTH*(.2+distFromOriginal*.1);
-                    
-                    // Calculate spring force with minimal strength
-                    vec3 springForce=(originalPos-tempTarget)*adaptiveSpringStrength;
-                    
-                    // Apply near-zero damping for extremely slow movement
-                    float dampingFactor=SPRING_DAMPING*(.1+sin(time*.2)*.1);
-                    tempTarget+=springForce*(1.-elasticFactor*dampingFactor);
-                    
-                    // Add very subtle rotational motion during return
-                    if(returnProgress>.3&&returnProgress<.9){
-                        float rotAngle=time*.5;
-                        float rotRadius=.05*(.9-returnProgress);
-                        vec3 rotOffset=vec3(
-                            cos(rotAngle)*rotRadius,
-                            sin(rotAngle)*rotRadius,
-                            sin(rotAngle*.5)*rotRadius*.5
-                        );
-                        tempTarget+=rotOffset*elasticFactor;
-                    }
-                }
-                
-                // Calculate morphing patterns with slower transitions
-                float morphTime=time*MORPH_SPEED;
-                float patternIndex=mod(morphTime/5.,MORPH_PATTERNS);
-                
-                // Smooth transitions between morphing patterns
-                vec3 morphTarget;
-                if(patternIndex<1.){
-                    morphTarget=tempTarget;
-                }else if(patternIndex<2.){
-                    float t=patternIndex-1.;
-                    morphTarget=mix(tempTarget,morphToTorus(tempTarget,time,radius),t);
-                }else if(patternIndex<3.){
-                    float t=patternIndex-2.;
-                    morphTarget=mix(morphToTorus(tempTarget,time,radius),morphToCube(tempTarget,time,radius),t);
-                }else{
-                    float t=patternIndex-3.;
-                    morphTarget=mix(morphToCube(tempTarget,time,radius),morphToOctahedron(tempTarget,time,radius),t);
-                }
-                
-                // Add minimal noise effects for smoother movement
-                float noiseScale=.15;
-                vec3 noiseOffset=curlNoise(morphTarget+time*.2)*noiseScale;
-                float noiseStrength=snoise(morphTarget+time*.1);
-                
-                // Apply final effects with reduced strength for smoother transitions
-                float effectStrength=radius<1.1?.2:.15;
-                vec3 finalPosWithEffects=morphTarget;
-                finalPosWithEffects+=curlNoise(finalPosWithEffects+3.)*effectStrength*.6;
-                finalPosWithEffects+=snoise(finalPosWithEffects+time*.3)*(effectStrength*.3);
-                finalPosWithEffects+=noiseOffset*noiseStrength*.7;
-                
-                // Apply distance-based scaling with gentle mouse interaction
-                float distanceFromCenter=length(finalPosWithEffects);
-                if(distanceFromCenter<1.){
-                    float mouseInfluence=smoothstep(uMouseRadius,0.,dist)*.7;
-                    finalPosWithEffects=normalize(finalPosWithEffects)*(1.+(1.-distanceFromCenter)*mouseInfluence);
-                }
-                
-                return finalPosWithEffects;
+                // Wide random scatter filling the full camera frustum.
+                // Camera at z=5, fov=75 → visible half-width ≈4.7 at origin.
+                // With radiusScale=1.0 the sim outputs ±1.5 which vertex then ×1.0
+                // — keep raw units moderate; radiusScale in Particles.tsx does the screen-fill.
+                vec3 restPos=vec3(
+                    tempPos.x*1.55,// wide horizontal scatter
+                    tempPos.y*1.10,// tall enough to cover screen height
+                    tempPos.z*.35// thin Z band — reads as flat cloud
+                );
+                // Subtle wind-drift so grains float lazily
+                float w=time*.055;
+                vec3 drift=vec3(
+                    snoise(vec3(tempPos.x*1.6,tempPos.y*1.6,w))*.055,
+                    snoise(vec3(tempPos.y*1.6,tempPos.z*1.6,w+3.7))*.055,
+                    snoise(vec3(tempPos.z*1.6,tempPos.x*1.6,w+7.1))*.018
+                );
+                return restPos+drift;
             }
             
             void main(){
@@ -409,26 +274,10 @@ float snoise(vec3 v){
                 vec4 posD=texture2D(positionsD,vUv);
                 
                 // Apply mouse influence to all positions for consistent interaction
-                vec2 mouse=vec2(uMouse.x,uMouse.y)*2.;
+                // OPTIMIZATION: We removed heavy mouse repulsion from the FBO layer
+                // in favor of the beautiful fluid Vortex implementation inside vertexShader.glsl
+                // which is far smoother and doesn't suffer from pseudo-state-jitter.
                 vec3 mouseInfluenceVector=vec3(0.);
-                
-                if(uMouseActive>0.){
-                    float timeSinceActive=(uTime-uMouseActive)*SLOW_MOTION_FACTOR;
-                    float mouseProgress=clamp(timeSinceActive/RETURN_DELAY,0.,1.);
-                    float effectStrength=1.-mouseProgress;
-                    
-                    // Calculate common mouse influence to apply across all positions
-                    for(int i=0;i<4;i++){
-                        vec3 currentPos=i==0?posA.xyz:(i==1?posB.xyz:(i==2?posC.xyz:posD.xyz));
-                        float dist=length(currentPos.xy-mouse);
-                        if(dist<uMouseRadius*3.){
-                            vec2 dir=normalize(currentPos.xy-mouse);
-                            float distFactor=smoothstep(uMouseRadius*3.,0.,dist);
-                            mouseInfluenceVector.xy+=dir*distFactor*effectStrength*MOUSE_INFLUENCE*.25;
-                            mouseInfluenceVector.z+=distFactor*sin(dist*5.)*.2*effectStrength;
-                        }
-                    }
-                }
                 
                 vec3 positionAWithEffects=calculatePositionA(posA.xyz,uTime*TRANSITION_SPEED,uRadiusScale);
                 vec3 pos;
@@ -437,25 +286,72 @@ float snoise(vec3 v){
                 if(uCurrentPosition==0.){
                     pos=positionAWithEffects;
                     if(uRadiusScale<1.1){
-                        pos+=curlNoise(pos*(uFrequency*1.5)+uTime*.2)*.15;
+                        // OPTIMIZATION: Replace curlNoise with simple offset vector to save GPU cycles
+                        vec3 simpleNoise=vec3(
+                            snoise(pos*(uFrequency*1.5)+uTime*.2),
+                            snoise(pos.yzx*(uFrequency*1.5)+uTime*.2),
+                            snoise(pos.zxy*(uFrequency*1.5)+uTime*.2)
+                        );
+                        pos+=simpleNoise*.15;
                     }
                 }else if(uCurrentPosition==1.){
-                    // Apply mouse influence to both start and end positions
-                    vec3 modifiedPosA=positionAWithEffects+mouseInfluenceVector;
-                    vec3 modifiedPosB=posB.xyz+mouseInfluenceVector;
-                    pos=mix(modifiedPosA,modifiedPosB,uTransitionProgress);
-                    pos+=curlNoise(pos*uFrequency+uTime*.1)*mix(.1,.05,uTransitionProgress);
+                    // SAND-IN-AIR TRANSITION: each particle has a unique random delay
+                    // so they take off and land at staggered times — like sand blown by wind
+                    vec3 modifiedPosA=positionAWithEffects;
+                    vec3 modifiedPosB=posB.xyz;
+                    
+                    // Per-particle hash: unique [0,1] offset based on its UV position
+                    float particleHash=fract(sin(dot(vUv,vec2(127.1,311.7)))*43758.5453);
+                    // Stagger: particle starts moving when globalT > particleHash*0.5
+                    // and finishes when globalT = particleHash*0.5 + 0.5
+                    // This spreads the movement across the full scroll window
+                    float localT=clamp((uTransitionProgress-particleHash*.45)/.55,0.,1.);
+                    // Smootherstep so each particle eases in and out
+                    float smoothLocalT=localT*localT*(3.-2.*localT);
+                    
+                    // Arc: particle lifts off (Z burst upward) then settles
+                    // Arc peaks at mid-flight (localT=0.5), zero at start/end
+                    float arcHeight=sin(localT*3.14159)*.35;
+                    // Wind turbulence during flight — the sand-swirl mid-air
+                    float flyNoise=sin(localT*3.14159);// 0→1→0 envelope
+                    vec3 windDisplace=vec3(
+                        snoise(modifiedPosA*3.+uTime*.3)*.28*flyNoise,
+                        snoise(modifiedPosA.yzx*3.+uTime*.3)*.18*flyNoise,
+                        arcHeight
+                    );
+                    
+                    pos=mix(modifiedPosA+windDisplace,modifiedPosB,smoothLocalT);
+                    // As particle locks into place, reduce residual noise
+                    float settleNoise=1.-smoothLocalT;
+                    vec3 simpleNoise=vec3(
+                        snoise(pos*uFrequency+uTime*.15),
+                        snoise(pos.yzx*uFrequency+uTime*.15),
+                        snoise(pos.zxy*uFrequency+uTime*.15)
+                    );
+                    pos+=simpleNoise*.05*settleNoise;
                 }else if(uCurrentPosition==2.){
                     vec3 modifiedPosB=posB.xyz+mouseInfluenceVector;
                     vec3 modifiedPosC=posC.xyz+mouseInfluenceVector;
                     pos=mix(modifiedPosB,modifiedPosC,uTransitionProgress);
-                    pos+=curlNoise(pos*uFrequency+uTime*.1)*.05;
+                    
+                    vec3 simpleNoise=vec3(
+                        snoise(pos*uFrequency+uTime*.1),
+                        snoise(pos.yzx*uFrequency+uTime*.1),
+                        snoise(pos.zxy*uFrequency+uTime*.1)
+                    );
+                    pos+=simpleNoise*.05;
                 }else if(uCurrentPosition==3.){
                     vec3 modifiedPosC=posC.xyz+mouseInfluenceVector;
                     vec3 modifiedPosD=posD.xyz+mouseInfluenceVector;
                     pos=mix(modifiedPosC,modifiedPosD,uTransitionProgress);
                     float transitionNoise=snoise(pos+uTime*.1)*(1.-uTransitionProgress)*.02;
-                    pos+=curlNoise(pos*uFrequency+uTime*.1)*.05;
+                    
+                    vec3 simpleNoise=vec3(
+                        snoise(pos*uFrequency+uTime*.1),
+                        snoise(pos.yzx*uFrequency+uTime*.1),
+                        snoise(pos.zxy*uFrequency+uTime*.1)
+                    );
+                    pos+=simpleNoise*.05;
                     pos+=vec3(transitionNoise);
                 }else if(uCurrentPosition==4.){
                     pos=posD.xyz+mouseInfluenceVector;
@@ -474,8 +370,12 @@ float snoise(vec3 v){
                     float mouseInfluenceFactor=(1.-uTransitionProgress)*.6;
                     pos+=mouseInfluenceVector*mouseInfluenceFactor;
                     
-                    vec3 noise=curlNoise(pos*.5+uTime*.1);
-                    pos+=noise*(1.-uTransitionProgress)*.1;
+                    vec3 simpleNoise=vec3(
+                        snoise(pos*.5+uTime*.1),
+                        snoise(pos.yzx*.5+uTime*.1),
+                        snoise(pos.zxy*.5+uTime*.1)
+                    );
+                    pos+=simpleNoise*(1.-uTransitionProgress)*.1;
                 }else if(uCurrentPosition==6.){
                     float theta=vUv.x*2.*PI;
                     float phi=vUv.y*HALF_PI;
@@ -488,13 +388,24 @@ float snoise(vec3 v){
                     vec3 modifiedSpherePos=spherePos+mouseInfluenceVector*uTransitionProgress;
                     pos=mix(modifiedSpherePos,positionAWithEffects,uTransitionProgress);
                     
-                    vec3 noise=curlNoise(pos*uFrequency+uTime*.1);
-                    pos+=noise*mix(.1,.05,uTransitionProgress);
+                    vec3 simpleNoise=vec3(
+                        snoise(pos*uFrequency+uTime*.1),
+                        snoise(pos.yzx*uFrequency+uTime*.1),
+                        snoise(pos.zxy*uFrequency+uTime*.1)
+                    );
+                    pos+=simpleNoise*mix(.1,.05,uTransitionProgress);
                 }else if(uCurrentPosition==7.){
                     vec3 modifiedPosD=posD.xyz+mouseInfluenceVector*(1.-uTransitionProgress);
                     pos=mix(modifiedPosD,positionAWithEffects,uTransitionProgress);
-                    pos+=curlNoise(pos*uFrequency+uTime*.1)*mix(.08,.1,uTransitionProgress);
+                    
+                    vec3 simpleNoise=vec3(
+                        snoise(pos*uFrequency+uTime*.1),
+                        snoise(pos.yzx*uFrequency+uTime*.1),
+                        snoise(pos.zxy*uFrequency+uTime*.1)
+                    );
+                    pos+=simpleNoise*mix(.08,.1,uTransitionProgress);
                 }
                 
                 gl_FragColor=vec4(pos,1.);
             }
+            

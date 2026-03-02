@@ -1,0 +1,4 @@
+Total messages: 196 (Errors: 1, Warnings: 195)
+Returning 1 messages for level "error"
+
+Invalid or unexpected token

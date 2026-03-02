@@ -12,8 +12,10 @@ const Scene = memo(({ ...props }) => {
             onCreated={(state) => {
                 state.gl.toneMapping = THREE.AgXToneMapping;
                 state.gl.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-                // Ensure canvas doesn't block the main thread
-                state.gl.compile(state.scene, state.camera);
+                // Match the CSS body background (#06060c) so there is zero flash
+                // when the canvas mounts. The canvas is still alpha:true so CSS
+                // background shows through, but this prevents the white-frame flicker.
+                state.gl.setClearColor(0x06060c, 1);
             }}
             dpr={[0.5, 1]}
             performance={{ min: 1 }}
@@ -25,7 +27,7 @@ const Scene = memo(({ ...props }) => {
                 depth: true,
                 preserveDrawingBuffer: false,
             }}
-            camera={{ position: [0, 0, 5], fov: 75 }}
+            camera={{ position: [0, 0, 7], fov: 62 }}
             frameloop="always"
         >
             <Suspense fallback={null}>
