@@ -14,6 +14,7 @@ import LoadingScreen from './loading-screen'
 import { debounce } from '@/lib/utils'
 import { useScrollTheme } from '@/components/provider/scroll-theme-provider'
 import Footer from './Footer'
+import PageTransition from './PageTransition'
 import { AdaptiveDpr } from '@react-three/drei'
 
 
@@ -188,6 +189,7 @@ const Layout = ({ children }: Props) => {
                 }}
                 className='bg-[#06060c]'
             >
+                <PageTransition />
                 <Header />
                 {!isLoading && <BlobCursor
                     blobType="circle"

@@ -1,13 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { useCurrentScrollTheme } from '../provider/scroll-theme-provider'
 import { gsap } from 'gsap'
+import { navigateTo } from './PageTransition'
 
 const Header = () => {
     const theme = useCurrentScrollTheme()
-    const router = useRouter()
     const [isOpen, setIsOpen] = useState(false)
     const [viewport, setViewport] = useState({ w: 0, h: 0 })
     const overlayRef = useRef<HTMLDivElement | null>(null)
@@ -45,7 +44,7 @@ const Header = () => {
     const handleMenuSelection = (item: MenuItem) => {
         closeMenu()
         if (item.href) {
-            router.push(item.href)
+            navigateTo(item.href)
             return
         }
         const el = document.querySelector(`[data-section="${item.key}"]`)
