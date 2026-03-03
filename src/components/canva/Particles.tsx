@@ -175,17 +175,15 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
                 isParticleStopped.current = false;
                 uniforms.uFade.value = 1;
 
-                if (progress < heroEnd) {
-                    // Transition starts from the very first scroll pixel — particles
-                    // slowly coalesce into the brain shape throughout the entire hero section.
-                    const heroProgress = progress / heroEnd;
+                if (progress < visionStart) {
+                    // A→B: particles slowly coalesce into the brain shape across the
+                    // entire hero + about sections. The brain is NOT fully formed until
+                    // the vision section starts (visionStart), so IMAGINE text is already
+                    // appearing as the last particles lock into place.
+                    const abProgress = progress / Math.max(0.001, visionStart);
                     currentPosition = 'A-B';
-                    transitionProgress = Math.min(1, heroProgress);
+                    transitionProgress = Math.min(1, abProgress);
                     radiusScale = 5.0 - transitionProgress * 2.8;
-                } else if (progress < aboutEnd) {
-                    currentPosition = 'B';
-                    transitionProgress = 1;
-                    radiusScale = 2.2;
                 } else if (progress < visionEnd) {
                     const visionProgress = (progress - visionStart) / (visionEnd - visionStart);
                     // 0.00 – 0.28: brain holds (IMAGINE pinned in view)
@@ -193,7 +191,7 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
                     // 0.50 – 0.78: face holds (INVENT pinned in view)
                     // 0.78 – 1.00: face disperses upward (C-D)
                     if (visionProgress < 0.28) {
-                        // Brain fully formed, just holding
+                        // Brain fully formed, holding while IMAGINE is visible
                         currentPosition = 'B';
                         transitionProgress = 1;
                         radiusScale = 2.2;
@@ -213,28 +211,27 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
                         radiusScale = 2.2 - lastChunk * 0.8;
                     }
                 } else {
-                    // Abstract section — 4 phases:
-                    //   0.00–0.55 : D → Logo  (particles flow from disperse into logo shape)
-                    //   0.55–0.65 : Logo hold  (fully formed, brief pause)
-                    //   0.65–1.00 : Logo hold + fade out (gone before section leaves viewport)
+                    // Abstract section — particles flow into logo then hold fully visible.
+                    // NO FADE OUT: particles remain at full opacity for the entire abstract
+                    // section, "stuck" in the logo shape as the user scrolls through.
+                    //   0.00–0.55 : D → Logo  (particles converge into logo)
+                    //   0.55–1.00 : Logo hold  (fully formed, stays put)
                     const abstractProgress = (progress - visionEnd) / Math.max(0.001, abstractEnd - visionEnd);
                     if (abstractProgress < 0.55) {
                         currentPosition = 'D-Logo';
                         transitionProgress = Math.min(1, abstractProgress / 0.55);
                         radiusScale = 2.0 - transitionProgress * 0.2;
-                        uniforms.uFade.value = 1;
                     } else {
                         currentPosition = 'Logo';
                         transitionProgress = 1;
                         radiusScale = 1.8;
-                        // Fade: starts at abstractProgress=0.65, fully gone at 1.0
-                        const FADE_START = 0.65;
-                        const fadeProg = Math.max(0, (abstractProgress - FADE_START) / (1.0 - FADE_START));
-                        uniforms.uFade.value = Math.max(0, 1 - fadeProg);
                     }
+                    // Particles stay fully visible (uFade = 1) throughout abstract section —
+                    // they are "stuck" here rather than fading/drifting away.
+                    uniforms.uFade.value = 1;
                 }
             } else {
-                // Past abstractEnd — particles are already fully faded, keep at 0
+                // Past abstractEnd — particles snap off instantly
                 isParticleStopped.current = true;
                 currentPosition = 'Logo';
                 transitionProgress = 1;
@@ -272,8 +269,9 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
             trigger: 'body',
             start: 'top top',
             end: 'bottom bottom',
-            // 0.3 = tight follow; particles lag ~0.3 s behind scroll (was 1 s — felt totally unsynced)
-            scrub: 0.3,
+            // scrub: 1.0 — medium lag (~1 s) for smooth, cinematic transitions;
+            // A→B spans hero+about so it naturally feels very slow even at this scrub.
+            scrub: 1.0,
             onUpdate: (self) => updatePositionState(self.progress),
             id: 'particles-animation',
             refreshPriority: -1,
