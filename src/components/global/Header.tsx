@@ -124,22 +124,25 @@ const Header = () => {
     return (
         <div className='fixed w-full top-0 z-50'>
             <div className='flex justify-between items-center w-full md:px-12 px-4 py-6'>
-                <div className='cursor-pointer z-[500]'>
+                <div className='cursor-pointer z-[500] flex items-center gap-3'>
                     <Image
                         src={theme === 'dark' ? '/logo/only logo white.png' : '/logo/only logo black.png'}
                         alt='Exovance logo'
-                        width={48}
-                        height={48}
+                        width={40}
+                        height={40}
                         priority
                     />
+                    <span className='hidden sm:block font-mono text-[10px] tracking-[0.35em] uppercase text-customGrayDarker/70'>Exovance</span>
                 </div>
 
                 <button
                     aria-label={isOpen ? 'Close menu' : 'Open menu'}
                     onClick={() => (isOpen ? closeMenu() : openMenu())}
-                    className='inline-flex items-center gap-2 px-3 py-2 rounded-full border border-customGrayDark/40 text-customGrayLight hover:border-customGrayDark/70 hover:text-white transition-colors'
+                    className='inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full border border-customGrayDark/30 text-customGrayDark hover:border-violet-500/40 hover:text-customGrayLight transition-all duration-300'
                 >
-                    {isOpen ? <X className='w-5 h-5' /> : <Menu className='w-5 h-5' />}
+                    {isOpen
+                        ? <><X className='w-3.5 h-3.5' /><span className='font-mono text-[10px] tracking-[0.3em] uppercase'>Close</span></>
+                        : <><span className='font-mono text-[10px] tracking-[0.3em] uppercase'>Menu</span><Menu className='w-3.5 h-3.5' /></>}
                 </button>
             </div>
 
@@ -165,10 +168,10 @@ const Header = () => {
                         <button
                             aria-label='Close menu'
                             onClick={() => closeMenu()}
-                            className='absolute top-5 right-5 z-20 inline-flex items-center gap-2 px-3 py-2 rounded-full border border-customGrayDark/40 text-customGrayLight hover:border-customGrayDark/70 hover:text-white transition-colors'
+                            className='absolute top-5 right-5 z-20 inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full border border-customGrayDark/30 text-customGrayDark hover:border-violet-500/40 hover:text-customGrayLight transition-all duration-300'
                         >
-                            <X className='w-5 h-5' />
-                            <span className='hidden md:inline'>Close</span>
+                            <X className='w-3.5 h-3.5' />
+                            <span className='font-mono text-[10px] tracking-[0.3em] uppercase'>Close</span>
                         </button>
 
                         <div
@@ -183,12 +186,13 @@ const Header = () => {
                                 { label: 'Services', key: 'service', href: '/service' },
                                 { label: 'Team', key: 'team', href: '/team' },
                                 { label: 'Contact', key: 'contact', href: '/contact' },
-                            ] as MenuItem[]).map((item) => (
+                            ] as MenuItem[]).map((item, i) => (
                                 <button
                                     key={item.key}
                                     onClick={() => handleMenuSelection(item)}
-                                    className='text-3xl md:text-5xl tracking-wider text-white/90 hover:text-white transition-colors'
+                                    className='group flex items-center gap-4 font-display font-bold text-4xl md:text-6xl tracking-tight text-white/60 hover:text-white transition-colors duration-300'
                                 >
+                                    <span className='font-mono text-[9px] tracking-[0.3em] text-violet-400/50 group-hover:text-violet-300/70 transition-colors w-6 text-right hidden md:inline'>{String(i + 1).padStart(2, '0')}</span>
                                     {item.label}
                                 </button>
                             ))}

@@ -2,6 +2,7 @@ varying vec4 vColor;
 varying float vSparkle;
 uniform vec3 uColor;
 uniform float uTime;
+uniform float uFade;
 
 void main(){
     // Vector from center of the point (0.5, 0.5) to the current pixel
@@ -37,5 +38,5 @@ void main(){
     vec3 finalColor=mix(vColor.rgb,sparkleColor,vSparkle*starShape);
     
     // Standard (non-premultiplied) output
-    gl_FragColor=vec4(finalColor,totalAlpha);
+    gl_FragColor=vec4(finalColor,totalAlpha*uFade);
 }

@@ -1,80 +1,99 @@
 "use client"
-import React, { useRef, useMemo } from 'react'
+import React, { useRef, useMemo, useEffect } from 'react'
 import * as THREE from 'three'
 import { Float, useGLTF } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 
-// Animated aurora/video-texture shader — full spectrum color cycling through the mesh
+// ─── VERTEX ──────────────────────────────────────────────────────────────────
 const logoVertexShader = `
     varying vec2 vUv;
     varying vec3 vNormal;
-    varying vec3 vWorldPos;
     varying vec3 vViewDir;
 
     void main() {
         vUv = uv;
         vNormal = normalize(normalMatrix * normal);
         vec4 worldPos = modelMatrix * vec4(position, 1.0);
-        vWorldPos = worldPos.xyz;
         vViewDir = normalize(cameraPosition - worldPos.xyz);
         gl_Position = projectionMatrix * viewMatrix * worldPos;
     }
 `
 
+// ─── FRAGMENT ─────────────────────────────────────────────────────────────────
+// Active Theory glass: dark transparent body with animated iridescent colour washes.
+// The mesh is flat/2-D so NdotV is useless for hue — instead we drive colour purely
+// from UV-space animated waves, exactly what Active Theory does.
 const logoFragmentShader = `
     uniform float uTime;
+    uniform sampler2D uVideoTexture;
     varying vec2 vUv;
     varying vec3 vNormal;
-    varying vec3 vWorldPos;
     varying vec3 vViewDir;
 
-    // HSV to RGB
     vec3 hsv2rgb(vec3 c) {
         vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
         vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
         return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
     }
+    float hash21(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+    float n2(vec2 p){
+        vec2 i=floor(p),f=fract(p); f=f*f*(3.-2.*f);
+        return mix(mix(hash21(i),hash21(i+vec2(1,0)),f.x),
+                   mix(hash21(i+vec2(0,1)),hash21(i+vec2(1,1)),f.x),f.y);
+    }
 
     void main() {
-        vec2 uv = vUv;
+        float t  = uTime;
+        vec2  uv = vUv;
 
-        // Fresnel — strong at glancing angles (glass silhouette edge)
-        float NdotV = max(0.0, dot(normalize(vNormal), normalize(vViewDir)));
-        float fresnel = pow(1.0 - NdotV, 3.0);
+        // Fresnel for edge brightening (works even on flat mesh for silhouette)
+        float NdotV  = max(0.0, dot(normalize(vNormal), normalize(vViewDir)));
+        float fresnel = pow(1.0 - NdotV, 3.5);
 
-        // Gentle UV warp for undulating surface
-        float warpX = sin(uv.y * 2.5 + uTime * 0.35) * 0.03
-                    + sin(uv.y * 5.0 - uTime * 0.2) * 0.015;
-        float warpY = cos(uv.x * 2.0 + uTime * 0.28) * 0.025
-                    + cos(uv.x * 4.5 - uTime * 0.18) * 0.01;
-        vec2 wv = uv + vec2(warpX, warpY);
+        // ── Animated UV warp — creates the flowing glass distortion ──────────
+        vec2 wuv = uv;
+        wuv.x += sin(uv.y * 5.0 + t * 0.55) * 0.06 + sin(uv.y * 11.0 - t * 0.9) * 0.02;
+        wuv.y += cos(uv.x * 4.0 + t * 0.40) * 0.05 + cos(uv.x *  8.0 + t * 0.7) * 0.02;
 
-        // PEARL WHITE BASE — very low saturation, near-white
-        // A slow-drifting hue gives the iridescent colour shift without full rainbow
-        float hue = fract(wv.x * 0.4 + wv.y * 0.25 + uTime * 0.025);
-        // Very desaturated — mostly white with a hint of colour
-        float sat = 0.18 + 0.12 * sin(uTime * 0.5 + uv.x * 2.0);
-        float val = 0.90 + 0.08 * sin(uTime * 0.7 + uv.y * 3.0);
-        vec3 pearlBase = hsv2rgb(vec3(hue, sat, val));
+        // ── Surface noise ────────────────────────────────────────────────────
+        float noise = n2(wuv * 3.0 + t * 0.18) * 0.55
+                    + n2(wuv * 7.0 - t * 0.25) * 0.30
+                    + n2(wuv *14.0 + t * 0.40) * 0.15;
 
-        // IRIDESCENT RIM — richer colour at edges; purple/teal/blue shift
-        float rimHue = fract(hue + 0.35 + uTime * 0.018);
-        vec3 rimColor = hsv2rgb(vec3(rimHue, 0.55, 1.0));
+        // ── Iridescent colour — hue driven purely by animated UV ─────────────
+        // Slow wide sweep across the full spectrum (teal→violet→rose→back)
+        float bandHue = fract(wuv.x * 0.9 + wuv.y * 0.6 + noise * 0.25 + t * 0.06);
+        // High saturation, low-medium value so glass reads DARK not bright
+        float sat = 0.75 + 0.25 * noise;
+        float val = 0.18 + 0.22 * noise;          // dark glass body
+        vec3 glassColor = hsv2rgb(vec3(bandHue, sat, val));
 
-        // Mix pearl interior with coloured rim by fresnel
-        vec3 finalColor = mix(pearlBase, rimColor, fresnel * 0.75);
+        // ── Bright thin colour streaks — the signature Active Theory light lines
+        float s1 = pow(max(0.0, sin(wuv.y * 28.0 - t * 2.2 + bandHue * 8.0)), 9.0);
+        float s2 = pow(max(0.0, sin(wuv.x * 20.0 + t * 1.6 - bandHue * 5.0)), 8.0) * 0.6;
+        float s3 = pow(max(0.0, sin((wuv.x + wuv.y) * 18.0 - t * 1.9)), 10.0) * 0.4;
+        float streakMask = s1 + s2 + s3;
+        vec3  streakHue  = hsv2rgb(vec3(fract(bandHue + 0.12), 0.60, 1.8));
+        // Streaks add bright saturated light on top of the dark glass
+        vec3 iridColor = glassColor + streakHue * streakMask * 0.9;
 
-        // Subtle inner glow — brightens the core slightly
-        float breathe = 0.5 + 0.5 * sin(uTime * 0.8);
-        finalColor += pearlBase * (0.08 + 0.06 * breathe);
+        // ── Fresnel rim (edge glow) ───────────────────────────────────────────
+        vec3 rimCol  = vec3(0.75, 0.70, 1.0) * fresnel * (0.8 + 0.2 * sin(t*0.8)) * 1.6;
+        vec3 finalColor = iridColor + rimCol;
 
-        // Alpha:
-        //   core = mostly transparent (see-through like glass)
-        //   rim  = opaque bright edge (glass silhouette)
-        float alpha = mix(0.12, 0.82, fresnel);
-        // Boost slightly on brighter surface facets
-        alpha += (val - 0.9) * 0.3;
-        alpha = clamp(alpha, 0.08, 0.85);
+        // ── Minimal video glow inside the glass ──────────────────────────────
+        // Sample the video texture at the warped UV so it distorts with glass.
+        // Only luminous parts of the video bleed through; darks stay invisible.
+        // Max contribution ~9% — reads as a faint inner light wash.
+        vec3 videoSample = texture2D(uVideoTexture, wuv).rgb;
+        float videoLum = dot(videoSample, vec3(0.299, 0.587, 0.114));
+        float videoMask = smoothstep(0.15, 0.75, videoLum);
+        float videoIntensity = 0.09 * (1.0 - fresnel * 0.6) * videoMask;
+        finalColor += videoSample * videoIntensity;
+
+        // ── Alpha — dark glass: interior ~12%, streaks punch through, rim visible
+        float alpha = 0.12 + 0.40 * fresnel + 0.35 * streakMask + 0.08 * noise;
+        alpha = clamp(alpha, 0.06, 0.72);
 
         gl_FragColor = vec4(finalColor, alpha);
     }
@@ -83,32 +102,60 @@ const logoFragmentShader = `
 export const ExovanceLogo = (props: any) => {
     const { nodes }: any = useGLTF('/3d/exovance-3d.glb')
     const matRef = useRef<THREE.ShaderMaterial>(null!)
+    const groupRef = useRef<THREE.Group>(null!)
+    const videoTextureRef = useRef<THREE.VideoTexture | null>(null)
 
     const uniforms = useMemo(() => ({
         uTime: { value: 0 },
+        uVideoTexture: { value: new THREE.Texture() },
     }), [])
 
+    // Create video element and wire up THREE.VideoTexture
+    useEffect(() => {
+        const video = document.createElement('video')
+        video.src = '/video/colorvideo.mp4'
+        video.loop = true
+        video.muted = true
+        video.playsInline = true
+        video.autoplay = true
+        video.crossOrigin = 'anonymous'
+        // Must trigger play after user gesture or autoplay policy — muted allows auto
+        video.play().catch(() => {})
+
+        const texture = new THREE.VideoTexture(video)
+        texture.minFilter = THREE.LinearFilter
+        texture.magFilter = THREE.LinearFilter
+        texture.format = THREE.RGBAFormat
+        videoTextureRef.current = texture
+        uniforms.uVideoTexture.value = texture
+
+        return () => {
+            video.pause()
+            texture.dispose()
+        }
+    }, [uniforms])
+
     useFrame(({ clock }) => {
+        const t = clock.getElapsedTime()
         if (matRef.current) {
-            matRef.current.uniforms.uTime.value = clock.getElapsedTime()
+            matRef.current.uniforms.uTime.value = t
+        }
+        // Keep VideoTexture flagged for update each frame so frames advance
+        if (videoTextureRef.current) {
+            videoTextureRef.current.needsUpdate = true
+        }
+        if (groupRef.current) {
+            // Very subtle drift: ±0.06 up/down, ±0.04 left, independent slow frequencies
+            groupRef.current.position.y = 0.7 + Math.sin(t * 0.45) * 0.15
+            groupRef.current.position.x = Math.sin(t * 0.30) * 0.1
         }
     })
 
     return (
         <>
-            {/* White key light — gives the pearl highlight */}
-            <pointLight position={[4, 3, 6]} intensity={22} color="#ffffff" />
-            {/* Teal-cyan fill — iridescent edge shimmer */}
-            <pointLight position={[-4, -2, 4]} intensity={12} color="#44ddcc" />
-            {/* Purple side — colour-shift the shadows */}
-            <pointLight position={[3, -3, 3]} intensity={10} color="#9933ff" />
-            {/* Soft warm rim for depth */}
-            <pointLight position={[-2, 4, 2]} intensity={8} color="#aaccff" />
-            <ambientLight intensity={0.35} color="#111122" />
-
-            <Float speed={0.7} rotationIntensity={0.4} floatIntensity={1.0} floatingRange={[-0.1, 0.1]}>
-                <group {...props} dispose={null} rotation={[-Math.PI / 2, Math.PI, Math.PI]} position={[0, 0.7, 0.5]}>
-                    <mesh geometry={nodes.Curve003.geometry} position={[0, 0, 0.1]} scale={5}>
+            <Float speed={0.4} rotationIntensity={0.05} floatIntensity={0.0} floatingRange={[0, 0]}>
+                <group ref={groupRef} {...props} dispose={null} rotation={[-Math.PI / 2, Math.PI, Math.PI]} position={[0, 0.7, 0.5]}>
+                    <mesh geometry={nodes.Curve003.geometry} position={[0, 0, 0.1]} scale={8}>
                         <shaderMaterial
                             ref={matRef}
                             vertexShader={logoVertexShader}
@@ -117,7 +164,7 @@ export const ExovanceLogo = (props: any) => {
                             transparent={true}
                             side={THREE.DoubleSide}
                             depthWrite={false}
-                            blending={THREE.NormalBlending}
+                            blending={THREE.AdditiveBlending}
                         />
                     </mesh>
                 </group>

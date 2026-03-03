@@ -15,6 +15,12 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['"Inter"', '"Exo"', ...defaultTheme.fontFamily.sans],
+        display: ['"Syne"', '"Exo"', ...defaultTheme.fontFamily.sans],
+        mono: ['"Space Mono"', ...defaultTheme.fontFamily.mono],
+        exo: ['"Exo"', ...defaultTheme.fontFamily.sans],
+      },
       colors: {
         customBlack: 'var(--custom-black)',
         customBlackAlt: 'var(--custom-black-alt)',

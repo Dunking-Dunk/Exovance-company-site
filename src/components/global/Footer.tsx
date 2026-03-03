@@ -16,18 +16,19 @@ const Footer = () => {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="relative w-full h-full py-24 overflow-hidden text-customGray border-t border-customGrayDark/40 z-20">
-            <h2 className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[25vw] sm:text-[20vw] z-10 font-semibold text-customGrayDarker opacity-50'>EXOVANCE</h2>
+        <footer className="relative w-full h-full py-24 overflow-hidden text-customGray border-t border-violet-500/15 z-20">
+            {/* Background watermark */}
+            <h2 className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[25vw] sm:text-[20vw] z-10 font-display font-bold text-violet-500/[0.04] select-none pointer-events-none whitespace-nowrap'>EXOVANCE</h2>
 
             <Dither
-                waveColor={[0.35, 0.35, 0.35]}
+                waveColor={[0.18, 0.04, 0.32]}
                 disableAnimation={false}
                 enableMouseInteraction={false}
                 mouseRadius={0.3}
-                colorNum={4}
-                waveAmplitude={0.25}
-                waveFrequency={2.5}
-                waveSpeed={0.04}
+                colorNum={3}
+                waveAmplitude={0.20}
+                waveFrequency={2.0}
+                waveSpeed={0.03}
             />
 
             <div className="relative z-20 mx-6 sm:mx-10 lg:mx-28 h-full">
@@ -39,14 +40,14 @@ const Footer = () => {
                                 <div className="mb-6">
                                     <Image src="/logo/only logo white.png" alt="Exovance logo" width={160} height={40} className="h-10 w-auto opacity-90" />
                                 </div>
-                                <h3 className="text-4xl sm:text-5xl font-semibold text-customGrayLight leading-tight relative pb-2 after:content-[''] after:block after:h-[2px] after:w-24 after:bg-customGrayDark/40 after:rounded-full after:mt-2">EXOVANCE</h3>
+                                <h3 className="text-4xl sm:text-5xl font-display font-bold text-customGrayLight leading-tight relative pb-2 after:content-[''] after:block after:h-[1px] after:w-24 after:bg-violet-500/60 after:rounded-full after:mt-2">EXOVANCE</h3>
                             </div>
                             <p className="text-base sm:text-lg text-customGray mt-3 leading-relaxed">Engineering intelligent systems for the real world.</p>
                         </div>
 
 
                         <div>
-                            <h4 className="text-sm uppercase tracking-[0.18em] text-customGrayLight/80 mb-3 relative pb-1 after:content-[''] after:block after:h-[2px] after:w-16 after:bg-customGrayDark/40 after:rounded-full after:mt-1">Location</h4>
+                            <h4 className="font-mono text-[10px] uppercase tracking-[0.35em] text-violet-400/60 mb-3 relative pb-1 after:content-[''] after:block after:h-px after:w-16 after:bg-violet-500/25 after:rounded-full after:mt-1">Location</h4>
                             <address className="not-italic text-base text-customGray leading-relaxed">
                                 RWD Grand Corridor<br />
                                 Vanagram, Chennai<br />
@@ -54,32 +55,32 @@ const Footer = () => {
                             </address>
                         </div>
                         <div className="space-y-2">
-                            <h4 className="text-sm uppercase tracking-[0.18em] text-customGrayLight/80 mb-3 relative pb-1 after:content-[''] after:block after:h-[2px] after:w-16 after:bg-customGrayDark/40 after:rounded-full after:mt-1">Contact</h4>
-                            <a href="mailto:exovancelab@gmail.com" className="text-base hover:text-customGrayLight transition-colors">exovancelab@gmail.com</a><br />
-                            <a href="tel:+918056201341" className="text-base hover:text-customGrayLight transition-colors">+91 80562 01341</a>
+                            <h4 className="font-mono text-[10px] uppercase tracking-[0.35em] text-violet-400/60 mb-3 relative pb-1 after:content-[''] after:block after:h-px after:w-16 after:bg-violet-500/25 after:rounded-full after:mt-1">Contact</h4>
+                            <a href="mailto:exovancelab@gmail.com" className="block text-base text-customGrayDark hover:text-violet-300 transition-colors duration-300">exovancelab@gmail.com</a>
+                            <a href="tel:+918056201341" className="block text-base text-customGrayDark hover:text-violet-300 transition-colors duration-300">+91 80562 01341</a>
                         </div>
                         <p className="text-lg sm:text-2xl pt-3">©{currentYear}</p>
                     </div>
 
                     {/* Explore */}
                     <div className="flex flex-col items-start space-y-10 lg:space-y-20 md:items-center md:justify-self-center">
-                        <h4 className="text-sm uppercase tracking-[0.18em] text-customGrayLight/80 relative pb-1 after:content-[''] after:block after:h-[2px] after:w-16 after:bg-customGrayDark/40 after:rounded-full after:mt-1">Explore</h4>
-                        <nav className="flex flex-col text-lg sm:text-xl space-y-4">
-                            <Link href="/about" className="hover:text-customGrayLight transition-colors">About</Link>
-                            <Link href="/product" className="hover:text-customGrayLight transition-colors">Products</Link>
-                            <Link href="/team" className="hover:text-customGrayLight transition-colors">Team</Link>
-                            <Link href="/contact" className="hover:text-customGrayLight transition-colors">Contact</Link>
+                        <h4 className="font-mono text-[10px] uppercase tracking-[0.35em] text-violet-400/60 relative pb-1 after:content-[''] after:block after:h-px after:w-16 after:bg-violet-500/25 after:rounded-full after:mt-1">Explore</h4>
+                        <nav className="flex flex-col text-base space-y-3">
+                            <Link href="/about" className="text-customGrayDark hover:text-violet-300 transition-colors duration-300">About</Link>
+                            <Link href="/product" className="text-customGrayDark hover:text-violet-300 transition-colors duration-300">Products</Link>
+                            <Link href="/team" className="text-customGrayDark hover:text-violet-300 transition-colors duration-300">Team</Link>
+                            <Link href="/contact" className="text-customGrayDark hover:text-violet-300 transition-colors duration-300">Contact</Link>
                         </nav>
                         <div className="flex gap-4 pt-4">
                             <Link
                                 href="/contact"
-                                className="inline-flex items-center justify-center px-6 py-3 rounded-full border border-customGrayDark/40 text-customGrayLight hover:border-customGrayDark/70 hover:text-white transition-colors text-base"
+                                className="inline-flex items-center justify-center px-6 py-3 rounded-full border border-violet-500/35 text-customGrayLight hover:border-violet-400/70 hover:text-violet-200 transition-all duration-300 text-sm font-light tracking-wide"
                             >
                                 Start a project
                             </Link>
                             <Link
                                 href="/contact"
-                                className="inline-flex items-center justify-center px-6 py-3 rounded-full text-customGrayDark hover:text-white hover:bg-customGrayDark/30 border border-transparent transition-colors text-base"
+                                className="inline-flex items-center justify-center px-6 py-3 rounded-full text-customGrayDarker hover:text-violet-300 border border-transparent hover:border-violet-500/20 transition-all duration-300 text-sm font-light"
                             >
                                 Get in touch
                             </Link>
@@ -88,7 +89,7 @@ const Footer = () => {
 
                     {/* Follow */}
                     <div className="flex flex-col items-start space-y-6 md:items-end md:justify-self-end">
-                        <h4 className="text-base font-medium text-customGrayDark tracking-wider relative pb-1 after:content-[''] after:block after:h-[2px] after:w-16 after:bg-customGrayDark/40 after:rounded-full after:mt-1">Follow</h4>
+                        <h4 className="font-mono text-[10px] uppercase tracking-[0.35em] text-violet-400/60 relative pb-1 after:content-[''] after:block after:h-px after:w-16 after:bg-violet-500/25 after:rounded-full after:mt-1">Follow</h4>
                         <div className="flex space-x-6">
                             <motion.a
                                 href="https://www.instagram.com/exovance"

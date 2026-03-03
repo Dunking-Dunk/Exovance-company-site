@@ -46,7 +46,7 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
     const particleOffset = useRef(0);
     const isParticleStopped = useRef(false);
     const stopScrollPosition = useRef(0);
-    const scrollPositions = useRef({ heroEnd: 0.35, aboutEnd: 0.43, visionStart: 0.50, visionEnd: 0.65 });
+    const scrollPositions = useRef({ heroEnd: 0.35, aboutEnd: 0.43, visionStart: 0.50, visionEnd: 0.65, abstractEnd: 0.85 });
 
     // Memoize scroll transform
     const { scrollYProgress } = useScroll();
@@ -83,9 +83,10 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
         uColor: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
         uTime: { value: 0 },
         uTransitionProgress: { value: 0 },
-        uRadiusScale: { value: 3.2 },  // match scatter radiusScale so frame-1 is already spread out
+        uRadiusScale: { value: 5.0 },  // wider initial scatter so particles fill more of the screen
         uCurrentPosition: { value: 0 },
         uParticleOffset: { value: 0 },
+        uFade: { value: 1 },
         uMouse: { value: new THREE.Vector3(-9, -9, 0) },
         uMouseActive: { value: 0 },
     }), []);
@@ -127,7 +128,7 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
             const totalScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
 
 
-            let positions = { heroEnd: 0.35, aboutEnd: 0.43, visionStart: 0.50, visionEnd: 0.65 };
+            let positions = { heroEnd: 0.35, aboutEnd: 0.43, visionStart: 0.50, visionEnd: 0.65, abstractEnd: 0.85 };
 
             if (totalScrollHeight > 0) {
                 // Calculate positions relative to total scroll height
@@ -145,14 +146,16 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
                 if (visionSection) {
                     positions.visionStart = Math.max(positions.aboutEnd + 0.03, visionSection.offsetTop / totalScrollHeight);
                     const visionBottom = visionSection.offsetTop + visionSection.offsetHeight;
-
-                    positions.visionEnd = (visionBottom - window.innerHeight) / totalScrollHeight
+                    positions.visionEnd = (visionBottom - window.innerHeight) / totalScrollHeight;
+                    // Abstract section starts after vision, ends ~25% of remaining scroll later
+                    positions.abstractEnd = Math.min(0.97, positions.visionEnd + 0.20);
                 }
 
 
                 positions.aboutEnd = Math.max(positions.heroEnd + 0.05, positions.aboutEnd);
                 positions.visionStart = Math.max(positions.aboutEnd, positions.visionStart);
                 positions.visionEnd = Math.max(positions.visionStart, positions.visionEnd);
+                positions.abstractEnd = Math.max(positions.visionEnd + 0.05, positions.abstractEnd);
             }
 
             scrollPositions.current = positions;
@@ -162,66 +165,95 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
         const updatePositionState = (progress: number) => {
             if (!simulationMaterialRef.current) return;
 
-            const { heroEnd, aboutEnd, visionStart, visionEnd } = scrollPositions.current;
+            const { heroEnd, aboutEnd, visionStart, visionEnd, abstractEnd } = scrollPositions.current;
 
             let currentPosition = 'A';
             let transitionProgress = 0;
             let radiusScale = 1;
 
-            if (progress <= visionEnd) {
+            if (progress <= abstractEnd) {
                 isParticleStopped.current = false;
+                uniforms.uFade.value = 1;
 
                 if (progress < heroEnd) {
-                    // START TRANSITION IMMEDIATELY from first scroll pixel.
-                    // Map 0→heroEnd linearly to transitionProgress 0→1
-                    // so the sand-in-air morph begins the instant the user scrolls.
+                    // Transition starts from the very first scroll pixel — particles
+                    // slowly coalesce into the brain shape throughout the entire hero section.
                     const heroProgress = progress / heroEnd;
                     currentPosition = 'A-B';
                     transitionProgress = Math.min(1, heroProgress);
-                    // Smoothly shrink scatter scale as brain forms
-                    radiusScale = 3.2 - transitionProgress * 1.7;
+                    radiusScale = 5.0 - transitionProgress * 2.8;
                 } else if (progress < aboutEnd) {
                     currentPosition = 'B';
                     transitionProgress = 1;
-                    radiusScale = 1.5;
+                    radiusScale = 2.2;
                 } else if (progress < visionEnd) {
                     const visionProgress = (progress - visionStart) / (visionEnd - visionStart);
-                    if (visionProgress < 0.5) {
+                    // 0.00 – 0.28: brain holds (IMAGINE pinned in view)
+                    // 0.28 – 0.50: brain → face transition (B-C morph)
+                    // 0.50 – 0.78: face holds (INVENT pinned in view)
+                    // 0.78 – 1.00: face disperses upward (C-D)
+                    if (visionProgress < 0.28) {
+                        // Brain fully formed, just holding
+                        currentPosition = 'B';
+                        transitionProgress = 1;
+                        radiusScale = 2.2;
+                    } else if (visionProgress < 0.50) {
                         currentPosition = 'B-C';
-                        // Use the full half-section, no multiplier
-                        transitionProgress = Math.min(1, visionProgress * 2);
-                        radiusScale = 1.5;
+                        transitionProgress = Math.min(1, (visionProgress - 0.28) / 0.22);
+                        radiusScale = 2.2;
+                    } else if (visionProgress < 0.78) {
+                        // Face fully formed, holding
+                        currentPosition = 'C';
+                        transitionProgress = 1;
+                        radiusScale = 2.2;
                     } else {
                         currentPosition = 'C-D';
-                        const secondHalf = (visionProgress - 0.5) / 0.5;
-                        transitionProgress = Math.min(1, secondHalf * 2);
-                        radiusScale = 1.5 - secondHalf * 0.5;
+                        const lastChunk = (visionProgress - 0.78) / 0.22;
+                        transitionProgress = Math.min(1, lastChunk);
+                        radiusScale = 2.2 - lastChunk * 0.8;
+                    }
+                } else {
+                    // Abstract section — 4 phases:
+                    //   0.00–0.55 : D → Logo  (particles flow from disperse into logo shape)
+                    //   0.55–0.65 : Logo hold  (fully formed, brief pause)
+                    //   0.65–1.00 : Logo hold + fade out (gone before section leaves viewport)
+                    const abstractProgress = (progress - visionEnd) / Math.max(0.001, abstractEnd - visionEnd);
+                    if (abstractProgress < 0.55) {
+                        currentPosition = 'D-Logo';
+                        transitionProgress = Math.min(1, abstractProgress / 0.55);
+                        radiusScale = 2.0 - transitionProgress * 0.2;
+                        uniforms.uFade.value = 1;
+                    } else {
+                        currentPosition = 'Logo';
+                        transitionProgress = 1;
+                        radiusScale = 1.8;
+                        // Fade: starts at abstractProgress=0.65, fully gone at 1.0
+                        const FADE_START = 0.65;
+                        const fadeProg = Math.max(0, (abstractProgress - FADE_START) / (1.0 - FADE_START));
+                        uniforms.uFade.value = Math.max(0, 1 - fadeProg);
                     }
                 }
             } else {
-                if (!isParticleStopped.current) {
-                    isParticleStopped.current = true;
-                    stopScrollPosition.current = progress;
-                }
-
-                currentPosition = 'D';
+                // Past abstractEnd — particles are already fully faded, keep at 0
+                isParticleStopped.current = true;
+                currentPosition = 'Logo';
                 transitionProgress = 1;
-                radiusScale = 1.5;
-
-                const scrollAfterStop = progress - stopScrollPosition.current;
-                particleOffset.current = scrollAfterStop * 60;
+                radiusScale = 1.8;
+                uniforms.uFade.value = 0;
             }
 
             simulationMaterialRef.current.uniforms.uTransitionProgress.value = transitionProgress;
             simulationMaterialRef.current.uniforms.uRadiusScale.value = radiusScale;
             simulationMaterialRef.current.uniforms.uCurrentPosition.value =
-                currentPosition === 'A' ? 0 :
-                    currentPosition === 'A-B' ? 1 :
-                        currentPosition === 'B' ? 1 :
-                            currentPosition === 'B-C' ? 2 :
-                                currentPosition === 'C' ? 2 :
-                                    currentPosition === 'C-D' ? 3 :
-                                        currentPosition === 'D' ? 3 : 0;
+                currentPosition === 'A'        ? 0  :
+                currentPosition === 'A-B'      ? 1  :
+                currentPosition === 'B'        ? 1  :
+                currentPosition === 'B-C'      ? 2  :
+                currentPosition === 'C'        ? 2  :
+                currentPosition === 'C-D'      ? 3  :
+                currentPosition === 'D'        ? 3  :
+                currentPosition === 'D-Logo'   ? 10 :
+                currentPosition === 'Logo'     ? 11 : 0;
 
             // CRITICAL: also sync the points (vertex) shader uniforms —
             // without this the vertex shader is always stuck at initial values

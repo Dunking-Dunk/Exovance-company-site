@@ -20,7 +20,7 @@ const Vision = () => {
             scrollTrigger: {
                 trigger: containerRef.current,
                 start: "top top",
-                end: "+=240%",
+                end: "+=360%",
                 pin: true,
                 scrub: 1,
                 snap: {
@@ -107,99 +107,67 @@ const Vision = () => {
 
     return (
         <div ref={containerRef} className="w-full h-[100dvh] overflow-hidden relative z-10">
-            {/* Minimal background patterns */}
-            <div className="absolute inset-0 opacity-[0.08] dark:opacity-[0.12]">
-                {/* Radial dots pattern */}
-                <div className="absolute inset-0" style={{
-                    backgroundImage: `radial-gradient(circle at 2px 2px, rgba(0,0,0,0.3) 1px, transparent 0)`,
-                    backgroundSize: '80px 80px'
-                }} />
-            </div>
+            {/* Faint violet bloom top */}
+            <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 35% at 50% -5%, rgba(100,0,200,0.08) 0%, transparent 100%)' }} />
 
-            {/* Geometric accent lines */}
-            <div className="absolute inset-0 opacity-[0.06] dark:opacity-[0.1]">
-                {/* Diagonal grid */}
-                <div className="absolute inset-0" style={{
-                    backgroundImage: `
-                        linear-gradient(45deg, transparent 48%, rgba(0,0,0,0.2) 49%, rgba(0,0,0,0.2) 51%, transparent 52%),
-                        linear-gradient(-45deg, transparent 48%, rgba(0,0,0,0.2) 49%, rgba(0,0,0,0.2) 51%, transparent 52%)
-                    `,
-                    backgroundSize: '120px 120px'
-                }} />
-            </div>
-
-            {/* Corner text elements with proper typography */}
-            <p className="absolute top-1/3 left-[5%] md:left-[15%] text-sm md:text-base text-customGray font-light tracking-wider">
-                INDIAN TAMIL NADU <br />BASED START-UP
+            {/* Corner ambient text — mono small caps */}
+            <p className="absolute top-1/3 left-[5%] md:left-[12%] font-mono text-[9px] tracking-[0.35em] text-violet-400/25 uppercase leading-loose">
+                Tamil Nadu<br />India
             </p>
-            <p className="absolute top-1/4 right-[5%] md:right-[15%] text-sm md:text-base text-customGray font-light tracking-wider">
-                WE DEFINE THE <br />FUTURE
+            <p className="absolute top-1/4 right-[5%] md:right-[12%] font-mono text-[9px] tracking-[0.35em] text-violet-400/25 uppercase text-right leading-loose">
+                We Define<br />The Future
             </p>
-            <p className="absolute top-3/4 left-[5%] md:left-[15%] text-sm md:text-base text-customGray font-light tracking-widest">
-                UNFAZED
+            <p className="absolute top-3/4 left-[5%] md:left-[12%] font-mono text-[9px] tracking-[0.35em] text-violet-400/20 uppercase">
+                Unfazed
             </p>
 
             {/* Section 1 - IMAGINE */}
             <section className="pin-section absolute top-0 left-0 w-full h-full flex items-center justify-center" data-section="0">
-                {/* Minimal geometric accents for IMAGINE */}
-                <div className="absolute top-[20%] left-[10%] w-16 h-16 opacity-[0.15] dark:opacity-[0.2]">
-                    <div className="w-full h-full border border-customGray rotate-45"></div>
-                </div>
-                <div className="absolute bottom-[30%] left-[8%] w-8 h-8 opacity-[0.18] dark:opacity-[0.25]">
-                    <div className="w-full h-full bg-customGray rounded-full"></div>
-                </div>
-                <div className="absolute top-[15%] right-[12%] w-1 h-20 bg-customGray opacity-[0.12] dark:opacity-[0.18]"></div>
+                {/* Accent: thin violet hairlines */}
+                <div className="absolute top-[18%] left-[8%] w-px h-24 bg-gradient-to-b from-violet-500/20 to-transparent" />
+                <div className="absolute bottom-[25%] right-[8%] w-16 h-px bg-gradient-to-r from-transparent to-violet-500/20" />
+                <span className="absolute top-[18%] left-[8%] font-mono text-[8px] tracking-[0.5em] text-violet-400/20 uppercase ml-3">01</span>
 
                 <span className="overflow-hidden relative">
-                    <h3 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-light text-customGrayDark pin-section-text tracking-widest">
+                    <h3 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-display font-bold text-customGrayLight pin-section-text tracking-tight">
                         IMAGINE
                     </h3>
                 </span>
-                <p className="section-description font-light absolute bottom-[15%] md:bottom-[20%] right-[5%] md:right-[20%] text-sm md:text-base text-customGray w-36 md:w-48 leading-relaxed">
-                    Represents creativity and visionary thinking.
+                <p className="section-description font-mono absolute bottom-[15%] md:bottom-[20%] right-[5%] md:right-[18%] text-[10px] tracking-[0.35em] text-violet-400/50 uppercase w-44">
+                    Creativity &amp; visionary thinking.
                 </p>
             </section>
 
             {/* Section 2 - INVENT */}
             <section className="pin-section absolute top-0 left-0 w-full h-full flex items-center justify-center" data-section="1">
-                {/* Minimal geometric accents for INVENT */}
-                <div className="absolute top-[25%] left-[8%] w-12 h-1 bg-customGray opacity-[0.16] dark:opacity-[0.22]"></div>
-                <div className="absolute top-[28%] left-[8%] w-20 h-1 bg-customGray opacity-[0.12] dark:opacity-[0.18]"></div>
-                <div className="absolute bottom-[25%] right-[8%] w-10 h-10 opacity-[0.14] dark:opacity-[0.2]">
-                    <div className="w-full h-full border-2 border-customGray"></div>
-                </div>
-                <div className="absolute top-[20%] right-[15%] w-6 h-6 bg-customGray opacity-[0.18] dark:opacity-[0.25] rotate-45"></div>
+                <div className="absolute top-[18%] right-[8%] w-px h-24 bg-gradient-to-b from-violet-500/20 to-transparent" />
+                <div className="absolute bottom-[25%] left-[8%] w-16 h-px bg-gradient-to-r from-violet-500/20 to-transparent" />
+                <span className="absolute top-[18%] right-[8%] font-mono text-[8px] tracking-[0.5em] text-violet-400/20 uppercase mr-3">02</span>
 
                 <span className="overflow-hidden relative">
-                    <h3 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-light text-customGrayDark pin-section-text tracking-widest">
+                    <h3 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-display font-bold text-customGrayLight pin-section-text tracking-tight">
                         INVENT
                     </h3>
                 </span>
-                <p className="section-description font-light absolute bottom-[15%] md:bottom-[20%] right-[5%] md:right-[20%] text-sm md:text-base text-customGray w-36 md:w-48 leading-relaxed">
-                    Reflects building something entirely new
+                <p className="section-description font-mono absolute bottom-[15%] md:bottom-[20%] right-[5%] md:right-[18%] text-[10px] tracking-[0.35em] text-violet-400/50 uppercase w-44">
+                    Building something entirely new.
                 </p>
             </section>
 
             {/* Section 3 - EXOVANCE */}
             <section className="pin-section absolute top-0 left-0 w-full h-full flex items-center justify-center" data-section="2">
-                {/* Minimal geometric accents for EXOVANCE */}
-                <div className="absolute top-[18%] left-[12%] w-14 h-14 opacity-[0.14] dark:opacity-[0.2]">
-                    <div className="w-full h-full border border-customGray rounded-full"></div>
-                </div>
-                <div className="absolute bottom-[35%] left-[6%] opacity-[0.16] dark:opacity-[0.22]">
-                    <div className="w-4 h-4 bg-customGray transform rotate-45"></div>
-                    <div className="w-4 h-4 bg-customGray transform rotate-45 translate-x-3 -translate-y-4"></div>
-                </div>
-                <div className="absolute top-[30%] right-[10%] w-24 h-1 bg-customGray opacity-[0.12] dark:opacity-[0.18] rotate-12"></div>
-                <div className="absolute bottom-[20%] right-[12%] w-2 h-16 bg-customGray opacity-[0.15] dark:opacity-[0.22]"></div>
+                <div className="absolute top-[18%] left-[8%] w-px h-24 bg-gradient-to-b from-violet-500/30 to-transparent" />
+                <div className="absolute top-[18%] right-[8%] w-px h-24 bg-gradient-to-b from-violet-500/30 to-transparent" />
+                <div className="absolute bottom-[20%] left-1/2 -translate-x-1/2 w-24 h-px bg-gradient-to-r from-transparent via-violet-500/25 to-transparent" />
+                <span className="absolute top-[18%] left-[8%] font-mono text-[8px] tracking-[0.5em] text-violet-400/25 uppercase ml-3">03</span>
 
                 <span className="overflow-hidden relative">
-                    <h3 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-light text-customGrayDark pin-section-text tracking-widest">
-                        EXOVANCE
+                    <h3 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-display font-bold pin-section-text tracking-tight">
+                        <span className="text-violet-400">EXO</span><span className="text-customGrayLight">VANCE</span>
                     </h3>
                 </span>
-                <p className="section-description font-light absolute bottom-[15%] md:bottom-[20%] right-[5%] md:right-[20%] text-sm md:text-base text-customGray w-36 md:w-48 leading-relaxed">
-                    Highlights improving and pushing boundaries.
+                <p className="section-description font-mono absolute bottom-[15%] md:bottom-[20%] right-[5%] md:right-[18%] text-[10px] tracking-[0.35em] text-violet-400/50 uppercase w-44">
+                    Pushing beyond known boundaries.
                 </p>
             </section>
         </div>

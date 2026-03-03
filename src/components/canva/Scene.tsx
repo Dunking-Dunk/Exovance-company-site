@@ -1,7 +1,9 @@
 "use client"
 
 import { Canvas } from "@react-three/fiber"
-import { Preload, Loader } from "@react-three/drei"
+import { Preload } from "@react-three/drei"
+import { EffectComposer, Bloom } from '@react-three/postprocessing'
+import { BlendFunction } from 'postprocessing'
 import { r3 } from '@/lib/tunnel'
 import * as THREE from 'three'
 import { memo, Suspense } from 'react'
@@ -12,9 +14,6 @@ const Scene = memo(({ ...props }) => {
             onCreated={(state) => {
                 state.gl.toneMapping = THREE.AgXToneMapping;
                 state.gl.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-                // Match the CSS body background (#06060c) so there is zero flash
-                // when the canvas mounts. The canvas is still alpha:true so CSS
-                // background shows through, but this prevents the white-frame flicker.
                 state.gl.setClearColor(0x06060c, 1);
             }}
             dpr={[0.5, 1]}
@@ -34,6 +33,18 @@ const Scene = memo(({ ...props }) => {
                 <r3.Out />
                 <Preload all />
             </Suspense>
+
+            {/* Global Bloom for the single continuous scheme */}
+            <EffectComposer multisampling={0} frameBufferType={THREE.HalfFloatType}>
+                <Bloom
+                    intensity={0.25}
+                    luminanceThreshold={0.9}
+                    luminanceSmoothing={0.3}
+                    blendFunction={BlendFunction.ADD}
+                    mipmapBlur
+                    radius={0.5}
+                />
+            </EffectComposer>
         </Canvas>
     )
 })

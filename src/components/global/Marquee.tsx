@@ -1,67 +1,106 @@
+"use client";
 import React from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useScrollTheme } from '@/components/provider/scroll-theme-provider';
+import { motion } from 'framer-motion';
+
+const ROW1 = ['IMAGINE', 'AUTOMATE', 'INVENT', 'SCALE', 'BUILD', 'DEPLOY', 'IMAGINE', 'AUTOMATE', 'INVENT', 'SCALE', 'BUILD', 'DEPLOY'];
+const ROW2 = ['AI AGENTS', 'AVATARS', 'EXOVANCE', 'AUTOMATION', 'KIOSKS', 'INTELLIGENCE', 'AI AGENTS', 'AVATARS', 'EXOVANCE', 'AUTOMATION', 'KIOSKS', 'INTELLIGENCE'];
+
+// Indices that get the violet outline treatment instead of filled
+const OUTLINE_IDX = new Set([1, 4, 7, 10]);
+const OUTLINE_IDX2 = new Set([2, 5, 8, 11]);
 
 const MarqueeScrollText = () => {
-    const containerRef = React.useRef(null);
-    const { theme } = useScrollTheme()
-
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start end", "end start"]
-    });
-
-    const marqueeVariants = {
-        animate: {
-            x: [0, -1000],
-            transition: {
-                x: {
-                    repeat: Infinity,
-                    repeatType: "loop",
-                    duration: 20,
-                    ease: "linear",
-                },
-            },
-        },
-    };
-
     return (
-        <div
-            ref={containerRef}
-            className="relative z-10 w-full mt-24 flex flex-col items-center justify-center overflow-hidden space-mono-bold"
-        >
+        <div className="relative z-10 w-full overflow-hidden py-6 select-none">
 
-            <motion.div
-                className="relative w-full px-4">
+            {/* Top hairline */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/15 to-transparent" />
 
-                <div className="flex overflow-hidden">
-                    <motion.div
-                        className="flex space-x-32 whitespace-nowrap"
-                        variants={marqueeVariants}
-                        animate="animate"
-                    >
-                        <span className="text-customGrayLight md:text-9xl text-5xl font-light tracking-wider">IMAGINE</span>
-                        <span className="text-customGrayLight md:text-9xl text-5xl font-light tracking-wider">INVENT</span>
-                        <span className="text-customGrayLight md:text-9xl text-5xl font-light tracking-wider">EXOVANCE</span>
-                        <span className="text-customGrayLight md:text-9xl text-5xl font-light tracking-wider">IMAGINE</span>
-                        <span className="text-customGrayLight md:text-9xl text-5xl font-light tracking-wider">INVENT</span>
-                        <span className="text-customGrayLight md:text-9xl text-5xl font-light tracking-wider">EXOVANCE</span>
-                    </motion.div>
+            {/* Row 1 — scrolls left */}
+            <div className="flex overflow-hidden mb-1">
+                <motion.div
+                    className="flex shrink-0 gap-10 pr-10 whitespace-nowrap items-baseline"
+                    animate={{ x: ['0%', '-50%'] }}
+                    transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
+                >
+                    {ROW1.map((word, i) =>
+                        OUTLINE_IDX.has(i % 6) ? (
+                            <span key={i}
+                                className="font-display font-bold text-[clamp(3rem,7vw,6rem)] leading-none tracking-tight"
+                                style={{ WebkitTextStroke: '1px rgba(167,139,250,0.55)', color: 'transparent' }}
+                            >{word}</span>
+                        ) : (
+                            <span key={i}
+                                className="font-display font-bold text-[clamp(3rem,7vw,6rem)] leading-none tracking-tight text-white/[0.13]"
+                            >{word}</span>
+                        )
+                    )}
+                </motion.div>
+                {/* duplicate for seamless loop */}
+                <motion.div
+                    className="flex shrink-0 gap-10 pr-10 whitespace-nowrap items-baseline"
+                    animate={{ x: ['0%', '-50%'] }}
+                    transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
+                    aria-hidden
+                >
+                    {ROW1.map((word, i) =>
+                        OUTLINE_IDX.has(i % 6) ? (
+                            <span key={i}
+                                className="font-display font-bold text-[clamp(3rem,7vw,6rem)] leading-none tracking-tight"
+                                style={{ WebkitTextStroke: '1px rgba(167,139,250,0.55)', color: 'transparent' }}
+                            >{word}</span>
+                        ) : (
+                            <span key={i}
+                                className="font-display font-bold text-[clamp(3rem,7vw,6rem)] leading-none tracking-tight text-white/[0.13]"
+                            >{word}</span>
+                        )
+                    )}
+                </motion.div>
+            </div>
 
-                    <motion.div
-                        className="flex space-x-20 whitespace-nowrap"
-                        variants={marqueeVariants}
-                        animate="animate"
-                    >
-                        <span className="text-customGrayLight md:text-9xl text-5xl font-light tracking-wider">IMAGINE</span>
-                        <span className="text-customGrayLight md:text-9xl text-5xl font-light tracking-wider">INVENT</span>
-                        <span className="text-customGrayLight md:text-9xl text-5xl font-light tracking-wider">EXOVANCE</span>
-                        <span className="text-customGrayLight md:text-9xl text-5xl font-light tracking-wider">IMAGINE</span>
-                        <span className="text-customGrayLight md:text-9xl text-5xl font-light tracking-wider">INVENT</span>
-                        <span className="text-customGrayLight md:text-9xl text-5xl font-light tracking-wider">EXOVANCE</span>
-                    </motion.div>
-                </div>
-            </motion.div>
+            {/* Row 2 — scrolls right (reverse) */}
+            <div className="flex overflow-hidden">
+                <motion.div
+                    className="flex shrink-0 gap-10 pr-10 whitespace-nowrap items-baseline"
+                    animate={{ x: ['-50%', '0%'] }}
+                    transition={{ duration: 34, repeat: Infinity, ease: 'linear' }}
+                >
+                    {ROW2.map((word, i) =>
+                        OUTLINE_IDX2.has(i % 6) ? (
+                            <span key={i}
+                                className="font-display font-bold text-[clamp(2.4rem,5.5vw,4.5rem)] leading-none tracking-tight"
+                                style={{ WebkitTextStroke: '1px rgba(167,139,250,0.45)', color: 'transparent' }}
+                            >{word}</span>
+                        ) : (
+                            <span key={i}
+                                className="font-display font-bold text-[clamp(2.4rem,5.5vw,4.5rem)] leading-none tracking-tight text-white/[0.10]"
+                            >{word}</span>
+                        )
+                    )}
+                </motion.div>
+                <motion.div
+                    className="flex shrink-0 gap-10 pr-10 whitespace-nowrap items-baseline"
+                    animate={{ x: ['-50%', '0%'] }}
+                    transition={{ duration: 34, repeat: Infinity, ease: 'linear' }}
+                    aria-hidden
+                >
+                    {ROW2.map((word, i) =>
+                        OUTLINE_IDX2.has(i % 6) ? (
+                            <span key={i}
+                                className="font-display font-bold text-[clamp(2.4rem,5.5vw,4.5rem)] leading-none tracking-tight"
+                                style={{ WebkitTextStroke: '1px rgba(167,139,250,0.45)', color: 'transparent' }}
+                            >{word}</span>
+                        ) : (
+                            <span key={i}
+                                className="font-display font-bold text-[clamp(2.4rem,5.5vw,4.5rem)] leading-none tracking-tight text-white/[0.10]"
+                            >{word}</span>
+                        )
+                    )}
+                </motion.div>
+            </div>
+
+            {/* Bottom hairline */}
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/10 to-transparent" />
         </div>
     );
 };

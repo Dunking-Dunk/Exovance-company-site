@@ -1,90 +1,119 @@
-"use client"
+﻿"use client"
 
 import { motion } from 'framer-motion'
-import { TextGenerateEffect } from '@/components/ui/text-generate-effect'
-import { DotBackground } from '@/components/ui/dot-background'
 import React from 'react';
+
+const capabilities = [
+    { id: '01', title: 'AI Agents', desc: 'Autonomous intelligence that works for your business — 24/7.' },
+    { id: '02', title: '3D Avatars', desc: 'Lifelike virtual representatives with real-time expression.' },
+    { id: '03', title: 'Automation', desc: 'Streamlined pipelines that replace repetitive human work.' },
+    { id: '04', title: 'Virtual Kiosks', desc: 'Movable interactive stations powered by embedded AI.' },
+]
+
+const containerVariants = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } }
+}
+const itemVariants = {
+    hidden: { opacity: 0, y: 24 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] } }
+}
 
 const About = () => {
     return (
-        <div className="w-full min-h-screen relative overflow-hidden z-20">
+        <div className="w-full min-h-screen relative overflow-hidden z-20 bg-[#06060c]/50">
 
-            <div className="absolute inset-0 z-0">
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-customBlack/5 to-transparent" />
-            </div>
+            {/* Top violet separator rule */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/20 to-transparent" />
 
-            <div className="relative z-10 w-full flex flex-col justify-center px-4 md:px-8 lg:px-32 py-20 md:py-32">
+            <div className="relative z-10 w-full px-6 md:px-12 lg:px-28 py-28 md:py-40">
+
+                {/* Section header */}
                 <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    className="flex items-center space-x-3 mb-8 md:mb-12"
+                    variants={containerVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-80px" }}
+                    className="mb-20 md:mb-28"
                 >
-                    <motion.div
-                        initial={{ height: 0 }}
-                        whileInView={{ height: 32 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                        className="w-1 bg-gradient-to-b from-customGrayDark to-customGrayDarker"
-                    />
-                    <span className="text-sm tracking-[0.2em] uppercase text-customGrayDark font-medium">
-                        What We Do
-                    </span>
-                </motion.div>
+                    <motion.p variants={itemVariants} className="font-mono text-[10px] tracking-[0.4em] text-violet-400/60 uppercase mb-6">
+                        01 &mdash;&nbsp; What We Do
+                    </motion.p>
 
-
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: 0.3 }}
-                    className="mb-8 md:mb-12"
-                >
-                    <TextGenerateEffect
-                        duration={1.2}
-                        words='INNOVATE THE <br/> UNSEEN'
-                        className='text-6xl md:text-8xl lg:text-[120px] xl:text-[140px] font-medium tracking-wider leading-none'
-                    />
-                </motion.div>
-
-
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    className="max-w-5xl"
-                >
-                    <p
-                        className="text-lg md:text-xl lg:text-xl leading-relaxed text-customGrayDark"
+                    <motion.h2
+                        variants={itemVariants}
+                        className="font-display font-bold leading-[0.92] tracking-tight text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-[7rem]"
                     >
-                        At EXOVANCE, we specialize in building cutting-edge AI virtual agents powered by lifelike 3D avatars. Our intelligent agents can serve as sales representatives, billing counter assistants, and customer service representatives, all housed in movable kiosks for maximum flexibility. Beyond virtual agents, we provide a comprehensive range of automation services designed to streamline your business operations and enhance customer experiences.
-                    </p>
+                        <span className="block text-customGrayLight">INNOVATE</span>
+                        <span className="block">
+                            <span className="text-violet-400">THE</span>
+                            <span className="text-customGrayLight"> UNSEEN</span>
+                        </span>
+                    </motion.h2>
                 </motion.div>
 
+                {/* Two-column layout */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
 
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1, delay: 0.1 }}
-                    className="mt-16 md:mt-24 flex flex-wrap gap-4"
-                >
-                    {['AI Agents', '3D Avatars', 'Automation', 'Virtual Kiosks'].map((keyword, index) => (
-                        <motion.span
-                            key={keyword}
-                            initial={{ opacity: 0, y: 10 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                    {/* Left — body copy */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, margin: "-60px" }}
+                        transition={{ duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
+                        className="space-y-8"
+                    >
+                        <p className="text-lg md:text-xl leading-[1.85] text-customGrayDark font-light tracking-wide">
+                            At <span className="text-customGray font-medium">EXOVANCE</span>, we build cutting-edge AI virtual agents powered by lifelike 3D avatars — serving as sales representatives, billing assistants, and customer service agents, all housed in movable kiosks for maximum flexibility.
+                        </p>
+                        <p className="text-base md:text-lg leading-[1.85] text-customGrayDarker font-light tracking-wide">
+                            Beyond virtual agents, we deliver comprehensive automation services that streamline operations and redefine customer experiences at every touchpoint.
+                        </p>
+
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.5, delay: 1 + index * 0.1 }}
-                            className="px-4 py-2 text-sm tracking-wide border border-customGrayDark/30 rounded-full text-customGrayDark hover:border-customGrayDark/60 transition-colors duration-300"
+                            transition={{ duration: 0.6, delay: 0.4 }}
+                            className="pt-4"
                         >
-                            {keyword}
-                        </motion.span>
-                    ))}
-                </motion.div>
+                            <a
+                                href="/about"
+                                className="inline-flex items-center gap-3 font-mono text-xs tracking-[0.3em] uppercase text-violet-400/70 hover:text-violet-300 transition-colors duration-300 group"
+                            >
+                                <span>Discover our story</span>
+                                <span className="block h-px w-8 bg-violet-400/50 group-hover:w-14 transition-all duration-500" />
+                            </a>
+                        </motion.div>
+                    </motion.div>
+
+                    {/* Right — capability cards */}
+                    <motion.div
+                        variants={containerVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-60px" }}
+                        className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                    >
+                        {capabilities.map((cap) => (
+                            <motion.div
+                                key={cap.id}
+                                variants={itemVariants}
+                                className="group relative p-6 rounded-xl border border-white/[0.05] bg-white/[0.02] hover:border-violet-500/25 hover:bg-violet-500/[0.04] transition-all duration-500 overflow-hidden"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-br from-violet-500/0 via-transparent to-violet-500/0 group-hover:from-violet-500/5 transition-all duration-700 rounded-xl pointer-events-none" />
+                                <span className="block font-mono text-[9px] tracking-[0.4em] text-violet-400/40 mb-4 uppercase">{cap.id}</span>
+                                <h3 className="font-display font-semibold text-base text-customGrayLight mb-2 tracking-wide">{cap.title}</h3>
+                                <p className="text-sm leading-relaxed text-customGrayDarker font-light">{cap.desc}</p>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                </div>
+
             </div>
+
+            {/* Bottom violet separator rule */}
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/15 to-transparent" />
         </div>
     )
 }

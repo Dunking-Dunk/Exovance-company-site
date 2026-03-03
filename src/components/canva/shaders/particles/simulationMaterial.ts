@@ -11,6 +11,7 @@ useGLTF.preload('/3d/brain_3d.glb')
 useGLTF.preload('/3d/human_head.glb')
 useGLTF.preload('/3d/spider_robot.glb')
 useGLTF.preload('/3d/dna_3.glb')
+useGLTF.preload('/3d/exovance-3d.glb')
 
 const getRandomData = (width, height) => {
     const length = width * height * 4;
@@ -136,6 +137,16 @@ const robotVertices = () => {
     // return allVertices.length > 0 ? new Float32Array(allVertices) : new Float32Array();
 };
 
+const logoVertices = () => {
+    try {
+        const { nodes } = useGLTF('/3d/exovance-3d.glb');
+        if (!nodes.Curve003 || !nodes.Curve003.geometry) return new Float32Array();
+        return nodes.Curve003.geometry.attributes.position.array;
+    } catch {
+        return new Float32Array();
+    }
+};
+
 
 
 class SimulationMaterial extends THREE.ShaderMaterial {
@@ -180,6 +191,52 @@ class SimulationMaterial extends THREE.ShaderMaterial {
         );
         positionsRobotTexture.needsUpdate = true;
 
+        // ── Logo vertices: transform exactly as the ExovanceLogo mesh renders ──
+        // The mesh uses: group rotation [-PI/2, PI, PI], mesh scale 8.
+        // Euler XYZ [-PI/2, PI, PI] transforms vertex (x,y,z) → (x, -z, y).
+        // After that we auto-normalise to ±1.6 world units so it matches
+        // brain / face scale in particle space.
+        const rawLogo = logoVertices();
+        let logoPositions: Float32Array;
+        if (rawLogo.length >= 3) {
+            const transformed = new Float32Array(rawLogo.length);
+            for (let i = 0; i < rawLogo.length; i += 3) {
+                const vx = rawLogo[i]     * 8;   // mesh scale = 8
+                const vy = rawLogo[i + 1] * 8;
+                const vz = rawLogo[i + 2] * 8;
+                // Rotation [-PI/2, PI, PI] XYZ Euler: (x,y,z) → (x, -z, y)
+                transformed[i]     =  vx;
+                transformed[i + 1] = -vz;
+                transformed[i + 2] =  vy;
+            }
+            // Auto-scale so the point cloud spans ±1.6 units (same as brain/face)
+            let maxExtent = 0;
+            for (let i = 0; i < transformed.length; i += 3) {
+                maxExtent = Math.max(
+                    maxExtent,
+                    Math.abs(transformed[i]),
+                    Math.abs(transformed[i + 1]),
+                    Math.abs(transformed[i + 2])
+                );
+            }
+            const targetSize = 1.6;
+            const normScale = maxExtent > 0 ? targetSize / maxExtent : 1.0;
+            for (let i = 0; i < transformed.length; i++) {
+                transformed[i] *= normScale;
+            }
+            logoPositions = normalizeAndResizeVertices(transformed, size, 1.0);
+        } else {
+            logoPositions = new Float32Array(size * size * 4);
+        }
+        const positionsLogoTexture = new THREE.DataTexture(
+            logoPositions,
+            size,
+            size,
+            THREE.RGBAFormat,
+            THREE.FloatType
+        );
+        positionsLogoTexture.needsUpdate = true;
+
 
         super({
             uniforms: {
@@ -187,6 +244,7 @@ class SimulationMaterial extends THREE.ShaderMaterial {
                 positionsB: { value: positionsBrainTexture },
                 positionsC: { value: positionsHumanTexture },
                 positionsD: { value: positionsRobotTexture },
+                positionsE: { value: positionsLogoTexture },
                 uTime: { value: 0 },
                 uFrequency: { value: 0.25 },
                 uMouse: { value: new THREE.Vector3(0, 0, 0) },

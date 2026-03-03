@@ -90,23 +90,25 @@ void main(){
     float sparkleFlash=pow(max(0.,sin(uTime*twinkleFreq+particlePhase)),8.);
     vSparkle=sparkleFlash;
     
-    // VIVID PURPLE PALETTE — bright, saturated, alive
+    // DEEP VIOLET PALETTE — pure violet (hue ~270°) with slight hue variance
     float hueShift=fract(sin(dot(position.xy,vec2(17.2,53.7)))*43758.5453);
-    vec3 purpleCore=vec3(
-        .48+hueShift*.14+shimmer,// R: 0.48-0.62  (strong red for rich purple)
-        .01+hueShift*.02,// G: 0.01-0.03  (near-zero keeps it saturated)
-        .72+hueShift*.16+shimmer// B: 0.72-0.88  (dominant blue — violet-purple)
+    // deep violet: strong blue, medium-high red, zero green
+    vec3 deepViolet=vec3(
+        .38+hueShift*.12+shimmer,// R: 0.38-0.50  (medium-high for violet hue)
+        .00+hueShift*.005,// G: ~0  (zero green keeps it pure violet)
+        .72+hueShift*.20+shimmer// B: 0.72-0.92  (dominant — this is what makes violet)
     );
     // Sparkle: bright white-violet flash
-    vec3 sparkleColor=vec3(.92+hueShift*.06,.78+hueShift*.08,1.);
-    // Strong multiply so particles glow noticeably
-    vec3 finalColor=mix(purpleCore*colorIntensity*4.2,sparkleColor*5.5,sparkleFlash);
+    vec3 sparkleColor=vec3(.80+hueShift*.08,.60+hueShift*.10,1.);
+    // Moderate multiply so deep violet reads correctly (not washed out)
+    vec3 finalColor=mix(deepViolet*colorIntensity*3.8,sparkleColor*5.,sparkleFlash);
     
     // Alpha: dim base, spikes fully opaque on flash
     float dynamicAlpha=mix(.4+.2*pulseEffect,1.,sparkleFlash);
     if(uCurrentPosition<.5){
         float distFromCenter=length(pos.xy);
-        float edgeFade=1.-smoothstep(3.5,5.2,distFromCenter);
+        // Widen fade boundary to match the larger spread radius
+        float edgeFade=1.-smoothstep(5.,8.5,distFromCenter);
         dynamicAlpha*=edgeFade;
     }
     vColor=vec4(finalColor,dynamicAlpha);

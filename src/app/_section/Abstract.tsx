@@ -2,14 +2,6 @@
 
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import dynamic from "next/dynamic";
-
-const View = dynamic(() => import('../../components/canva/View').then((mod) => mod.View), { ssr: false });
-
-const ExovanceLogo = dynamic(() => import('../../components/canva/ExovanceLogo').then((mod) => mod.ExovanceLogo), { ssr: false });
-
-const Common = dynamic(() => import('../../components/canva/View').then((mod) => mod.Common), { ssr: false });
-
 const Abstract = () => {
   const container = useRef(null);
 
@@ -154,11 +146,6 @@ const Abstract = () => {
 
   return (
     <div className="relative h-[100dvh] z-10 overflow-hidden flex items-center justify-center px-4 md:px-16 lg:px-80 md:py-60 py-10" ref={container}>
-      {/* @ts-ignore */}
-      <View className="absolute inset-0">
-        <ExovanceLogo />
-        <Common />
-      </View>
       {tagVariants.map(({ text, scrollRange, outputRange, top, left, right, delay, duration, spring }, index) => {
         const x = useTransform(scrollYProgress, scrollRange, outputRange);
 
@@ -182,10 +169,13 @@ const Abstract = () => {
             }}
           >
             <div className="group cursor-pointer z-0">
-              <span className="bg-customGray text-customBlack md:px-4 px-2 md:py-1 rounded-sm text-sm font-semibold
-                           transition-all duration-300 ease-in-out
-                           hover:bg-gray-800 hover:text-gray-200
-                           group-hover:shadow-lg">
+              <span className="font-mono text-[9px] tracking-[0.35em] uppercase
+                           px-3 py-1.5 rounded-sm
+                           border border-violet-500/20 bg-violet-500/[0.05]
+                           text-customGrayDark
+                           hover:border-violet-400/40 hover:text-violet-300
+                           transition-all duration-400 ease-out
+                           group-hover:bg-violet-500/[0.10]">
                 {text}
               </span>
             </div>
@@ -200,9 +190,9 @@ const Abstract = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 1, ease: "easeOut" }}
-        className="text-customGray absolute left-[10%] bottom-[15%] mt-8 mx-auto text-sm"
+        className="font-mono text-[10px] tracking-[0.25em] text-violet-400/60 absolute left-[10%] bottom-[15%] mt-8 mx-auto uppercase"
       >
-        Innovate. Automate. Elevate. Cutting-edge AI, web, and <br /> mobile solutions to shape the future.
+        Innovate. Automate. Elevate.<br />AI &amp; automation solutions that shape the future.
       </motion.p>
     </div>
   );

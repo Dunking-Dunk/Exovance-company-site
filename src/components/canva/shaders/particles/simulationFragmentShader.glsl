@@ -26,6 +26,7 @@ uniform sampler2D positionsA;
 uniform sampler2D positionsB;
 uniform sampler2D positionsC;
 uniform sampler2D positionsD;
+uniform sampler2D positionsE;
 uniform float uTime;
 uniform float uFrequency;
 uniform vec3 uMouse;
@@ -272,6 +273,7 @@ float snoise(vec3 v){
                 vec4 posB=texture2D(positionsB,vUv);
                 vec4 posC=texture2D(positionsC,vUv);
                 vec4 posD=texture2D(positionsD,vUv);
+                vec4 posE=texture2D(positionsE,vUv);
                 
                 // Apply mouse influence to all positions for consistent interaction
                 // OPTIMIZATION: We removed heavy mouse repulsion from the FBO layer
@@ -295,64 +297,137 @@ float snoise(vec3 v){
                         pos+=simpleNoise*.15;
                     }
                 }else if(uCurrentPosition==1.){
-                    // SAND-IN-AIR TRANSITION: each particle has a unique random delay
-                    // so they take off and land at staggered times — like sand blown by wind
+                    // GROUPED WAVY SAND STREAMS A→B:
+                    // Particles are sorted into 8 streams. Each stream shares a
+                    // large-scale wave offset so the whole group curves together
+                    // like a ribbon of sand — then individuals within the stream
+                    // have small personal variation for organic texture.
                     vec3 modifiedPosA=positionAWithEffects;
                     vec3 modifiedPosB=posB.xyz;
                     
-                    // Per-particle hash: unique [0,1] offset based on its UV position
-                    float particleHash=fract(sin(dot(vUv,vec2(127.1,311.7)))*43758.5453);
-                    // Stagger: particle starts moving when globalT > particleHash*0.5
-                    // and finishes when globalT = particleHash*0.5 + 0.5
-                    // This spreads the movement across the full scroll window
-                    float localT=clamp((uTransitionProgress-particleHash*.45)/.55,0.,1.);
-                    // Smootherstep so each particle eases in and out
-                    float smoothLocalT=localT*localT*(3.-2.*localT);
+                    float pHash=fract(sin(dot(vUv,vec2(127.1,311.7)))*43758.5453);
+                    // Assign to 1-of-8 stream groups
+                    float groupId=floor(pHash*8.);// 0..7
+                    float groupPhase=groupId*(3.14159/4.);// 45° apart
+                    // Group-shared stagger — slightly tighter so groups overlap more
+                    float groupDelay=groupId*.048;// 0..0.336
+                    // Denominator increased 0.52→0.70: each particle's flight arc is
+                    // longer/slower — they linger as sand before settling into brain.
+                    float localT=clamp((uTransitionProgress-groupDelay-pHash*.10)/.70,0.,1.);
+                    float slt=localT*localT*(3.-2.*localT);
                     
-                    // Arc: particle lifts off (Z burst upward) then settles
-                    // Arc peaks at mid-flight (localT=0.5), zero at start/end
-                    float arcHeight=sin(localT*3.14159)*.35;
-                    // Wind turbulence during flight — the sand-swirl mid-air
-                    float flyNoise=sin(localT*3.14159);// 0→1→0 envelope
-                    vec3 windDisplace=vec3(
-                        snoise(modifiedPosA*3.+uTime*.3)*.28*flyNoise,
-                        snoise(modifiedPosA.yzx*3.+uTime*.3)*.18*flyNoise,
-                        arcHeight
-                    );
+                    float flyEnv=sin(localT*3.14159);
                     
-                    pos=mix(modifiedPosA+windDisplace,modifiedPosB,smoothLocalT);
-                    // As particle locks into place, reduce residual noise
-                    float settleNoise=1.-smoothLocalT;
-                    vec3 simpleNoise=vec3(
-                        snoise(pos*uFrequency+uTime*.15),
-                        snoise(pos.yzx*uFrequency+uTime*.15),
-                        snoise(pos.zxy*uFrequency+uTime*.15)
-                    );
-                    pos+=simpleNoise*.05*settleNoise;
+                    // ── Group-level wavy path ────────────────────────────────
+                    // Each stream bends in a unique direction driven by groupPhase.
+                    // The wave frequency and speed is the same for all members of the stream
+                    // so they visually travel as one ribbon.
+                    float waveT=uTime*.55+groupPhase;
+                    vec3 groupWave=vec3(
+                        sin(waveT*1.10+modifiedPosA.y*1.8)*.55,
+                        cos(waveT*.85+modifiedPosA.x*1.5)*.45,
+                        sin(waveT*.70+groupPhase)*.30
+                    )*flyEnv;
+                    
+                    // ── Individual micro-variation within stream ─────────────
+                    float microT=uTime*.8+pHash*6.28;
+                    vec3 microWave=vec3(
+                        snoise(modifiedPosA*2.5+vec3(microT,0.,0.))*.12,
+                        snoise(modifiedPosA.yzx*2.5+vec3(0.,microT,0.))*.10,
+                        snoise(modifiedPosA.zxy*2.5+vec3(0.,0.,microT))*.06
+                    )*flyEnv;
+                    
+                    // Outward burst so streams spread visibly before converging
+                    vec3 burstDir=normalize(modifiedPosA+vec3(.0001));
+                    float burstScale=flyEnv*(.40+pHash*.25);
+                    
+                    pos=mix(modifiedPosA+groupWave+microWave+burstDir*burstScale,modifiedPosB,slt);
+                    
+                    // Settle noise fades as particle locks in
+                    pos+=vec3(
+                        snoise(pos*uFrequency+uTime*.12),
+                        snoise(pos.yzx*uFrequency+uTime*.12),
+                        snoise(pos.zxy*uFrequency+uTime*.12)
+                    )*.04*(1.-slt);
                 }else if(uCurrentPosition==2.){
-                    vec3 modifiedPosB=posB.xyz+mouseInfluenceVector;
-                    vec3 modifiedPosC=posC.xyz+mouseInfluenceVector;
-                    pos=mix(modifiedPosB,modifiedPosC,uTransitionProgress);
+                    // GROUPED WAVY SAND STREAMS B→C (brain → face):
+                    // Brain dissolves into 8 curving ribbons that each arc through
+                    // their own wave path before reassembling as the face.
+                    vec3 srcPos=posB.xyz;
+                    vec3 dstPos=posC.xyz;
                     
-                    vec3 simpleNoise=vec3(
-                        snoise(pos*uFrequency+uTime*.1),
-                        snoise(pos.yzx*uFrequency+uTime*.1),
-                        snoise(pos.zxy*uFrequency+uTime*.1)
-                    );
-                    pos+=simpleNoise*.05;
+                    float h2=fract(sin(dot(vUv,vec2(43.1,127.9)))*53821.7291);
+                    float gId2=floor(h2*8.);
+                    float gPhase2=gId2*(3.14159/4.);
+                    float gDelay2=gId2*.050;
+                    float localT2=clamp((uTransitionProgress-gDelay2-h2*.07)/.53,0.,1.);
+                    float slt2=localT2*localT2*(3.-2.*localT2);
+                    
+                    float flyEnv2=sin(localT2*3.14159);
+                    
+                    // Group wave — each ribbon bends together in a shared arc
+                    float waveT2=uTime*.60+gPhase2;
+                    vec3 groupWave2=vec3(
+                        sin(waveT2*1.05+srcPos.y*2.)*.65,
+                        cos(waveT2*.80+srcPos.x*1.8)*.55,
+                        sin(waveT2*.65+gPhase2)*.35
+                    )*flyEnv2;
+                    
+                    // Per-particle micro-variation within the stream
+                    float microT2=uTime*.85+h2*6.28;
+                    vec3 microWave2=vec3(
+                        snoise(srcPos*2.8+vec3(microT2,0.,0.))*.14,
+                        snoise(srcPos.yzx*2.8+vec3(0.,microT2,0.))*.12,
+                        snoise(srcPos.zxy*2.8+vec3(0.,0.,microT2))*.08
+                    )*flyEnv2;
+                    
+                    // Burst outward from brain center
+                    vec3 burstDir2=normalize(srcPos+vec3(.0001))*(flyEnv2*(.50+h2*.30));
+                    
+                    pos=mix(srcPos+groupWave2+microWave2+burstDir2,dstPos,slt2);
+                    pos+=vec3(
+                        snoise(pos*uFrequency+uTime*.12),
+                        snoise(pos.yzx*uFrequency+uTime*.12),
+                        snoise(pos.zxy*uFrequency+uTime*.12)
+                    )*.04*(1.-slt2);
+                    
                 }else if(uCurrentPosition==3.){
-                    vec3 modifiedPosC=posC.xyz+mouseInfluenceVector;
-                    vec3 modifiedPosD=posD.xyz+mouseInfluenceVector;
-                    pos=mix(modifiedPosC,modifiedPosD,uTransitionProgress);
-                    float transitionNoise=snoise(pos+uTime*.1)*(1.-uTransitionProgress)*.02;
+                    // GROUPED WAVY SAND STREAMS C→D (face → disperse):
+                    // Face shatters into 8 arcing ribbons that swoops outward in waves.
+                    vec3 srcPos=posC.xyz;
+                    vec3 dstPos=posD.xyz;
                     
-                    vec3 simpleNoise=vec3(
-                        snoise(pos*uFrequency+uTime*.1),
-                        snoise(pos.yzx*uFrequency+uTime*.1),
-                        snoise(pos.zxy*uFrequency+uTime*.1)
-                    );
-                    pos+=simpleNoise*.05;
-                    pos+=vec3(transitionNoise);
+                    float h3=fract(sin(dot(vUv,vec2(311.7,73.13)))*87523.1234);
+                    float gId3=floor(h3*8.);
+                    float gPhase3=gId3*(3.14159/4.);
+                    float gDelay3=gId3*.048;
+                    float localT3=clamp((uTransitionProgress-gDelay3-h3*.07)/.55,0.,1.);
+                    float slt3=localT3*localT3*(3.-2.*localT3);
+                    
+                    float flyEnv3=sin(localT3*3.14159);
+                    
+                    float waveT3=uTime*.58+gPhase3;
+                    vec3 groupWave3=vec3(
+                        sin(waveT3*1.15+srcPos.y*1.9)*.70,
+                        cos(waveT3*.88+srcPos.x*1.6)*.60,
+                        sin(waveT3*.72+gPhase3)*.38
+                    )*flyEnv3;
+                    
+                    float microT3=uTime*.90+h3*6.28;
+                    vec3 microWave3=vec3(
+                        snoise(srcPos*3.+vec3(microT3,0.,0.))*.15,
+                        snoise(srcPos.yzx*3.+vec3(0.,microT3,0.))*.13,
+                        snoise(srcPos.zxy*3.+vec3(0.,0.,microT3))*.09
+                    )*flyEnv3;
+                    
+                    vec3 burstDir3=normalize(srcPos+vec3(.0001))*(flyEnv3*(.55+h3*.35));
+                    
+                    pos=mix(srcPos+groupWave3+microWave3+burstDir3,dstPos,slt3);
+                    pos+=vec3(
+                        snoise(pos*uFrequency+uTime*.12),
+                        snoise(pos.yzx*uFrequency+uTime*.12),
+                        snoise(pos.zxy*uFrequency+uTime*.12)
+                    )*.04*(1.-slt3);
                 }else if(uCurrentPosition==4.){
                     pos=posD.xyz+mouseInfluenceVector;
                     float staticNoise=snoise(pos+uTime*.05)*.01;
@@ -404,6 +479,78 @@ float snoise(vec3 v){
                         snoise(pos.zxy*uFrequency+uTime*.1)
                     );
                     pos+=simpleNoise*mix(.08,.1,uTransitionProgress);
+                }else if(uCurrentPosition==8.){
+                    // ── DNA DOUBLE HELIX HOLD ────────────────────────────────
+                    // Two intertwined strands driven purely by vUv — no external texture.
+                    // vUv.x = position along helix height (0..1)
+                    // parity of hash divides particles into strand A (phase 0) vs strand B (phase π)
+                    float dHash=fract(sin(dot(vUv,vec2(53.7,311.9)))*73141.7);
+                    float strandPhase=step(.5,dHash)*3.14159;// 0 or PI → interleaved helices
+                    float numTurns=3.5;
+                    float helixT=vUv.x*numTurns*2.*3.14159;
+                    float dnaHeight=(vUv.x-.5)*3.8;// vertical extent ±1.9
+                    float helixR=.90;
+                    // Gentle breathing pulsation so helix feels alive
+                    float breathe=1.+.045*sin(uTime*.7+vUv.x*5.);
+                    vec3 dnaPos=vec3(
+                        helixR*cos(helixT+strandPhase)*breathe,
+                        dnaHeight,
+                        helixR*sin(helixT+strandPhase)*breathe
+                    );
+                    // Subtle per-particle micro-jitter for organic texture
+                    float dnaJitter=snoise(vec3(vUv.x*8.,dHash*4.,uTime*.3))*.045;
+                    dnaPos+=normalize(dnaPos)*dnaJitter;
+                    pos=dnaPos;
+                }else if(uCurrentPosition==9.){
+                    // ── D → DNA TRANSITION (SAND STREAMS into double helix) ──
+                    // Particles arc from dispersed (D) positions into their DNA slot.
+                    float dHash9=fract(sin(dot(vUv,vec2(53.7,311.9)))*73141.7);
+                    float strandPhase9=step(.5,dHash9)*3.14159;
+                    float helixT9=vUv.x*3.5*2.*3.14159;
+                    float dnaH9=(vUv.x-.5)*3.8;
+                    float helixR9=.90;
+                    vec3 dnaTarget=vec3(
+                        helixR9*cos(helixT9+strandPhase9),
+                        dnaH9,
+                        helixR9*sin(helixT9+strandPhase9)
+                    );
+                    vec3 srcD=posD.xyz;
+                    // Stagger entry so particles arrive at different times
+                    float gId9=floor(dHash9*8.);
+                    float gDelay9=gId9*.048;
+                    float locT9=clamp((uTransitionProgress-gDelay9-dHash9*.10)/.68,0.,1.);
+                    float slt9=locT9*locT9*(3.-2.*locT9);
+                    float flyEnv9=sin(locT9*3.14159);
+                    float gPhase9=gId9*(3.14159/4.);
+                    float wT9=uTime*.50+gPhase9;
+                    vec3 arc9=vec3(
+                        sin(wT9*1.+srcD.y*1.5)*.50,
+                        cos(wT9*.75+srcD.x*1.2)*.40,
+                        sin(wT9*.60+gPhase9)*.28
+                    )*flyEnv9;
+                    pos=mix(srcD+arc9,dnaTarget,slt9);
+                    pos+=vec3(
+                        snoise(pos*uFrequency+uTime*.10),
+                        snoise(pos.yzx*uFrequency+uTime*.10),
+                        snoise(pos.zxy*uFrequency+uTime*.10)
+                    )*.035*(1.-slt9);
+                }else if(uCurrentPosition==10.){
+                    // ── D → LOGO: particles flow from face-disperse (D) positions to logo ──
+                    // Source is posD.xyz — the same positions particles held at the
+                    // end of C-D (transitionProgress=1), so there is zero pop or
+                    // helix artifact at t=0. Pure seamless scatter→logo convergence.
+                    float dHash10=fract(sin(dot(vUv,vec2(53.7,311.9)))*73141.7);
+                    float t10=uTransitionProgress*uTransitionProgress*(3.-2.*uTransitionProgress);
+                    float pNoise10=dHash10*.04-.02;
+                    float t10n=clamp(t10+pNoise10,0.,1.);
+                    pos=mix(posD.xyz,posE.xyz,t10n);
+                }else if(uCurrentPosition==11.){
+                    // ── LOGO HOLD — particles rest on the logo shape with subtle breathing ──
+                    float breatheLogo=1.+.025*sin(uTime*.6+posE.x*3.+posE.y*2.);
+                    pos=posE.xyz*breatheLogo;
+                    // tiny micro-jitter so particles feel alive without drifting
+                    float jL=snoise(vec3(vUv.x*6.,vUv.y*6.,uTime*.25))*.018;
+                    pos+=normalize(posE.xyz+vec3(.0001))*jL;
                 }
                 
                 gl_FragColor=vec4(pos,1.);

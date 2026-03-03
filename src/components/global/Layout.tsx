@@ -227,8 +227,8 @@ const Layout = ({ children }: Props) => {
                 <View className="fixed inset-0 pointer-events-none z-[0]">
                     {render3DComponents.showCommon && <Common />}
                     {render3DComponents.showParticles && <Particles onReady={handleParticlesReady} />}
-                    {render3DComponents.showTransparentPlane && <TransparentPlane />}
-                    <AdaptiveDpr pixelated />
+                    {/* {render3DComponents.showTransparentPlane && <TransparentPlane />} */}
+                    {/* <AdaptiveDpr pixelated /> */}
                 </View>
                 {isLoading && <LoadingScreen onLoadingComplete={handleLoadingComplete} blockUntilParticlesReady={render3DComponents.showParticles} particlesReady={particlesReady} />}
                 <Footer />
