@@ -20,7 +20,7 @@ extend({ SimulationMaterial: SimulationMaterial });
 
 
 // Increase simulation size to 128 for a much denser, "Active Theory" style effect (16,384 particles)
-const SIZE = 128;
+const SIZE = 90;
 const POSITIONS = new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0]);
 const UVS = new Float32Array([0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0]);
 
@@ -49,7 +49,7 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
     // World units per full screen height:  2 * cameraZ * tan(fov/2)
     // Camera z=7, fov=62° → 2 * 7 * tan(31°) ≈ 8.41
     const WORLD_HEIGHT_PER_SCREEN = 8.41;
-    const scrollPositions = useRef({ heroEnd: 0.35, aboutEnd: 0.43, visionStart: 0.50, visionEnd: 0.65, abstractEnd: 0.85 });
+    const scrollPositions = useRef({ heroEnd: 0.35, aboutEnd: 0.43, visionStart: 0.50, visionEnd: 0.65, abstractEnter: 0.75, abstractInView: 0.82, abstractEnd: 0.95 });
 
     // Memoize scroll transform
     const { scrollYProgress } = useScroll();
@@ -126,12 +126,12 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
             const heroSection = document.querySelector('[data-section="hero"]');
             const aboutSection = document.querySelector('[data-section="about"]');
             const visionSection = document.querySelector('[data-section="vision"]');
-            const teamSection = document.querySelector('[data-section="team"]');
+            const abstractSection = document.querySelector('[data-section="abstract"]') as HTMLElement | null;
 
             const totalScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
 
 
-            let positions = { heroEnd: 0.35, aboutEnd: 0.43, visionStart: 0.50, visionEnd: 0.65, abstractEnd: 0.85 };
+            let positions = { heroEnd: 0.35, aboutEnd: 0.43, visionStart: 0.50, visionEnd: 0.65, abstractEnter: 0.75, abstractInView: 0.82, abstractEnd: 0.95 };
 
             if (totalScrollHeight > 0) {
                 // Calculate positions relative to total scroll height
@@ -150,15 +150,36 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
                     positions.visionStart = Math.max(positions.aboutEnd + 0.03, visionSection.offsetTop / totalScrollHeight);
                     const visionBottom = visionSection.offsetTop + visionSection.offsetHeight;
                     positions.visionEnd = (visionBottom - window.innerHeight) / totalScrollHeight;
-                    // Abstract section starts after vision, ends ~25% of remaining scroll later
-                    positions.abstractEnd = Math.min(0.97, positions.visionEnd + 0.20);
                 }
 
+                if (abstractSection) {
+                    // abstractEnter: bottom of abstract section enters the viewport
+                    const absTop = abstractSection.offsetTop;
+                    // abstractEnter: abstract section starts coming into view (its top crosses the bottom of the viewport)
+                    positions.abstractEnter = Math.max(
+                        positions.visionEnd + 0.02,
+                        (absTop - window.innerHeight) / totalScrollHeight
+                    );
+                    // abstractInView: abstract section is fully in view — its top is at the viewport top
+                    positions.abstractInView = Math.max(
+                        positions.abstractEnter + 0.02,
+                        absTop / totalScrollHeight
+                    );
+                    // abstractEnd: abstract section has fully scrolled past the viewport
+                    positions.abstractEnd = Math.min(
+                        0.98,
+                        (absTop + abstractSection.offsetHeight) / totalScrollHeight
+                    );
+                } else {
+                    // Fallback if no abstract section found
+                    positions.abstractEnter = positions.visionEnd + 0.08;
+                    positions.abstractInView = positions.visionEnd + 0.15;
+                    positions.abstractEnd = positions.visionEnd + 0.30;
+                }
 
                 positions.aboutEnd = Math.max(positions.heroEnd + 0.05, positions.aboutEnd);
                 positions.visionStart = Math.max(positions.aboutEnd, positions.visionStart);
                 positions.visionEnd = Math.max(positions.visionStart, positions.visionEnd);
-                positions.abstractEnd = Math.max(positions.visionEnd + 0.05, positions.abstractEnd);
             }
 
             scrollPositions.current = positions;
@@ -168,7 +189,7 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
         const updatePositionState = (progress: number) => {
             if (!simulationMaterialRef.current) return;
 
-            const { heroEnd, aboutEnd, visionStart, visionEnd, abstractEnd } = scrollPositions.current;
+            const { heroEnd, aboutEnd, visionStart, visionEnd, abstractEnter, abstractInView, abstractEnd } = scrollPositions.current;
 
             let currentPosition = 'A';
             let transitionProgress = 0;
@@ -188,12 +209,7 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
                 } else if (progress < visionEnd) {
                     targetParticleOffset.current = 0;
                     const visionProgress = (progress - visionStart) / (visionEnd - visionStart);
-                    // 0.00 – 0.28: brain holds (IMAGINE pinned in view)
-                    // 0.28 – 0.50: brain → face transition (B-C morph)
-                    // 0.50 – 0.78: face holds (INVENT pinned in view)
-                    // 0.78 – 1.00: face disperses upward (C-D)
                     if (visionProgress < 0.28) {
-                        // Brain fully formed, holding while IMAGINE is visible
                         currentPosition = 'B';
                         transitionProgress = 1;
                         radiusScale = 2.2;
@@ -202,7 +218,6 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
                         transitionProgress = Math.min(1, (visionProgress - 0.28) / 0.22);
                         radiusScale = 2.2;
                     } else if (visionProgress < 0.78) {
-                        // Face fully formed, holding
                         currentPosition = 'C';
                         transitionProgress = 1;
                         radiusScale = 2.2;
@@ -212,48 +227,42 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
                         transitionProgress = Math.min(1, lastChunk);
                         radiusScale = 2.2 - lastChunk * 0.8;
                     }
+                } else if (progress < abstractInView) {
+                    // ── D → Logo convergence ─────────────────────────────────────────────
+                    // Runs from visionEnd (face disperses) through to the moment the
+                    // Abstract section is fully in the viewport. Logo coalesces during
+                    // this window. No offset — particles are centred on screen.
+                    targetParticleOffset.current = 0;
+                    const dLogoSpan = Math.max(0.001, abstractInView - visionEnd);
+                    const dLogoProgress = (progress - visionEnd) / dLogoSpan;
+                    currentPosition = 'D-Logo';
+                    transitionProgress = Math.min(1, dLogoProgress);
+                    radiusScale = 1.4 + transitionProgress * 0.4;
                 } else {
-                    // ── ABSTRACT SECTION ────────────────────────────────────────────────────
-                    //   0.00–0.55 : D → Logo  (free convergence, zero offset)
-                    //   0.55–1.00 : Logo hold (pure-math counter-scroll, no sentinel)
-                    //
-                    // OFFSET FORMULA: purely derived from abstractProgress so it is
-                    // perfectly continuous in both scroll directions — no sentinel, no pop.
-                    //
-                    // During logo-hold the total physical pixels scrolled since logo-hold
-                    // entry = logoPhaseProgress * logoHoldSpanPx.
-                    // We subtract 200 px so particles start 200 px below their natural pin
-                    // position and drift upward as the user scrolls. Clamping to ≥0 means
-                    // the target is exactly 0 at the 0.55 boundary (matches D-Logo target),
-                    // so there is zero discontinuity when crossing in either direction.
-
-                    const abstractProgress = (progress - visionEnd) / Math.max(0.001, abstractEnd - visionEnd);
-
-                    if (abstractProgress < 0.55) {
-                        targetParticleOffset.current = 0;
-                        currentPosition = 'D-Logo';
-                        transitionProgress = Math.min(1, abstractProgress / 0.55);
-                        radiusScale = 1.4 + transitionProgress * 0.4;
-                    } else {
-                        // Pure-math offset: stateless, smooth, no pops.
-                        const logoPhaseProgress = (abstractProgress - 0.55) / 0.45; // 0–1
-                        const totalScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-                        const logoHoldSpanPx = 0.45 * (abstractEnd - visionEnd) * totalScrollHeight;
-                        const scrolledInLogoHoldPx = logoPhaseProgress * logoHoldSpanPx;
-                        // Clamp: offset stays 0 until 200 px in, then rises— no boundary jump
-                        targetParticleOffset.current = Math.max(
-                            0,
-                            (scrolledInLogoHoldPx - 200) / window.innerHeight * WORLD_HEIGHT_PER_SCREEN
-                        );
-                        currentPosition = 'Logo';
-                        transitionProgress = 1;
-                        radiusScale = 1.8;
-                    }
+                    // ── Logo hold + 1:1 upward drift ─────────────────────────────────────
+                    // From the moment Abstract is fully in view, every pixel the user
+                    // scrolls pushes the particle logo up by the same pixel amount.
+                    // Formula: pxScrolled * (WORLD_HEIGHT / viewportHeight)
+                    const totalScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+                    const pxScrolledPastAbstractInView = (progress - abstractInView) * totalScrollHeight;
+                    targetParticleOffset.current = Math.max(
+                        0,
+                        pxScrolledPastAbstractInView / window.innerHeight * WORLD_HEIGHT_PER_SCREEN
+                    );
+                    currentPosition = 'Logo';
+                    transitionProgress = 1;
+                    radiusScale = 1.8;
                 }
             } else {
-                // Past abstractEnd — smoothly wind offset back to 0
-                isParticleStopped.current = true;
-                targetParticleOffset.current = 0;
+                // Past abstractEnd — keep pushing with the same 1:1 formula so the
+                // logo never snaps back down as the user continues scrolling.
+                isParticleStopped.current = false;
+                const totalScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const pxScrolledPastAbstractInView = (progress - abstractInView) * totalScrollHeight;
+                targetParticleOffset.current = Math.max(
+                    0,
+                    pxScrolledPastAbstractInView / window.innerHeight * WORLD_HEIGHT_PER_SCREEN
+                );
                 currentPosition = 'Logo';
                 transitionProgress = 1;
                 radiusScale = 1.8;

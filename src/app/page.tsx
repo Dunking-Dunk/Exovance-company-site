@@ -48,7 +48,9 @@ export default function Home() {
 
 
         {/* Abstract */}
-        <Abstract />
+        <div data-section="abstract">
+          <Abstract />
+        </div>
 
 
 
