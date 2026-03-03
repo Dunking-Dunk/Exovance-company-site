@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 const highlights = [
-    { title: 'AI Agents', desc: 'Autonomous virtual agents that sell, support, and serve â€” 24 / 7.' },
-    { title: 'Automation', desc: 'Workflow automation and process optimisation at every touchpoint.' },
-    { title: 'Advisory', desc: 'Exploratory sessions to align goals and de-risk delivery.' },
+    { title: 'Campus Suite', desc: 'Timetabling in 30 seconds. Live campus knowledge for every student, teacher, and admin.' },
+    { title: 'AIVA', desc: '3D AI voice agents deployed in enterprise kiosks — sales, billing, customer service.' },
+    { title: 'Automation', desc: 'Workflow automation that eliminates repetitive human work at every touchpoint.' },
 ];
 
 const ContactSection = () => {
@@ -64,17 +64,19 @@ const ContactSection = () => {
                         viewport={{ once: true }}
                         transition={{ duration: 0.8, delay: 0.3 }}
                     >
-                        <Link
-                            href="/contact"
+                        <a
+                            href="https://waitlist.exovance.in"
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="inline-flex items-center justify-center px-7 py-3 rounded-full bg-violet-600/80 hover:bg-violet-500/90 text-white text-xs font-mono tracking-[0.25em] uppercase transition-all duration-300 shadow-lg shadow-violet-900/20"
                         >
-                            Start a project
-                        </Link>
+                            Get Early Access — Campus Suite
+                        </a>
                         <Link
                             href="/contact"
                             className="inline-flex items-center justify-center px-7 py-3 rounded-full border border-violet-500/25 hover:border-violet-400/50 text-customGrayLight hover:text-violet-200 text-xs font-mono tracking-[0.25em] uppercase transition-all duration-300"
                         >
-                            Know more
+                            Deploy AIVA at Your Location
                         </Link>
                     </motion.div>
 

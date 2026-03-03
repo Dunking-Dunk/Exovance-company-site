@@ -33,8 +33,8 @@ export default function Hero() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1.4, delay: 2.0 }}
             >
-                <span className="font-mono text-[8px] tracking-[0.45em] uppercase text-violet-400/25">Chennai · India</span>
-                <span className="font-mono text-[8px] tracking-[0.45em] uppercase text-violet-400/18">Est. 2024</span>
+                <span className="font-mono text-[8px] tracking-[0.45em] uppercase text-violet-400/50">Chennai · India</span>
+                <span className="font-mono text-[8px] tracking-[0.45em] uppercase text-violet-400/40">Est. 2024</span>
             </motion.div>
 
             {/* Bottom-right: scroll cue */}
@@ -44,7 +44,7 @@ export default function Hero() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1.4, delay: 2.2 }}
             >
-                <span className="font-mono text-[8px] tracking-[0.45em] uppercase text-violet-400/25 rotate-90 origin-center mb-6">Scroll</span>
+                <span className="font-mono text-[8px] tracking-[0.45em] uppercase text-violet-400/50 rotate-90 origin-center mb-6">Scroll</span>
                 <motion.div
                     className="w-px h-12 bg-gradient-to-b from-violet-400/30 to-transparent"
                     animate={{ scaleY: [0.4, 1, 0.4], opacity: [0.3, 0.7, 0.3] }}

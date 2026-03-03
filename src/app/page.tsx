@@ -7,7 +7,6 @@ import About from "@/app/_section/About";
 const Vision = dynamic(() => import("@/app/_section/Vision"), { ssr: false });
 const ScrollTextAnimation = dynamic(() => import("@/components/global/Marquee"), { ssr: false });
 const ContactPage = dynamic(() => import("@/app/_section/Contact"), { ssr: false });
-const Service = dynamic(() => import("@/app/_section/Service"), { ssr: false });
 const Product = dynamic(() => import("@/app/_section/Product"), { ssr: false });
 const Abstract = dynamic(() => import("./_section/Abstract"), { ssr: false });
 const Footer = dynamic(() => import("@/components/global/Footer"), { ssr: false });
@@ -36,17 +35,11 @@ export default function Home() {
         </div>
 
         {/* Products */}
-        {/* <div data-section="product">
+        <div data-section="product">
           <Product />
-        </div> */}
+        </div>
 
         <ScrollTextAnimation />
-
-        {/* Services */}
-        {/* <div data-section="service">
-          <Service />
-        </div> */}
-
 
         {/* Team */}
         {/* <div data-section="team">

@@ -111,13 +111,13 @@ const Vision = () => {
             <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 35% at 50% -5%, rgba(100,0,200,0.08) 0%, transparent 100%)' }} />
 
             {/* Corner ambient text — mono small caps */}
-            <p className="absolute top-1/3 left-[5%] md:left-[12%] font-mono text-[9px] tracking-[0.35em] text-violet-400/25 uppercase leading-loose">
+            <p className="absolute top-1/3 left-[5%] md:left-[12%] font-mono text-[9px] tracking-[0.35em] text-violet-400/45 uppercase leading-loose">
                 Tamil Nadu<br />India
             </p>
-            <p className="absolute top-1/4 right-[5%] md:right-[12%] font-mono text-[9px] tracking-[0.35em] text-violet-400/25 uppercase text-right leading-loose">
+            <p className="absolute top-1/4 right-[5%] md:right-[12%] font-mono text-[9px] tracking-[0.35em] text-violet-400/45 uppercase text-right leading-loose">
                 We Define<br />The Future
             </p>
-            <p className="absolute top-3/4 left-[5%] md:left-[12%] font-mono text-[9px] tracking-[0.35em] text-violet-400/20 uppercase">
+            <p className="absolute top-3/4 left-[5%] md:left-[12%] font-mono text-[9px] tracking-[0.35em] text-violet-400/35 uppercase">
                 Unfazed
             </p>
 
@@ -126,15 +126,15 @@ const Vision = () => {
                 {/* Accent: thin violet hairlines */}
                 <div className="absolute top-[18%] left-[8%] w-px h-24 bg-gradient-to-b from-violet-500/20 to-transparent" />
                 <div className="absolute bottom-[25%] right-[8%] w-16 h-px bg-gradient-to-r from-transparent to-violet-500/20" />
-                <span className="absolute top-[18%] left-[8%] font-mono text-[8px] tracking-[0.5em] text-violet-400/20 uppercase ml-3">01</span>
+                <span className="absolute top-[18%] left-[8%] font-mono text-[8px] tracking-[0.5em] text-violet-400/40 uppercase ml-3">01</span>
 
                 <span className="overflow-hidden relative">
                     <h3 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-display font-bold text-customGrayLight pin-section-text tracking-tight">
                         IMAGINE
                     </h3>
                 </span>
-                <p className="section-description font-mono absolute bottom-[15%] md:bottom-[20%] right-[5%] md:right-[18%] text-[10px] tracking-[0.35em] text-violet-400/50 uppercase w-44">
-                    Creativity &amp; visionary thinking.
+                <p className="section-description font-mono absolute bottom-[15%] md:bottom-[20%] right-[5%] md:right-[18%] text-[10px] tracking-[0.35em] text-violet-400/65 uppercase w-44">
+                    A university where AI writes the entire timetable before morning coffee.
                 </p>
             </section>
 
@@ -142,15 +142,15 @@ const Vision = () => {
             <section className="pin-section absolute top-0 left-0 w-full h-full flex items-center justify-center" data-section="1">
                 <div className="absolute top-[18%] right-[8%] w-px h-24 bg-gradient-to-b from-violet-500/20 to-transparent" />
                 <div className="absolute bottom-[25%] left-[8%] w-16 h-px bg-gradient-to-r from-violet-500/20 to-transparent" />
-                <span className="absolute top-[18%] right-[8%] font-mono text-[8px] tracking-[0.5em] text-violet-400/20 uppercase mr-3">02</span>
+                <span className="absolute top-[18%] right-[8%] font-mono text-[8px] tracking-[0.5em] text-violet-400/40 uppercase mr-3">02</span>
 
                 <span className="overflow-hidden relative">
                     <h3 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-display font-bold text-customGrayLight pin-section-text tracking-tight">
                         INVENT
                     </h3>
                 </span>
-                <p className="section-description font-mono absolute bottom-[15%] md:bottom-[20%] right-[5%] md:right-[18%] text-[10px] tracking-[0.35em] text-violet-400/50 uppercase w-44">
-                    Building something entirely new.
+                <p className="section-description font-mono absolute bottom-[15%] md:bottom-[20%] right-[5%] md:right-[18%] text-[10px] tracking-[0.35em] text-violet-400/65 uppercase w-44">
+                    A kiosk that speaks, thinks, and closes deals without a human present.
                 </p>
             </section>
 
@@ -159,14 +159,14 @@ const Vision = () => {
                 <div className="absolute top-[18%] left-[8%] w-px h-24 bg-gradient-to-b from-violet-500/30 to-transparent" />
                 <div className="absolute top-[18%] right-[8%] w-px h-24 bg-gradient-to-b from-violet-500/30 to-transparent" />
                 <div className="absolute bottom-[20%] left-1/2 -translate-x-1/2 w-24 h-px bg-gradient-to-r from-transparent via-violet-500/25 to-transparent" />
-                <span className="absolute top-[18%] left-[8%] font-mono text-[8px] tracking-[0.5em] text-violet-400/25 uppercase ml-3">03</span>
+                <span className="absolute top-[18%] left-[8%] font-mono text-[8px] tracking-[0.5em] text-violet-400/40 uppercase ml-3">03</span>
 
                 <span className="overflow-hidden relative">
                     <h3 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-display font-bold pin-section-text tracking-tight">
                         <span className="text-violet-400">EXO</span><span className="text-customGrayLight">VANCE</span>
                     </h3>
                 </span>
-                <p className="section-description font-mono absolute bottom-[15%] md:bottom-[20%] right-[5%] md:right-[18%] text-[10px] tracking-[0.35em] text-violet-400/50 uppercase w-44">
+                <p className="section-description font-mono absolute bottom-[15%] md:bottom-[20%] right-[5%] md:right-[18%] text-[10px] tracking-[0.35em] text-violet-400/65 uppercase w-44">
                     Pushing beyond known boundaries.
                 </p>
             </section>

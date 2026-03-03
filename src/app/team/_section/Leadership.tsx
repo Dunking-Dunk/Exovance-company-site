@@ -8,18 +8,36 @@ import Link from "next/link";
 
 const Leadership = () => {
     return (
-        <section className="relative w-full py-24 md:py-32">
-            <div className="px-4 md:px-32">
+        <section className="relative w-full px-6 md:px-12 lg:px-28 py-28 md:py-40 overflow-hidden">
+
+            {/* Top hairline */}
+            <div className="absolute top-0 left-6 right-6 md:left-12 md:right-12 lg:left-28 lg:right-28 h-px bg-gradient-to-r from-violet-500/20 via-violet-500/10 to-transparent" />
+
+            {/* Ambient bloom */}
+            <div className="absolute top-0 right-0 w-[500px] h-[400px] opacity-[0.04] pointer-events-none"
+                style={{ background: 'radial-gradient(ellipse at 80% 0%, #7800ff 0%, transparent 60%)' }} />
+
+            <div className="relative z-10">
+                <motion.p
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="font-mono text-[10px] tracking-[0.45em] text-violet-400/60 uppercase mb-10"
+                >
+                    01 &mdash;&nbsp; The Founders
+                </motion.p>
+
                 <div className="mb-12 md:mb-16">
                     <h2 className="text-4xl md:text-6xl font-bold text-customGrayLight mb-3">
-                        Our Core Team
+                        The Founders
                     </h2>
-                    <p className="text-customGrayDarker text-lg">
-                        The founding team guiding Exovance with clarity, craftsmanship, and conviction.
+                    <p className="text-customGrayDarker text-lg max-w-xl">
+                        Engineering students who got tired of waiting for someone else to fix the problem.
                     </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {founders.map((f, i) => (
                         <motion.div
                             key={f.name + i}
@@ -27,40 +45,48 @@ const Leadership = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5, delay: i * 0.05 }}
-                            className="group rounded-2xl border border-white/10 bg-white/5 dark:bg-gray-900/30 backdrop-blur-sm overflow-hidden"
+                            className="group rounded-2xl border border-white/[0.06] bg-white/[0.03] backdrop-blur-sm overflow-hidden hover:border-violet-500/20 transition-colors duration-300"
                         >
-                            <div className="relative aspect-[4/3] w-full overflow-hidden">
+                            <div className="relative aspect-[3/4] w-full overflow-hidden">
                                 <Image
                                     src={f.photo}
                                     alt={f.name}
                                     fill
-                                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                                    className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                                {/* Role badge over image */}
+                                <div className="absolute bottom-4 left-5">
+                                    <span className="font-mono text-[9px] tracking-[0.3em] text-violet-300/80 bg-black/50 backdrop-blur-sm px-2 py-1 rounded uppercase">
+                                        {f.role}
+                                    </span>
+                                </div>
                             </div>
 
                             <div className="p-6 flex flex-col gap-4">
                                 <div>
-                                    <h3 className="text-2xl font-semibold text-customGrayLight">
+                                    <h3 className="text-2xl font-semibold text-customGrayLight tracking-tight">
                                         {f.name}
                                     </h3>
-                                    <p className="text-sm text-customGrayDarker">{f.role}</p>
                                 </div>
 
-                                <p className="text-customGrayDarker text-sm leading-relaxed">
+                                {/* oneLiner — brighter, italic */}
+                                <p className="text-customGray text-sm leading-relaxed italic border-l-2 border-violet-500/30 pl-3">
                                     {f.oneLiner}
                                 </p>
 
-                                <p className="text-customGrayDarker text-sm leading-relaxed">
-                                    {f.bio}
-                                </p>
+                                <div className="border-t border-white/5 pt-3">
+                                    <p className="text-customGrayDarker text-xs leading-relaxed">
+                                        {f.bio}
+                                    </p>
+                                </div>
 
-                                <div className="flex flex-wrap gap-2 mt-2">
+                                <div className="flex flex-wrap gap-2">
                                     {f.expertise.map((tag) => (
                                         <span
                                             key={tag}
-                                            className="px-2 py-1 rounded-md text-xs bg-white/10 text-customGrayLight"
+                                            className="px-2 py-1 rounded-md text-[11px] font-mono bg-white/[0.06] text-customGrayDark hover:bg-white/10 transition-colors"
                                         >
                                             {tag}
                                         </span>
@@ -68,7 +94,7 @@ const Leadership = () => {
                                 </div>
 
                                 {(f.links?.github || f.links?.linkedin || f.links?.portfolio) && (
-                                    <div className="flex items-center gap-4 pt-2">
+                                    <div className="flex items-center gap-4 pt-1 border-t border-white/5">
                                         {f.links?.linkedin && (
                                             <Link href={f.links.linkedin} className="text-customGrayDarker hover:text-customGrayLight transition-colors" aria-label="LinkedIn">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764c.967 0 1.75.79 1.75 1.764s-.783 1.764-1.75 1.764zm13.5 11.268h-3v-5.604c0-1.337-.026-3.06-1.865-3.06-1.867 0-2.154 1.459-2.154 2.965v5.699h-3v-10h2.878v1.367h.041c.401-.761 1.379-1.563 2.838-1.563 3.036 0 3.597 2.001 3.597 4.603v5.593z" /></svg>

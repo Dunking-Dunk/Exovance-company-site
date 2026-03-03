@@ -12,14 +12,21 @@ const TeamPage = () => {
     return (
         <main className='w-full h-full relative z-10'>
 
-            <section className='w-full h-full py-20 md:py-60'>
-                <div className="px-4 md:px-32">
-                    <TextGenerateEffect className='text-6xl md:text-9xl text-customGrayLight mb-6'
-                        words='Meet the Innovators <br/> of Exovance'
+            <section className='relative w-full pt-40 md:pt-56 pb-0 overflow-hidden'>
+                {/* Ambient bloom */}
+                <div
+                    className="absolute top-0 left-0 right-0 h-[60vh] pointer-events-none"
+                    style={{ background: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(100,0,200,0.07) 0%, transparent 100%)' }}
+                />
+                <div className="relative z-10 px-6 md:px-12 lg:px-28 mb-20">
+                    <p className='font-mono text-[10px] tracking-[0.5em] text-violet-400/50 uppercase mb-10'>
+                        The People Behind It
+                    </p>
+                    <TextGenerateEffect className='text-6xl md:text-9xl text-customGrayLight mb-8'
+                        words='The Team <br/> Behind Exovance'
                     />
-                    <p className='text-lg text-customGrayDark max-w-3xl leading-relaxed'
-                    >
-                        We are a collective of driven undergraduate students operating at the forefront of deep tech. Our founding team is a testament to the power of synergy, uniting a diverse range of talents from intricate UI/UX design to robust backend development. This multidisciplinary approach allows us to architect solutions from concept to code, tackling complex challenges with a holistic and innovative perspective that is unconstrained by convention.
+                    <p className='text-lg text-customGrayDark max-w-2xl leading-relaxed'>
+                        We&rsquo;re final-year engineering students from Tamil Nadu. We got tired of watching our campus run on WhatsApp groups and spreadsheets. So we built the tools to fix it &mdash; and decided to keep going.
                     </p>
                 </div>
                 <TeamCarousel />

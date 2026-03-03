@@ -44,8 +44,11 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
 
 
     const particleOffset = useRef(0);
+    const targetParticleOffset = useRef(0); // smoothly driven; particleOffset lerps toward this
     const isParticleStopped = useRef(false);
-    const stopScrollPosition = useRef(0);
+    // World units per full screen height:  2 * cameraZ * tan(fov/2)
+    // Camera z=7, fov=62° → 2 * 7 * tan(31°) ≈ 8.41
+    const WORLD_HEIGHT_PER_SCREEN = 8.41;
     const scrollPositions = useRef({ heroEnd: 0.35, aboutEnd: 0.43, visionStart: 0.50, visionEnd: 0.65, abstractEnd: 0.85 });
 
     // Memoize scroll transform
@@ -173,18 +176,17 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
 
             if (progress <= abstractEnd) {
                 isParticleStopped.current = false;
-                uniforms.uFade.value = 1;
 
                 if (progress < visionStart) {
                     // A→B: particles slowly coalesce into the brain shape across the
-                    // entire hero + about sections. The brain is NOT fully formed until
-                    // the vision section starts (visionStart), so IMAGINE text is already
-                    // appearing as the last particles lock into place.
+                    // entire hero + about sections.
+                    targetParticleOffset.current = 0;
                     const abProgress = progress / Math.max(0.001, visionStart);
                     currentPosition = 'A-B';
                     transitionProgress = Math.min(1, abProgress);
                     radiusScale = 5.0 - transitionProgress * 2.8;
                 } else if (progress < visionEnd) {
+                    targetParticleOffset.current = 0;
                     const visionProgress = (progress - visionStart) / (visionEnd - visionStart);
                     // 0.00 – 0.28: brain holds (IMAGINE pinned in view)
                     // 0.28 – 0.50: brain → face transition (B-C morph)
@@ -211,32 +213,50 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
                         radiusScale = 2.2 - lastChunk * 0.8;
                     }
                 } else {
-                    // Abstract section — particles flow into logo then hold fully visible.
-                    // NO FADE OUT: particles remain at full opacity for the entire abstract
-                    // section, "stuck" in the logo shape as the user scrolls through.
-                    //   0.00–0.55 : D → Logo  (particles converge into logo)
-                    //   0.55–1.00 : Logo hold  (fully formed, stays put)
+                    // ── ABSTRACT SECTION ────────────────────────────────────────────────────
+                    //   0.00–0.55 : D → Logo  (free convergence, zero offset)
+                    //   0.55–1.00 : Logo hold (pure-math counter-scroll, no sentinel)
+                    //
+                    // OFFSET FORMULA: purely derived from abstractProgress so it is
+                    // perfectly continuous in both scroll directions — no sentinel, no pop.
+                    //
+                    // During logo-hold the total physical pixels scrolled since logo-hold
+                    // entry = logoPhaseProgress * logoHoldSpanPx.
+                    // We subtract 200 px so particles start 200 px below their natural pin
+                    // position and drift upward as the user scrolls. Clamping to ≥0 means
+                    // the target is exactly 0 at the 0.55 boundary (matches D-Logo target),
+                    // so there is zero discontinuity when crossing in either direction.
+
                     const abstractProgress = (progress - visionEnd) / Math.max(0.001, abstractEnd - visionEnd);
+
                     if (abstractProgress < 0.55) {
+                        targetParticleOffset.current = 0;
                         currentPosition = 'D-Logo';
                         transitionProgress = Math.min(1, abstractProgress / 0.55);
-                        radiusScale = 2.0 - transitionProgress * 0.2;
+                        radiusScale = 1.4 + transitionProgress * 0.4;
                     } else {
+                        // Pure-math offset: stateless, smooth, no pops.
+                        const logoPhaseProgress = (abstractProgress - 0.55) / 0.45; // 0–1
+                        const totalScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+                        const logoHoldSpanPx = 0.45 * (abstractEnd - visionEnd) * totalScrollHeight;
+                        const scrolledInLogoHoldPx = logoPhaseProgress * logoHoldSpanPx;
+                        // Clamp: offset stays 0 until 200 px in, then rises— no boundary jump
+                        targetParticleOffset.current = Math.max(
+                            0,
+                            (scrolledInLogoHoldPx - 200) / window.innerHeight * WORLD_HEIGHT_PER_SCREEN
+                        );
                         currentPosition = 'Logo';
                         transitionProgress = 1;
                         radiusScale = 1.8;
                     }
-                    // Particles stay fully visible (uFade = 1) throughout abstract section —
-                    // they are "stuck" here rather than fading/drifting away.
-                    uniforms.uFade.value = 1;
                 }
             } else {
-                // Past abstractEnd — particles snap off instantly
+                // Past abstractEnd — smoothly wind offset back to 0
                 isParticleStopped.current = true;
+                targetParticleOffset.current = 0;
                 currentPosition = 'Logo';
                 transitionProgress = 1;
                 radiusScale = 1.8;
-                uniforms.uFade.value = 0;
             }
 
             simulationMaterialRef.current.uniforms.uTransitionProgress.value = transitionProgress;
@@ -372,6 +392,9 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
 
 
         // Theme switching removed — single dark palette, always AdditiveBlending
+        // Smoothly lerp particleOffset toward its target each frame.
+        // This prevents snapping when entering/leaving the abstract section in either direction.
+        particleOffset.current += (targetParticleOffset.current - particleOffset.current) * 0.12;
         points.current.material.uniforms.uPositions.value = renderTarget.texture;
         points.current.material.uniforms.uColor.value = currentColor.current;
         points.current.material.uniforms.uTime.value = elapsedTime;

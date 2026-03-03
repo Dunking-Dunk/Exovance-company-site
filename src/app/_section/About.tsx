@@ -4,10 +4,10 @@ import { motion } from 'framer-motion'
 import React from 'react';
 
 const capabilities = [
-    { id: '01', title: 'AI Agents', desc: 'Autonomous intelligence that works for your business — 24/7.' },
-    { id: '02', title: '3D Avatars', desc: 'Lifelike virtual representatives with real-time expression.' },
-    { id: '03', title: 'Automation', desc: 'Streamlined pipelines that replace repetitive human work.' },
-    { id: '04', title: 'Virtual Kiosks', desc: 'Movable interactive stations powered by embedded AI.' },
+    { id: '01', title: 'Campus Schedule', desc: 'AI timetabling that does in 30 seconds what takes a university 3 weeks.' },
+    { id: '02', title: 'Campus Intelligence', desc: 'RAG knowledge agent — every student, teacher, and admin talks to AI that knows their campus live.' },
+    { id: '03', title: 'AIVA Voice Agents', desc: '3D AI avatars for sales, billing, and customer service — deployed in enterprise kiosks.' },
+    { id: '04', title: 'Automation', desc: 'Workflow automation that eliminates repetitive human work at every operational touchpoint.' },
 ]
 
 const containerVariants = {
@@ -64,10 +64,10 @@ const About = () => {
                         className="space-y-8"
                     >
                         <p className="text-lg md:text-xl leading-[1.85] text-customGrayDark font-light tracking-wide">
-                            At <span className="text-customGray font-medium">EXOVANCE</span>, we build cutting-edge AI virtual agents powered by lifelike 3D avatars — serving as sales representatives, billing assistants, and customer service agents, all housed in movable kiosks for maximum flexibility.
+                            At <span className="text-customGray font-medium">EXOVANCE</span>, we build AI that works — a campus intelligence suite that makes timetabling, knowledge, and administration instant, and AIVA, our 3D AI voice agent deployed in enterprise kiosks.
                         </p>
                         <p className="text-base md:text-lg leading-[1.85] text-customGrayDarker font-light tracking-wide">
-                            Beyond virtual agents, we deliver comprehensive automation services that streamline operations and redefine customer experiences at every touchpoint.
+                            Two product lines. One mission: eliminate the slow, manual, and repetitive from every institution and enterprise that dares to move faster.
                         </p>
 
                         <motion.div

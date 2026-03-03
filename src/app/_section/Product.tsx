@@ -1,212 +1,127 @@
 "use client"
 
 import React from 'react'
-import dynamic from 'next/dynamic'
-import { TextGenerateEffect } from '@/components/ui/text-generate-effect'
-import { DotBackground } from '@/components/ui/dot-background'
-import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
-import MagicBento from '@/components/ui/MagicBento'
-import { useRouter } from 'next/navigation'
+
+const products = [
+    {
+        id: '01',
+        name: 'Campus Suite',
+        tagline: 'EdTech · Indian Universities · Agentic AI',
+        description: 'Campus Schedule rewrites the timetable in 30 seconds. Campus Intelligence gives every student, teacher, and admin an AI that knows their campus live — schedules, rules, and all.',
+        tags: ['Campus Schedule', 'Campus Intelligence', 'FFCS · Hybrid · Traditional', '30 Seconds'],
+        href: '/product/campus-suite',
+        accent: 'violet',
+    },
+    {
+        id: '02',
+        name: 'AIVA',
+        tagline: 'Voice Agents · 3D Avatars · Enterprise Kiosks',
+        description: 'AI voice agents with lifelike 3D avatars deployed in movable enterprise kiosks — handling sales, billing, and customer service without a human in the loop.',
+        tags: ['Voice Agent', '3D Avatar', 'Kiosk', 'Enterprise Automation'],
+        href: '/product/aiva',
+        accent: 'violet',
+    },
+]
+
+const containerVariants = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.18, delayChildren: 0.05 } }
+}
+const itemVariants = {
+    hidden: { opacity: 0, y: 28 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.75, ease: [0.25, 0.46, 0.45, 0.94] } }
+}
 
 const Product = () => {
-    const router = useRouter()
-
     return (
-        <div className="w-full h-full relative z-20" >
+        <div className="w-full relative z-20 bg-[#06060c]/50">
 
-            <div className="absolute inset-0 z-0">
-                <DotBackground />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-customBlack/5 to-transparent" />
-            </div>
+            {/* Top hairline */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/20 to-transparent" />
 
-            <div className="relative w-full h-full flex flex-col justify-center px-4 md:px-8 lg:px-32 md:py-32">
+            <div className="relative z-10 w-full px-6 md:px-12 lg:px-28 py-28 md:py-40">
 
-                <div className="flex items-center space-x-3 mb-8 md:mb-12">
-                    <div className="w-1 h-8 bg-gradient-to-b from-customGrayDark to-customGrayDarker" />
-                    <span className="text-sm tracking-[0.2em] uppercase text-customGrayDark font-medium">
-                        Our Flagship Product
-                    </span>
-                </div>
+                {/* Section header */}
+                <motion.div
+                    variants={containerVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-80px" }}
+                    className="mb-20 md:mb-28"
+                >
+                    <motion.p variants={itemVariants} className="font-mono text-[10px] tracking-[0.4em] text-violet-400/60 uppercase mb-6">
+                        02 &mdash;&nbsp; Products
+                    </motion.p>
+                    <motion.h2
+                        variants={itemVariants}
+                        className="font-display font-bold leading-[0.92] tracking-tight text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-[7rem]"
+                    >
+                        <span className="block text-customGrayLight">WHAT WE</span>
+                        <span className="block">
+                            <span className="text-violet-400">SHIP</span>
+                            <span className="text-customGrayLight"> TODAY.</span>
+                        </span>
+                    </motion.h2>
+                </motion.div>
 
-                {/* Product Title */}
-                <div className="mb-8 md:mb-16">
-                    <TextGenerateEffect
-                        duration={1.2}
-                        words='AIVA <br/> THE FUTURE'
-                        className='text-6xl md:text-8xl lg:text-[120px] xl:text-[140px] font-medium tracking-wider leading-none'
-                    />
-                </div>
-
-                {/* Subtitle */}
-                <div className="mb-12 md:mb-16">
-                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-light tracking-wide">
-                        ARTIFICIAL INTELLIGENCE VIRTUAL AGENT
-                    </h2>
-                </div>
-
-                <div className="max-w-5xl mb-16 md:mb-24">
-                    <p className="text-lg md:text-xl lg:text-xl leading-relaxed text-customGrayDark">
-                        AIVA is more than AI — it's your all-in-one, charming, intelligent sales assistant that engages,
-                        recommends, explains, and sells. With human touch and machine power, AIVA revolutionizes the
-                        future of selling in the market through emotional intelligence and seamless customer interactions.
-                    </p>
-                </div>
-
-                <div className="relative w-full mb-16 md:mb-24">
-                    <div className="relative w-full h-[60vh] md:h-[70vh] lg:h-[80vh] xl:h-[90vh] rounded-2xl overflow-hidden group">
-
-                        <video
-                            className="absolute inset-0 w-full h-full object-cover"
-                            autoPlay
-                            loop
-                            muted
-                            playsInline
+                {/* Dual product cards */}
+                <motion.div
+                    variants={containerVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-60px" }}
+                    className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+                >
+                    {products.map((p) => (
+                        <motion.div
+                            key={p.id}
+                            variants={itemVariants}
+                            className="group relative p-8 md:p-10 rounded-2xl border border-white/[0.06] bg-white/[0.02] hover:border-violet-500/30 hover:bg-violet-500/[0.04] transition-all duration-500 overflow-hidden"
                         >
-                            <source src="/video/Kiosk_With_Wheels.mp4" type="video/mp4" />
-                            Your browser does not support the video tag.
-                        </video>
+                            {/* Ambient glow on hover */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-violet-500/0 via-transparent to-violet-500/0 group-hover:from-violet-500/6 transition-all duration-700 rounded-2xl pointer-events-none" />
 
-                        {/* Video Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-customBlack/60 via-transparent to-customBlack/20"></div>
-
-                        <div className="absolute inset-0 flex flex-col justify-end p-4 md:p-8 lg:p-16">
-                            <div className="max-w-3xl">
-                                <h3 className="text-xl md:text-3xl lg:text-4xl font-medium text-white mb-2 md:mb-4 tracking-wide">
-                                    AIVA in Action
-                                </h3>
-                                <p className="text-sm md:text-lg lg:text-xl text-white/90 leading-relaxed mb-4 md:mb-6 hidden sm:block">
-                                    Experience the future of retail with our intelligent kiosk system.
-                                </p>
-                                <div className="flex flex-wrap gap-2 md:gap-4">
-                                    <span className="px-3 py-1 md:px-4 md:py-2 bg-white/20 backdrop-blur-sm rounded-full text-xs md:text-sm text-white border border-white/30">
-                                        Mobile Design
-                                    </span>
-                                    <span className="px-3 py-1 md:px-4 md:py-2 bg-white/20 backdrop-blur-sm rounded-full text-xs md:text-sm text-white border border-white/30">
-                                        3D Avatar
-                                    </span>
-                                    <span className="px-3 py-1 md:px-4 md:py-2 bg-white/20 backdrop-blur-sm rounded-full text-xs md:text-sm text-white border border-white/30 hidden sm:inline-block">
-                                        Interactive Display
-                                    </span>
+                            <div className="relative z-10">
+                                <div className="flex items-start justify-between mb-6">
+                                    <span className="font-mono text-[9px] tracking-[0.4em] text-violet-400/40 uppercase">{p.id}</span>
+                                    <span className="font-mono text-[8px] tracking-[0.3em] text-violet-400/35 uppercase">{p.tagline}</span>
                                 </div>
-                            </div>
-                        </div>
 
-                        {/* Play/Pause Button */}
-                        <button
-                            className="absolute top-6 right-6 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 hover:bg-white/30 transition-all duration-300 group"
-                            onClick={(e) => {
-                                const video = e.currentTarget.parentElement?.querySelector('video');
-                                if (video) {
-                                    if (video.paused) {
-                                        video.play();
-                                    } else {
-                                        video.pause();
-                                    }
-                                }
-                            }}
-                        >
-                            <svg className="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
+                                <h3 className="font-display font-bold text-4xl md:text-5xl text-customGrayLight mb-5 tracking-tight">{p.name}</h3>
 
-                <div className="mb-16 md:mb-24">
+                                <p className="text-base leading-[1.8] text-customGrayDark font-light mb-8">{p.description}</p>
 
-                    <div className='w-full'>
-                        <MagicBento
-                            textAutoHide={true}
-                            enableStars={true}
-                            enableSpotlight={true}
-                            enableBorderGlow={true}
-                            disableAnimations={false}
-                            spotlightRadius={300}
-                            particleCount={8}
-                            enableTilt={true}
-                            glowColor="160, 160, 160"
-                            clickEffect={true}
-                            enableMagnetism={true}
-                        />
-                    </div>
-                </div>
+                                {/* Tags */}
+                                <div className="flex flex-wrap gap-2 mb-10">
+                                    {p.tags.map((tag) => (
+                                        <span key={tag} className="font-mono text-[8px] tracking-[0.3em] uppercase px-3 py-1.5 rounded-sm border border-violet-500/20 bg-violet-500/[0.05] text-customGrayDark">
+                                            {tag}
+                                        </span>
+                                    ))}
+                                </div>
 
-
-                <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-customGrayDark/5 to-transparent rounded-3xl"></div>
-
-                    <div className="relative text-center">
-
-                        <div className="flex items-center justify-center mb-8">
-                            <div className="w-16 h-px bg-gradient-to-r from-transparent via-customGrayDark to-transparent"></div>
-                            <div className="mx-4 w-2 h-2 bg-customGrayDark rounded-full"></div>
-                            <div className="w-16 h-px bg-gradient-to-r from-customGrayDark via-transparent to-transparent"></div>
-                        </div>
-
-                        <h3 className="text-3xl md:text-4xl lg:text-5xl font-medium mb-4 text-customGrayDark tracking-wide">
-                            Ready to revolutionize
-                        </h3>
-                        <h3 className="text-3xl md:text-4xl lg:text-5xl font-light mb-8 text-customGrayDarker tracking-wide">
-                            your retail experience?
-                        </h3>
-
-
-                        <p className="text-lg md:text-xl text-customGrayDarker mb-12 max-w-2xl mx-auto leading-relaxed">
-                            Discover how AIVA can transform your business with AI-powered sales assistance and seamless customer interactions.
-                        </p>
-
-
-                        <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                            {/* Primary CTA Button */}
-                            <div className="group relative">
-                                <div className="absolute -inset-0.5 bg-gradient-to-r from-customGrayDark to-customGrayDarker rounded-xl opacity-20 group-hover:opacity-40 transition duration-300 blur"></div>
-                                <Button
-                                    className="relative px-10 py-5 bg-customGrayDark text-white hover:bg-customGrayDark/90 transition-all duration-300 flex items-center space-x-3 rounded-xl font-medium text-lg shadow-lg hover:shadow-xl"
-                                    onClick={() => {
-                                        router.push('/product/aiva')
-                                    }}
+                                <Link
+                                    href={p.href}
+                                    className="inline-flex items-center gap-3 font-mono text-xs tracking-[0.3em] uppercase text-violet-400/70 hover:text-violet-300 transition-colors duration-300 group/link"
                                 >
-                                    <span>Explore AIVA in Detail</span>
-                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                                </Button>
+                                    <span>Learn More</span>
+                                    <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform duration-300" />
+                                </Link>
                             </div>
-
-
-                            <div className="group relative">
-                                <Button
-                                    variant="outline"
-                                    className="px-10 py-5 border-2 border-customGrayDark text-customGrayDark hover:bg-customGrayDark hover:text-white transition-all duration-300 rounded-xl font-medium text-lg shadow-md hover:shadow-lg"
-                                    onClick={() => {
-                                        console.log('Request demo');
-                                    }}
-                                >
-                                    <span>Request Demo</span>
-                                </Button>
-                            </div>
-                        </div>
-
-
-                        <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-customGrayDarker">
-                            <div className="flex items-center space-x-2">
-                                <div className="w-1 h-1 bg-customGrayDark rounded-full"></div>
-                                <span>No setup fees</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <div className="w-1 h-1 bg-customGrayDark rounded-full"></div>
-                                <span>24/7 AI support</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <div className="w-1 h-1 bg-customGrayDark rounded-full"></div>
-                                <span>Instant deployment</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                        </motion.div>
+                    ))}
+                </motion.div>
 
             </div>
+
+            {/* Bottom hairline */}
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/15 to-transparent" />
         </div>
     )
 }
 
 export default Product
+

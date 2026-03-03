@@ -13,7 +13,7 @@ const Abstract = () => {
   // Adjusted tag variants with a smaller scroll range
   const tagVariants = [
     {
-      text: "IMAGINE",
+      text: "CAMPUS",
       scrollRange: [0.2, 0.6],
       outputRange: [-80, 80],
       top: "15%",
@@ -23,7 +23,7 @@ const Abstract = () => {
       spring: { stiffness: 100, damping: 30 }
     },
     {
-      text: "INNOVATE",
+      text: "SCHEDULE",
       scrollRange: [0.3, 0.7],
       outputRange: [-100, 50],
       top: "70%",
@@ -33,7 +33,7 @@ const Abstract = () => {
       spring: { stiffness: 120, damping: 20 }
     },
     {
-      text: "SERVICES",
+      text: "AIVA",
       scrollRange: [0.25, 0.75],
       outputRange: [-100, 50],
       top: "20%",
@@ -43,7 +43,7 @@ const Abstract = () => {
       spring: { stiffness: 80, damping: 25 }
     },
     {
-      text: "INVENT",
+      text: "INTELLIGENCE",
       scrollRange: [0.35, 0.65],
       outputRange: [-80, 80],
       top: "45%",
@@ -53,7 +53,7 @@ const Abstract = () => {
       spring: { stiffness: 90, damping: 15 }
     },
     {
-      text: "DESIGN",
+      text: "TIMETABLE",
       scrollRange: [0.3, 0.7],
       outputRange: [-90, 60],
       top: "30%",
@@ -63,7 +63,7 @@ const Abstract = () => {
       spring: { stiffness: 110, damping: 22 }
     },
     {
-      text: "DISRUPT",
+      text: "VOICE AGENT",
       scrollRange: [0.4, 0.6],
       outputRange: [-80, 70],
       top: "85%",
@@ -73,7 +73,7 @@ const Abstract = () => {
       spring: { stiffness: 95, damping: 28 }
     },
     {
-      text: "EVOLVE",
+      text: "FFCS",
       scrollRange: [0.2, 0.8],
       outputRange: [-85, 65],
       top: "60%",
@@ -83,7 +83,7 @@ const Abstract = () => {
       spring: { stiffness: 85, damping: 18 }
     },
     {
-      text: "BUILD",
+      text: "30 SECONDS",
       scrollRange: [0.15, 0.55],
       outputRange: [-70, 70],
       top: "10%",
@@ -93,7 +93,7 @@ const Abstract = () => {
       spring: { stiffness: 105, damping: 24 }
     },
     {
-      text: "CREATE",
+      text: "AGENTIC",
       scrollRange: [0.25, 0.65],
       outputRange: [-90, 60],
       top: "35%",
@@ -103,7 +103,7 @@ const Abstract = () => {
       spring: { stiffness: 115, damping: 22 }
     },
     {
-      text: "OPTIMIZE",
+      text: "KIOSK",
       scrollRange: [0.45, 0.8],
       outputRange: [-100, 50],
       top: "75%",
@@ -113,7 +113,7 @@ const Abstract = () => {
       spring: { stiffness: 90, damping: 20 }
     },
     {
-      text: "AUTOMATE",
+      text: "RAG",
       scrollRange: [0.2, 0.6],
       outputRange: [-80, 80],
       top: "50%",
@@ -123,7 +123,7 @@ const Abstract = () => {
       spring: { stiffness: 100, damping: 23 }
     },
     {
-      text: "SCALE",
+      text: "AI-NATIVE",
       scrollRange: [0.3, 0.7],
       outputRange: [-85, 65],
       top: "5%",
@@ -133,7 +133,7 @@ const Abstract = () => {
       spring: { stiffness: 110, damping: 21 }
     },
     {
-      text: "DEPLOY",
+      text: "AI-NATIVE",
       scrollRange: [0.4, 0.8],
       outputRange: [-90, 70],
       top: "90%",
@@ -171,11 +171,11 @@ const Abstract = () => {
             <div className="group cursor-pointer z-0">
               <span className="font-mono text-[9px] tracking-[0.35em] uppercase
                            px-3 py-1.5 rounded-sm
-                           border border-violet-500/20 bg-violet-500/[0.05]
-                           text-customGrayDark
-                           hover:border-violet-400/40 hover:text-violet-300
+                           border border-violet-500/30 bg-violet-500/[0.07]
+                           text-customGray
+                           hover:border-violet-400/50 hover:text-violet-300
                            transition-all duration-400 ease-out
-                           group-hover:bg-violet-500/[0.10]">
+                           group-hover:bg-violet-500/[0.12]">
                 {text}
               </span>
             </div>

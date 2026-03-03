@@ -81,17 +81,25 @@ const HeroSection = () => {
 
             <div className="space-y-8">
                 <div>
-                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-customGrayLight mb-4">
+                    <p className="font-mono text-[10px] tracking-[0.5em] text-violet-400/40 uppercase mb-3">Exovance &mdash; Product 02</p>
+                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-customGrayLight mb-2 tracking-tight">
                         AIVA
                     </h1>
-                    <div className="w-24 h-1 bg-customGrayLight"></div>
+                    <p className="text-2xl md:text-3xl font-semibold text-customGrayDark leading-tight">
+                        Voice. Vision. Action.
+                    </p>
                 </div>
 
-                <div>
-                    <p className="text-lg md:text-xl text-customGrayDarker leading-relaxed">
-                        AIVA is an AI-powered virtual sales assistant designed to enhance customer engagement and sales
-                        in both in-store and online retail environments. More than just AI, AIVA revolutionizes the
-                        future of selling through emotional intelligence and seamless customer interactions.
+                <div className="space-y-4">
+                    <p className="font-mono text-[10px] tracking-[0.45em] text-violet-400/60 uppercase">
+                        Enterprise AI &mdash; Voice &middot; Vision &middot; Action
+                    </p>
+                    <p className="text-lg md:text-xl text-customGray leading-relaxed">
+                        AI that talks, thinks, and closes &mdash; deployed in your location. AIVA is a 3D AI voice agent deployed in movable enterprise kiosks, handling sales, billing, and customer service without a human in the loop.
+                    </p>
+                    <p className="text-sm text-customGrayDarker leading-relaxed">
+                        One of two product lines from Exovance. For campus AI, see{' '}
+                        <a href="/product/campus-suite" className="text-violet-400/70 hover:text-violet-400 underline underline-offset-2 transition-colors">Campus Suite &rarr;</a>
                     </p>
                 </div>
 

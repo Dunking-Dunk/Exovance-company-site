@@ -40,7 +40,7 @@ const Footer = () => {
                                 <div className="mb-6">
                                     <Image src="/logo/only logo white.png" alt="Exovance logo" width={160} height={40} className="h-10 w-auto opacity-90" />
                                 </div>
-                                <h3 className="text-4xl sm:text-5xl font-display font-bold text-customGrayLight leading-tight relative pb-2 after:content-[''] after:block after:h-[1px] after:w-24 after:bg-violet-500/60 after:rounded-full after:mt-2">EXOVANCE</h3>
+                                <h3 className="text-4xl sm:text-5xl font-display font-bold text-customGrayLight leading-tight relative pb-2 after:content-[''] after:block after:h-[1px] after:w-24 after:bg-violet-500/40 after:rounded-full after:mt-2 z-[10]">EXOVANCE</h3>
                             </div>
                             <p className="text-base sm:text-lg text-customGray mt-3 leading-relaxed">Engineering intelligent systems for the real world.</p>
                         </div>

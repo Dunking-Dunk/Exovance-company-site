@@ -74,10 +74,10 @@ export interface Founder {
 export const founders: Founder[] = [
     {
         name: "Hursun SS",
-        role: "Full-Stack Developer",
+        role: "CEO & Tech Lead",
         photo: "/team/hursun2.webp",
-        oneLiner: "A full-stack web developer who builds both the front-end and back-end of websites and apps, with a curiosity for AI and IoT.",
-        bio: "I'm a full-stack web developer with skills in React, Express, React Native, Next.js, Django, and Three.js. I started with web development and then moved into mobile apps. I am curious by nature, so I explored AI and now use it in my projects to make them smarter. I also work with IoT, combining smart devices with AI-powered software. I am the president of the largest tech club at Rajalakshmi Engineering College.",
+        oneLiner: "Built the CP-SAT timetabling engine from scratch while preparing for finals. Now shipping it to real colleges.",
+        bio: "Final-year student at Rajalakshmi Engineering College and president of its largest tech club. Full-stack across React, Next.js, Django, Three.js, and React Native — with AI and IoT layered in. Leads all technical architecture at Exovance.",
         expertise: ["React", "Express", "React Native", "Next.js", "Django", "Three.js", "AI & ML", "IOT"],
         links: {
             linkedin: "https://www.linkedin.com/in/hursun-ss-377659233/",
@@ -86,10 +86,10 @@ export const founders: Founder[] = [
     },
     {
         name: "Shanthosh S",
-        role: "AI & Machine Learning Engineer",
+        role: "AI Lead",
         photo: "/team/shan-placeholder.jpg",
-        oneLiner: "An AI and Machine Learning engineer with a track record of developing impactful solutions for industrial applications and disaster management.",
-        bio: "A Computer Science student contributing to software solutions for industrial weld metal analysis and mobile phone detection using computer vision.As a Smart India Hackathon 2024 Finalist, he developed several AI and RAG models for coal mining operations.He also serves as the Technical Lead for the Intellexa club, where he has overseen its growth to over 1600 members.",
+        oneLiner: "Smart India Hackathon 2024 Finalist. Leads AI architecture — LangGraph agents, RAG pipelines, and the intelligence layer inside Campus Suite.",
+        bio: "Computer Science student and Technical Lead of Intellexa (1,600+ members). Built AI and RAG models for coal mining operations in SIH 2024. Now architecting the LangGraph-based agent system that powers Campus Intelligence.",
         expertise: ["Python", "TensorFlow", "LangChain", "FastAPI", "YOLOv8", "Scikit-Learn", "GCP"],
         links: {
             linkedin: "https://www.linkedin.com/in/shanthosh-s-3a1930257/",
@@ -98,10 +98,10 @@ export const founders: Founder[] = [
     },
     {
         name: "Dhayananth C",
-        role: "Product Engineer",
+        role: "Co-Founder & Product",
         photo: "/team/dhaya3.webp",
-        oneLiner: "Designing and shipping products that are as elegant as they are performant.",
-        bio: "Final-year Information Technology student with a focus on full‑stack and DX. Built scalable web systems, design systems, and internal tooling to speed up product delivery.",
+        oneLiner: "Designed and built the product layer — full stack, front to back — from a dorm room in SRM.",
+        bio: "Final-year AIML student at SRM University. Owns the product and business side of Exovance: positioning, UX, and go-to-market. Also builds full-stack — TypeScript, Next.js, Node.js, PostgreSQL.",
         expertise: ["TypeScript", "Next.js", "Node.js", "PostgreSQL", "UX"],
         links: {
             linkedin: "#",
@@ -132,18 +132,6 @@ export const founders: Founder[] = [
             github: "https://github.com/manov-ik",
         },
     },
-    {
-        name: "Ajjay Adhithya V",
-        role: "Full-Stack & AI Developer",
-        photo: "/team/ajjay.webp",
-        oneLiner: "A versatile full-stack developer with expertise in building AI-driven applications and IoT systems.",
-        bio: "A Computer Science student at VIT Chennai with a strong foundation in full-stack development, AI, and IoT.He has developed an adaptive traffic signal system using Reinforcement Learning, an Ed-Tech platform on AWS and a smart irrigation system.His experience includes a full-stack internship at InstiBuzz and a developer role at the CodeChef VIT-Chennai Chapter.",
-        expertise: ["MERN Stack", "Python", "AWS Services", "Reinforcement Learning", "IoT", "Oracle SQL"],
-        links: {
-            linkedin: "https://www.linkedin.com/in/ajjay-adhithya-v-434b43258/",
-            github: "https://github.com/AjjayAdhithyaV"
-        }
-    }
 ];
 
 export interface Project {
