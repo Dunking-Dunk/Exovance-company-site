@@ -20,7 +20,7 @@ extend({ SimulationMaterial: SimulationMaterial });
 
 
 // Increase simulation size to 128 for a much denser, "Active Theory" style effect (16,384 particles)
-const SIZE = 90;
+const SIZE = 100;
 const POSITIONS = new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0]);
 const UVS = new Float32Array([0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0]);
 
@@ -225,7 +225,7 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
                         currentPosition = 'C-D';
                         const lastChunk = (visionProgress - 0.78) / 0.22;
                         transitionProgress = Math.min(1, lastChunk);
-                        radiusScale = 2.2 - lastChunk * 0.8;
+                        radiusScale = 2.2;
                     }
                 } else if (progress < abstractInView) {
                     // ── D → Logo convergence ─────────────────────────────────────────────
@@ -237,7 +237,7 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
                     const dLogoProgress = (progress - visionEnd) / dLogoSpan;
                     currentPosition = 'D-Logo';
                     transitionProgress = Math.min(1, dLogoProgress);
-                    radiusScale = 1.4 + transitionProgress * 0.4;
+                    radiusScale = 2.2 - transitionProgress * 0.4; // 2.2 → 1.8 (matches Logo hold)
                 } else {
                     // ── Logo hold + 1:1 upward drift ─────────────────────────────────────
                     // From the moment Abstract is fully in view, every pixel the user
