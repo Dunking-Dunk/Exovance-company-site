@@ -9,6 +9,7 @@ const logoVertexShader = `
     varying vec2 vUv;
     varying vec3 vNormal;
     varying vec3 vViewDir;
+    varying vec4 vClipPos;
 
     void main() {
         vUv = uv;
@@ -16,6 +17,7 @@ const logoVertexShader = `
         vec4 worldPos = modelMatrix * vec4(position, 1.0);
         vViewDir = normalize(cameraPosition - worldPos.xyz);
         gl_Position = projectionMatrix * viewMatrix * worldPos;
+        vClipPos = gl_Position;
     }
 `
 
@@ -29,71 +31,60 @@ const logoFragmentShader = `
     varying vec2 vUv;
     varying vec3 vNormal;
     varying vec3 vViewDir;
-
-    vec3 hsv2rgb(vec3 c) {
-        vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
-        vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-        return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-    }
-    float hash21(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
-    float n2(vec2 p){
-        vec2 i=floor(p),f=fract(p); f=f*f*(3.-2.*f);
-        return mix(mix(hash21(i),hash21(i+vec2(1,0)),f.x),
-                   mix(hash21(i+vec2(0,1)),hash21(i+vec2(1,1)),f.x),f.y);
-    }
+    varying vec4 vClipPos;
 
     void main() {
-        float t  = uTime;
-        vec2  uv = vUv;
+        float t = uTime;
 
-        // Fresnel for edge brightening (works even on flat mesh for silhouette)
-        float NdotV  = max(0.0, dot(normalize(vNormal), normalize(vViewDir)));
-        float fresnel = pow(1.0 - NdotV, 3.5);
+        // Screen-space UV — full video mapped across the logo
+        vec2 ndc = vClipPos.xy / vClipPos.w;
+        vec2 screenUV = ndc * 0.5 + 0.5;
 
-        // ── Animated UV warp — creates the flowing glass distortion ──────────
-        vec2 wuv = uv;
-        wuv.x += sin(uv.y * 5.0 + t * 0.55) * 0.06 + sin(uv.y * 11.0 - t * 0.9) * 0.02;
-        wuv.y += cos(uv.x * 4.0 + t * 0.40) * 0.05 + cos(uv.x *  8.0 + t * 0.7) * 0.02;
+        // Back-face normal correction
+        vec3 facingNormal = gl_FrontFacing ? normalize(vNormal) : -normalize(vNormal);
+        float NdotV = max(0.0, dot(facingNormal, normalize(vViewDir)));
 
-        // ── Surface noise ────────────────────────────────────────────────────
-        float noise = n2(wuv * 3.0 + t * 0.18) * 0.55
-                    + n2(wuv * 7.0 - t * 0.25) * 0.30
-                    + n2(wuv *14.0 + t * 0.40) * 0.15;
+        // ── Fresnel — glass is bright/reflective at edges, transparent at face-on ──
+        float fresnel = pow(1.0 - NdotV, 2.8);
 
-        // ── Iridescent colour — hue driven purely by animated UV ─────────────
-        // Slow wide sweep across the full spectrum (teal→violet→rose→back)
-        float bandHue = fract(wuv.x * 0.9 + wuv.y * 0.6 + noise * 0.25 + t * 0.06);
-        // High saturation, low-medium value so glass reads DARK not bright
-        float sat = 0.75 + 0.25 * noise;
-        float val = 0.18 + 0.22 * noise;          // dark glass body
-        vec3 glassColor = hsv2rgb(vec3(bandHue, sat, val));
+        // ── Refraction warp — more distortion at grazing edges (like real glass) ──
+        float refrStrength = 0.018 + fresnel * 0.022;
+        vec2 wuv = screenUV;
+        wuv.x += sin(screenUV.y * 7.0 + t * 0.40) * refrStrength
+               + sin(screenUV.y * 18.0 - t * 0.9) * refrStrength * 0.4;
+        wuv.y += cos(screenUV.x * 5.0 + t * 0.30) * refrStrength
+               + cos(screenUV.x * 14.0 + t * 0.55) * refrStrength * 0.4;
 
-        // ── Bright thin colour streaks — the signature Active Theory light lines
-        float s1 = pow(max(0.0, sin(wuv.y * 28.0 - t * 2.2 + bandHue * 8.0)), 9.0);
-        float s2 = pow(max(0.0, sin(wuv.x * 20.0 + t * 1.6 - bandHue * 5.0)), 8.0) * 0.6;
-        float s3 = pow(max(0.0, sin((wuv.x + wuv.y) * 18.0 - t * 1.9)), 10.0) * 0.4;
-        float streakMask = s1 + s2 + s3;
-        vec3  streakHue  = hsv2rgb(vec3(fract(bandHue + 0.12), 0.60, 1.8));
-        // Streaks add bright saturated light on top of the dark glass
-        vec3 iridColor = glassColor + streakHue * streakMask * 0.9;
+        // ── Video refracted through glass ────────────────────────────────────────
+        vec3 videoColor = texture2D(uVideoTexture, wuv).rgb;
 
-        // ── Fresnel rim (edge glow) ───────────────────────────────────────────
-        vec3 rimCol  = vec3(0.75, 0.70, 1.0) * fresnel * (0.8 + 0.2 * sin(t*0.8)) * 1.6;
-        vec3 finalColor = iridColor + rimCol;
+        // ── Dark glass body — near-black with a cool blue-grey tint ─────────────
+        vec3 glassBody = vec3(0.04, 0.05, 0.09);
 
-        // ── Minimal video glow inside the glass ──────────────────────────────
-        // Sample the video texture at the warped UV so it distorts with glass.
-        // Only luminous parts of the video bleed through; darks stay invisible.
-        // Max contribution ~9% — reads as a faint inner light wash.
-        vec3 videoSample = texture2D(uVideoTexture, wuv).rgb;
-        float videoLum = dot(videoSample, vec3(0.299, 0.587, 0.114));
-        float videoMask = smoothstep(0.15, 0.75, videoLum);
-        float videoIntensity = 0.09 * (1.0 - fresnel * 0.6) * videoMask;
-        finalColor += videoSample * videoIntensity;
+        // ── Chrome rim — silver-blue at Fresnel edges ────────────────────────────
+        vec3 rimColor  = vec3(0.50, 0.62, 0.80);
 
-        // ── Alpha — dark glass: interior ~12%, streaks punch through, rim visible
-        float alpha = 0.12 + 0.40 * fresnel + 0.35 * streakMask + 0.08 * noise;
-        alpha = clamp(alpha, 0.06, 0.72);
+        // ── Specular hotspot — animated reflection on the glass face ─────────────
+        float spec = pow(NdotV, 14.0) * 0.25;
+        vec3 specColor = vec3(0.65, 0.72, 0.88) * spec;
+
+        // ── Composite ─────────────────────────────────────────────────────────────
+        // Base: video clearly visible through the glass (increased mix)
+        vec3 finalColor = mix(glassBody, videoColor * 0.75, 0.55);
+        // Dark smoked-glass tint — cool near-black shade like tinted car glass
+        finalColor *= vec3(0.50, 0.52, 0.60);
+        // Add Fresnel rim glow at edges
+        finalColor += rimColor * fresnel * 0.55;
+        // Add specular highlight on front face
+        finalColor += specColor;
+
+        // ── Alpha — higher base so dark glass body/shade is present ──────────────
+        float alpha = 0.55 + 0.38 * fresnel;
+        alpha = clamp(alpha, 0.45, 0.93);
+
+        // Discard fully transparent fragments so they don't write depth
+        // (prevents the empty letterform cutouts from blocking particles behind)
+        if (alpha < 0.12) discard;
 
         gl_FragColor = vec4(finalColor, alpha);
     }
@@ -104,16 +95,29 @@ export const ExovanceLogo = (props: any) => {
     const matRef = useRef<THREE.ShaderMaterial>(null!)
     const groupRef = useRef<THREE.Group>(null!)
     const videoTextureRef = useRef<THREE.VideoTexture | null>(null)
+    // Normalized mouse target (-1 to 1) and smoothed current value
+    const mouseTgt = useRef({ x: 0, y: 0 })
+    const mouseCur = useRef({ x: 0, y: 0 })
 
     const uniforms = useMemo(() => ({
         uTime: { value: 0 },
         uVideoTexture: { value: new THREE.Texture() },
     }), [])
 
+    // Track mouse position, normalised -1..1
+    useEffect(() => {
+        const onMove = (e: MouseEvent) => {
+            mouseTgt.current.x = (e.clientX / window.innerWidth)  * 2 - 1
+            mouseTgt.current.y = (e.clientY / window.innerHeight) * 2 - 1
+        }
+        window.addEventListener('mousemove', onMove)
+        return () => window.removeEventListener('mousemove', onMove)
+    }, [])
+
     // Create video element and wire up THREE.VideoTexture
     useEffect(() => {
         const video = document.createElement('video')
-        video.src = '/video/colorvideo.mp4'
+        video.src = '/video/color2.mp4'
         video.loop = true
         video.muted = true
         video.playsInline = true
@@ -144,10 +148,22 @@ export const ExovanceLogo = (props: any) => {
         if (videoTextureRef.current) {
             videoTextureRef.current.needsUpdate = true
         }
+        // Smooth lerp mouse toward target (easing factor 0.06 = silky slow)
+        const ease = 0.06
+        mouseCur.current.x += (mouseTgt.current.x - mouseCur.current.x) * ease
+        mouseCur.current.y += (mouseTgt.current.y - mouseCur.current.y) * ease
+
         if (groupRef.current) {
-            // Very subtle drift: ±0.06 up/down, ±0.04 left, independent slow frequencies
+            // Idle float
             groupRef.current.position.y = 0.7 + Math.sin(t * 0.45) * 0.15
             groupRef.current.position.x = Math.sin(t * 0.30) * 0.1
+            // Mouse tilt — base rotation is [-PI/2, PI, PI], add delta on top
+            // mx → tilt left/right (Y axis), my → tilt up/down (X axis)
+            const tiltX =  mouseCur.current.y * 0.08   // ~4.5° max up/down
+            const tiltY =  mouseCur.current.x * 0.06   // ~3.5° max left/right
+            groupRef.current.rotation.x = -Math.PI / 2 + tiltX  // base flat, mouse adds subtle tilt
+            groupRef.current.rotation.y =  Math.PI     + tiltY
+            groupRef.current.rotation.z =  Math.PI + 0.08  // subtle ~4.5° Z tilt
         }
     })
 
@@ -155,16 +171,16 @@ export const ExovanceLogo = (props: any) => {
         <>
             <Float speed={0.4} rotationIntensity={0.05} floatIntensity={0.0} floatingRange={[0, 0]}>
                 <group ref={groupRef} {...props} dispose={null} rotation={[-Math.PI / 2, Math.PI, Math.PI]} position={[0, 0.7, 0.5]}>
-                    <mesh geometry={nodes.Curve003.geometry} position={[0, 0, 0.1]} scale={8}>
+                    <mesh geometry={nodes.Curve003.geometry} position={[0, 0, 0.1]} scale={8} renderOrder={2}>
                         <shaderMaterial
                             ref={matRef}
                             vertexShader={logoVertexShader}
                             fragmentShader={logoFragmentShader}
                             uniforms={uniforms}
                             transparent={true}
-                            side={THREE.DoubleSide}
-                            depthWrite={false}
-                            blending={THREE.AdditiveBlending}
+                            side={THREE.FrontSide}
+                            depthWrite={true}
+                            blending={THREE.NormalBlending}
                         />
                     </mesh>
                 </group>
