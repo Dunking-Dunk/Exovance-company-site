@@ -2,7 +2,7 @@
 import React, { useRef, useMemo, useEffect } from 'react'
 import * as THREE from 'three'
 import { useGLTF } from '@react-three/drei'
-import { useFrame } from '@react-three/fiber'
+import { useFrame, useThree } from '@react-three/fiber'
 
 // ─── VERTEX ──────────────────────────────────────────────────────────────────
 const logoVertexShader = `
@@ -155,9 +155,13 @@ export const ExovanceLogo = (props: any) => {
     const matRef = useRef<THREE.ShaderMaterial>(null!)
     const groupRef = useRef<THREE.Group>(null!)
     const videoTextureRef = useRef<THREE.VideoTexture | null>(null)
-    // Normalized mouse target (-1 to 1) and smoothed current value
+    // Normalize mouse target (-1 to 1) and smoothed current value
     const mouseTgt = useRef({ x: 0, y: 0 })
     const mouseCur = useRef({ x: 0, y: 0 })
+    
+    // We'll track scroll progression here
+    const scrollRef = useRef(0)
+
     const uniforms = useMemo(() => ({
         uTime: { value: 0 },
         uVideoTexture: { value: new THREE.Texture() },
@@ -198,6 +202,8 @@ export const ExovanceLogo = (props: any) => {
         }
     }, [uniforms])
 
+    const { camera } = useThree()
+
     useFrame(({ clock }) => {
         const t = clock.getElapsedTime()
         if (matRef.current) {
@@ -212,15 +218,44 @@ export const ExovanceLogo = (props: any) => {
         mouseCur.current.x += (mouseTgt.current.x - mouseCur.current.x) * ease
         mouseCur.current.y += (mouseTgt.current.y - mouseCur.current.y) * ease
         if (groupRef.current) {
-            // Idle float
-            groupRef.current.position.y = 0.7 + Math.sin(t * 0.45) * 0.15
+            // Find max scroll limit
+            let maxScrollY = 0
+            // Safely look up the About section (wait for mount)
+            if (typeof document !== 'undefined') {
+                const aboutEl = document.querySelector('[data-section="about"]') as HTMLElement
+                if (aboutEl) {
+                    // Stop compensating 150px after the about section reaches the bottom of the viewport
+                    maxScrollY = Math.max(0, aboutEl.offsetTop + aboutEl.offsetHeight - window.innerHeight + 150)
+                }
+            }
+
+            const currentScroll = typeof window !== 'undefined' ? Math.max(0, window.scrollY) : 0
+            const compensatedScroll = Math.min(currentScroll, maxScrollY)
+
+            // Convert compensatedScroll to 3D Y offset
+            let yOffset = 0
+            if ((camera as THREE.PerspectiveCamera).isPerspectiveCamera) {
+                const cam = camera as THREE.PerspectiveCamera
+                const distance = cam.position.z 
+                const vFov = (cam.fov * Math.PI) / 180
+                const heightAtZ = 2 * Math.tan(vFov / 2) * distance
+                const screenH = typeof window !== 'undefined' ? window.innerHeight : 1000
+                yOffset = - (compensatedScroll * heightAtZ / screenH)
+            }
+
+            // Idle float + compensated scroll
+            groupRef.current.position.y = 0.7 + Math.sin(t * 0.45) * 0.15 + yOffset
             groupRef.current.position.x = Math.sin(t * 0.30) * 0.1
             const tiltX =  mouseCur.current.y * 0.08
             const tiltY =  mouseCur.current.x * 0.06
             const tiltZ = -mouseCur.current.x * 0.04
+
+            // Coin spin based on scroll (exactly 140 degrees across the free scroll range)
+            const scrollSpin = maxScrollY > 0 ? (compensatedScroll / maxScrollY) * (140 * Math.PI / 180) : 0
+
             groupRef.current.rotation.x = -Math.PI / 2 + tiltX
             groupRef.current.rotation.y =  Math.PI + tiltY
-            groupRef.current.rotation.z =  Math.PI + 0.08 + tiltZ
+            groupRef.current.rotation.z =  Math.PI + 0.08 + tiltZ + scrollSpin
         }
     })
 
