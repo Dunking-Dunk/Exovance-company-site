@@ -49,6 +49,10 @@ const logoFragmentShader = `
         // ── Screen-space UV for video ─────────────────────────────────────────
         vec2 ndc      = vClipPos.xy / vClipPos.w;
         vec2 screenUV = ndc * 0.5 + 0.5;
+        
+        // Zoom out the video by scaling from the center
+        float videoZoom = 3.0; // Change this value to zoom more or less (>1 zooms out)
+        screenUV = (screenUV - 0.5) * videoZoom + 0.5;
 
         // ── Normal / view ─────────────────────────────────────────────────────
         vec3 N    = gl_FrontFacing ? normalize(vNormal) : -normalize(vNormal);
