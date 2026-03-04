@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useRef, useEffect, useCallback } from "react";
+import React, { useRef, useEffect } from "react";
 import gsap from "gsap";
 
 export interface BlobCursorProps {
-  blobType?: "circle" | "square";
+  // legacy props kept for API compatibility — not used in new implementation
+  blobType?: string;
   fillColor?: string;
   trailCount?: number;
   sizes?: number[];
@@ -26,141 +27,107 @@ export interface BlobCursorProps {
   zIndex?: number;
 }
 
-export default function BlobCursor({
-  blobType = "circle",
-  fillColor = "#5227FF",
-  trailCount = 3,
-  sizes = [60, 125, 75],
-  innerSizes = [20, 35, 25],
-  innerColor = "rgba(255,255,255,0.8)",
-  opacities = [0.6, 0.6, 0.6],
-  shadowColor = "rgba(0,0,0,0.75)",
-  shadowBlur = 5,
-  shadowOffsetX = 10,
-  shadowOffsetY = 10,
-  filterId = "blob",
-  filterStdDeviation = 30,
-  filterColorMatrixValues = "1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 35 -10",
-  useFilter = true,
-  fastDuration = 0.1,
-  slowDuration = 0.5,
-  fastEase = "power3.out",
-  slowEase = "power1.out",
-  zIndex = 100,
-}: BlobCursorProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const blobsRef = useRef<(HTMLDivElement | null)[]>([]);
-  const isMobileRef = useRef(false);
-
-  const handleMouseMove = useCallback(
-    (e: MouseEvent) => {
-      const { clientX, clientY } = e;
-
-      blobsRef.current.forEach((el, i) => {
-        if (!el) return;
-        const isLead = i === 0;
-        gsap.to(el, {
-          x: clientX,
-          y: clientY,
-          duration: isLead ? fastDuration : slowDuration,
-          ease: isLead ? fastEase : slowEase,
-        });
-      });
-    },
-    [fastDuration, slowDuration, fastEase, slowEase]
-  );
+/**
+ * Minimal dot + ring cursor — matches the dark glass/space aesthetic.
+ *
+ * • Sharp 5px white dot: snaps to cursor instantly (no lag)
+ * • 32px ring: silver-blue border, follows with a smooth 0.18s delay
+ * • Subtle glow on both elements via box-shadow
+ */
+export default function BlobCursor({ zIndex = 100 }: BlobCursorProps) {
+  const dotRef  = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Check if device is mobile
-    isMobileRef.current = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) return;
 
-    if (isMobileRef.current) {
-      if (containerRef.current) {
-        containerRef.current.style.display = 'none';
-      }
-      return;
-    }
+    // Hide native cursor across the whole page
+    document.documentElement.style.cursor = "none";
 
-    // Add global mouse move event listener
-    document.addEventListener('mousemove', handleMouseMove);
+    const onMove = (e: MouseEvent) => {
+      const { clientX: x, clientY: y } = e;
 
-    // Initial setup for blobs
-    blobsRef.current.forEach((el, i) => {
-      if (!el) return;
-      gsap.set(el, {
-        xPercent: -50,
-        yPercent: -50,
-        scale: 0,
-        opacity: 0
+      // Dot — instant
+      gsap.set(dotRef.current, { x, y });
+
+      // Ring — smooth follow
+      gsap.to(ringRef.current, {
+        x,
+        y,
+        duration: 0.18,
+        ease: "power2.out",
       });
+    };
 
-      gsap.to(el, {
-        scale: 1,
-        opacity: opacities[i],
-        duration: 0.8,
-        delay: i * 0.1,
-        ease: "elastic.out(1, 0.7)"
+    const onEnter = () => {
+      gsap.to([dotRef.current, ringRef.current], { opacity: 1, duration: 0.2 });
+    };
+    const onLeave = () => {
+      gsap.to([dotRef.current, ringRef.current], { opacity: 0, duration: 0.3 });
+    };
+
+    // Scale ring up on clickable elements
+    const onOver = (e: MouseEvent) => {
+      const el = e.target as HTMLElement;
+      const isClickable = el.closest('a, button, [role="button"], input, textarea, select, label');
+      gsap.to(ringRef.current, {
+        scale: isClickable ? 1.6 : 1,
+        borderColor: isClickable ? "rgba(180,100,255,0.85)" : "rgba(150,80,255,0.50)",
+        duration: 0.25,
+        ease: "power2.out",
       });
-    });
+    };
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseenter", onEnter);
+    document.addEventListener("mouseleave", onLeave);
+    document.addEventListener("mouseover", onOver);
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
+      document.documentElement.style.cursor = "";
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseenter", onEnter);
+      document.removeEventListener("mouseleave", onLeave);
+      document.removeEventListener("mouseover", onOver);
     };
-  }, [handleMouseMove, opacities]);
-
-  // Don't render anything on mobile
-  if (isMobileRef.current) return null;
+  }, []);
 
   return (
     <div
-      ref={containerRef}
-      className="fixed top-0 left-0 w-full h-full pointer-events-none"
-      style={{ zIndex }}>
-      {useFilter && (
-        <svg className="absolute w-0 h-0">
-          <filter id={filterId}>
-            <feGaussianBlur
-              in="SourceGraphic"
-              result="blur"
-              stdDeviation={filterStdDeviation}
-            />
-            <feColorMatrix in="blur" values={filterColorMatrixValues} />
-          </filter>
-        </svg>
-      )}
-
+      className="fixed top-0 left-0 pointer-events-none"
+      style={{ zIndex }}
+    >
+      {/* Sharp dot — center point */}
       <div
-        className="pointer-events-none absolute inset-0 overflow-hidden"
-        style={{ filter: useFilter ? `url(#${filterId})` : undefined, zIndex }}
-      >
-        {Array.from({ length: trailCount }).map((_, i) => (
-          <div
-            key={i}
-            ref={(el: any) => (blobsRef.current[i] = el)}
-            className="absolute will-change-transform transform -translate-x-1/2 -translate-y-1/2 bg-customGrayDark"
-            style={{
-              width: sizes[i],
-              height: sizes[i],
-              borderRadius: blobType === "circle" ? "50%" : "0",
-              backgroundColor: fillColor,
-              opacity: opacities[i],
-              boxShadow: `${shadowOffsetX}px ${shadowOffsetY}px ${shadowBlur}px 0 ${shadowColor}`,
-            }}
-          >
-            <div
-              className="absolute"
-              style={{
-                width: innerSizes[i],
-                height: innerSizes[i],
-                top: (sizes[i] - innerSizes[i]) / 2,
-                left: (sizes[i] - innerSizes[i]) / 2,
-                backgroundColor: innerColor,
-                borderRadius: blobType === "circle" ? "50%" : "0",
-              }}
-            />
-          </div>
-        ))}
-      </div>
+        ref={dotRef}
+        style={{
+          position: "fixed",
+          width: 5,
+          height: 5,
+          borderRadius: "50%",
+          backgroundColor: "rgba(232, 232, 240, 0.95)",
+          boxShadow: "0 0 6px 2px rgba(150, 80, 255, 0.55)",
+          transform: "translate(-50%, -50%)",
+          willChange: "transform",
+          pointerEvents: "none",
+        }}
+      />
+      {/* Delayed ring */}
+      <div
+        ref={ringRef}
+        style={{
+          position: "fixed",
+          width: 32,
+          height: 32,
+          borderRadius: "50%",
+          border: "1px solid rgba(150, 80, 255, 0.50)",
+          boxShadow: "0 0 10px 0px rgba(120, 0, 255, 0.20), inset 0 0 6px 0px rgba(150, 80, 255, 0.08)",
+          transform: "translate(-50%, -50%)",
+          willChange: "transform",
+          pointerEvents: "none",
+        }}
+      />
     </div>
   );
 }

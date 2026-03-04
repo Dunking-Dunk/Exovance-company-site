@@ -58,6 +58,25 @@ const logoFragmentShader = `
         // ── Video refracted through glass ────────────────────────────────────────
         vec3 videoColor = texture2D(uVideoTexture, wuv).rgb;
 
+        // ── Video bloom — sample the bright parts at small offsets and bleed them back ─
+        // Threshold: only pixels brighter than 0.55 luminance contribute to bloom
+        float bloomRadius = 0.018;
+        vec3 bloomAccum = vec3(0.0);
+        // 8-tap radial kernel
+        bloomAccum += texture2D(uVideoTexture, wuv + vec2( bloomRadius,  0.0)).rgb;
+        bloomAccum += texture2D(uVideoTexture, wuv + vec2(-bloomRadius,  0.0)).rgb;
+        bloomAccum += texture2D(uVideoTexture, wuv + vec2( 0.0,  bloomRadius)).rgb;
+        bloomAccum += texture2D(uVideoTexture, wuv + vec2( 0.0, -bloomRadius)).rgb;
+        bloomAccum += texture2D(uVideoTexture, wuv + vec2( bloomRadius * 0.7,  bloomRadius * 0.7)).rgb;
+        bloomAccum += texture2D(uVideoTexture, wuv + vec2(-bloomRadius * 0.7,  bloomRadius * 0.7)).rgb;
+        bloomAccum += texture2D(uVideoTexture, wuv + vec2( bloomRadius * 0.7, -bloomRadius * 0.7)).rgb;
+        bloomAccum += texture2D(uVideoTexture, wuv + vec2(-bloomRadius * 0.7, -bloomRadius * 0.7)).rgb;
+        bloomAccum /= 8.0;
+        // Extract only bright regions (soft knee at 0.55)
+        float bloomLum = dot(bloomAccum, vec3(0.299, 0.587, 0.114));
+        float bloomMask = smoothstep(0.45, 0.90, bloomLum);
+        vec3 bloomColor = bloomAccum * bloomMask;
+
         // ── Dark glass body — near-black with a cool blue-grey tint ─────────────
         vec3 glassBody = vec3(0.04, 0.05, 0.09);
 
@@ -77,6 +96,8 @@ const logoFragmentShader = `
         finalColor += rimColor * fresnel * 0.55;
         // Add specular highlight on front face
         finalColor += specColor;
+        // ── Bloom layer — additive bright bleed on top of everything ─────────────
+        finalColor += bloomColor * 0.55;
 
         // ── Alpha — higher base so dark glass body/shade is present ──────────────
         float alpha = 0.55 + 0.38 * fresnel;
@@ -161,9 +182,10 @@ export const ExovanceLogo = (props: any) => {
             // mx → tilt left/right (Y axis), my → tilt up/down (X axis)
             const tiltX =  mouseCur.current.y * 0.08   // ~4.5° max up/down
             const tiltY =  mouseCur.current.x * 0.06   // ~3.5° max left/right
+            const tiltZ = -mouseCur.current.x * 0.04   // ~2.3° roll — follows X movement
             groupRef.current.rotation.x = -Math.PI / 2 + tiltX  // base flat, mouse adds subtle tilt
             groupRef.current.rotation.y =  Math.PI     + tiltY
-            groupRef.current.rotation.z =  Math.PI + 0.08  // subtle ~4.5° Z tilt
+            groupRef.current.rotation.z =  Math.PI + 0.08 + tiltZ  // subtle Z tilt + mouse roll
         }
     })
 
