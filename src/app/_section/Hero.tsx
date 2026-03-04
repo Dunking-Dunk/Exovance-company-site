@@ -10,14 +10,8 @@ export default function Hero() {
     return (
         <section className="relative z-10 h-[100dvh] w-full overflow-hidden">
 
-            {/* Ambient violet blooms */}
-            <div className="absolute inset-0 pointer-events-none" aria-hidden>
-                <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[550px] opacity-[0.18]"
-                    style={{ background: "radial-gradient(ellipse at 50% 0%, #7800ff 0%, #9a20e0 28%, transparent 68%)" }} />
-                <div className="absolute -top-20 right-[8%] w-[500px] h-[360px] opacity-[0.08]"
-                    style={{ background: "radial-gradient(ellipse at 60% 0%, #aa00ff 0%, transparent 65%)" }} />
-                <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/15 to-transparent" />
-            </div>
+            {/* bottom rule */}
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/10 to-transparent" />
 
             {/* 3-D logo */}
             <div className="absolute inset-0 z-[1] w-full h-full pointer-events-none" aria-hidden>

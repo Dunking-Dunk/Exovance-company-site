@@ -90,18 +90,21 @@ void main(){
     float sparkleFlash=pow(max(0.,sin(uTime*twinkleFreq+particlePhase)),8.);
     vSparkle=sparkleFlash;
     
-    // DEEP VIOLET PALETTE — pure violet (hue ~270°) with slight hue variance
+    // DARK PURPLE + WHITE PALETTE
+    // Each particle renders dark purple; additive blending naturally creates bright
+    // white-purple cores where particles cluster (logo/brain/face shapes).
     float hueShift=fract(sin(dot(position.xy,vec2(17.2,53.7)))*43758.5453);
-    // deep violet: strong blue, medium-high red, zero green
-    vec3 deepViolet=vec3(
-        .38+hueShift*.12+shimmer,// R: 0.38-0.50  (medium-high for violet hue)
-        .00+hueShift*.005,// G: ~0  (zero green keeps it pure violet)
-        .72+hueShift*.20+shimmer// B: 0.72-0.92  (dominant — this is what makes violet)
+    // dark purple: equal push of red + blue, near-zero green
+    vec3 darkPurple=vec3(
+        .48+hueShift*.12+shimmer,// R: 0.48-0.60 (boosted for purple hue, was .38)
+        .00+hueShift*.005,// G: ~0 (keep pure)
+        .55+hueShift*.14+shimmer// B: 0.55-0.69 (reduced from .72, balances with R)
     );
-    // Sparkle: bright white-violet flash
-    vec3 sparkleColor=vec3(.80+hueShift*.08,.60+hueShift*.10,1.);
-    // Moderate multiply so deep violet reads correctly (not washed out)
-    vec3 finalColor=mix(deepViolet*colorIntensity*3.8,sparkleColor*5.,sparkleFlash);
+    // Sparkle cross-rays: pure white burst
+    vec3 sparkleColor=vec3(1.,1.,1.);
+    // Lower multiplier (1.8 vs 3.8) keeps individual particles dark;
+    // the additive overlap on dense shapes provides the bright glow naturally.
+    vec3 finalColor=mix(darkPurple*colorIntensity*1.8,sparkleColor*4.,sparkleFlash);
     
     // Alpha: dim base, spikes fully opaque on flash
     float dynamicAlpha=mix(.4+.2*pulseEffect,1.,sparkleFlash);

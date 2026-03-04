@@ -58,7 +58,9 @@ export default function Home() {
         <ScrollTextAnimation />
 
         {/* contact */}
-        <ContactPage />
+        <div data-section="contact">
+          <ContactPage />
+        </div>
 
       </div>
     </>
