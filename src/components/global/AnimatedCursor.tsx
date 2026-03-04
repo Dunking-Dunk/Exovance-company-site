@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 
 export interface BlobCursorProps {
@@ -37,10 +37,15 @@ export interface BlobCursorProps {
 export default function BlobCursor({ zIndex = 100 }: BlobCursorProps) {
   const dotRef  = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    if (isMobile) return;
+    const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      || window.matchMedia('(pointer: coarse)').matches;
+    if (mobile) {
+      setIsMobile(true);
+      return;
+    }
 
     // Hide native cursor across the whole page
     document.documentElement.style.cursor = "none";
@@ -92,6 +97,9 @@ export default function BlobCursor({ zIndex = 100 }: BlobCursorProps) {
       document.removeEventListener("mouseover", onOver);
     };
   }, []);
+
+  // Don't render on touch/mobile devices — no cursor needed
+  if (isMobile) return null;
 
   return (
     <div

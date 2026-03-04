@@ -1,7 +1,7 @@
 "use client"
 import React, { useRef, useMemo, useEffect } from 'react'
 import * as THREE from 'three'
-import { Float, useGLTF } from '@react-three/drei'
+import { useGLTF } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 
 // ─── VERTEX ──────────────────────────────────────────────────────────────────
@@ -22,9 +22,6 @@ const logoVertexShader = `
 `
 
 // ─── FRAGMENT ─────────────────────────────────────────────────────────────────
-// Active Theory glass: dark transparent body with animated iridescent colour washes.
-// The mesh is flat/2-D so NdotV is useless for hue — instead we drive colour purely
-// from UV-space animated waves, exactly what Active Theory does.
 const logoFragmentShader = `
     uniform float uTime;
     uniform sampler2D uVideoTexture;
@@ -33,79 +30,121 @@ const logoFragmentShader = `
     varying vec3 vViewDir;
     varying vec4 vClipPos;
 
+    // Cheap hue-shift helper for thin-film iridescence
+    vec3 hueShift(vec3 col, float shift) {
+        const vec3 k = vec3(0.57735);
+        float c = cos(shift);
+        return col * c + cross(k, col) * sin(shift) + k * dot(k, col) * (1.0 - c);
+    }
+
+    // Thin-film coating — achromatic (no color), just varying brightness
+    // produces a clear glass-like sheen without hue
+    float thinFilm(float phase) {
+        return 0.5 + 0.5 * cos(phase);
+    }
+
     void main() {
         float t = uTime;
 
-        // Screen-space UV — full video mapped across the logo
-        vec2 ndc = vClipPos.xy / vClipPos.w;
+        // ── Screen-space UV for video ─────────────────────────────────────────
+        vec2 ndc      = vClipPos.xy / vClipPos.w;
         vec2 screenUV = ndc * 0.5 + 0.5;
 
-        // Back-face normal correction
-        vec3 facingNormal = gl_FrontFacing ? normalize(vNormal) : -normalize(vNormal);
-        float NdotV = max(0.0, dot(facingNormal, normalize(vViewDir)));
+        // ── Normal / view ─────────────────────────────────────────────────────
+        vec3 N    = gl_FrontFacing ? normalize(vNormal) : -normalize(vNormal);
+        vec3 V    = normalize(vViewDir);
+        float NdotV = max(0.0, dot(N, V));
 
-        // ── Fresnel — glass is bright/reflective at edges, transparent at face-on ──
-        float fresnel = pow(1.0 - NdotV, 2.8);
+        // ── Fresnel — crisp metallic falloff ─────────────────────────────────
+        float fresnel = pow(1.0 - NdotV, 4.0);
 
-        // ── Refraction warp — more distortion at grazing edges (like real glass) ──
-        float refrStrength = 0.018 + fresnel * 0.022;
+        // ── Refraction warp for video beneath the coating ─────────────────────
+        float refrStr = 0.006 + fresnel * 0.010;
         vec2 wuv = screenUV;
-        wuv.x += sin(screenUV.y * 7.0 + t * 0.40) * refrStrength
-               + sin(screenUV.y * 18.0 - t * 0.9) * refrStrength * 0.4;
-        wuv.y += cos(screenUV.x * 5.0 + t * 0.30) * refrStrength
-               + cos(screenUV.x * 14.0 + t * 0.55) * refrStrength * 0.4;
+        wuv.x += sin(screenUV.y * 6.0 + t * 0.35) * refrStr
+               + sin(screenUV.y * 17.0 - t * 0.7) * refrStr * 0.35;
+        wuv.y += cos(screenUV.x * 5.0 + t * 0.28) * refrStr
+               + cos(screenUV.x * 13.0 + t * 0.5) * refrStr * 0.35;
 
-        // ── Video refracted through glass ────────────────────────────────────────
+        // ── Video — subdued underneath the coating ───────────────────────────
         vec3 videoColor = texture2D(uVideoTexture, wuv).rgb;
+        float videoLum  = dot(videoColor, vec3(0.299, 0.587, 0.114));
+        // Visible hazy glow of the video under the film — not just 18%
+        vec3 videoUnder = mix(vec3(videoLum), videoColor, 0.80) * 0.45;
 
-        // ── Video bloom — sample the bright parts at small offsets and bleed them back ─
-        // Threshold: only pixels brighter than 0.55 luminance contribute to bloom
-        float bloomRadius = 0.018;
-        vec3 bloomAccum = vec3(0.0);
-        // 8-tap radial kernel
-        bloomAccum += texture2D(uVideoTexture, wuv + vec2( bloomRadius,  0.0)).rgb;
-        bloomAccum += texture2D(uVideoTexture, wuv + vec2(-bloomRadius,  0.0)).rgb;
-        bloomAccum += texture2D(uVideoTexture, wuv + vec2( 0.0,  bloomRadius)).rgb;
-        bloomAccum += texture2D(uVideoTexture, wuv + vec2( 0.0, -bloomRadius)).rgb;
-        bloomAccum += texture2D(uVideoTexture, wuv + vec2( bloomRadius * 0.7,  bloomRadius * 0.7)).rgb;
-        bloomAccum += texture2D(uVideoTexture, wuv + vec2(-bloomRadius * 0.7,  bloomRadius * 0.7)).rgb;
-        bloomAccum += texture2D(uVideoTexture, wuv + vec2( bloomRadius * 0.7, -bloomRadius * 0.7)).rgb;
-        bloomAccum += texture2D(uVideoTexture, wuv + vec2(-bloomRadius * 0.7, -bloomRadius * 0.7)).rgb;
-        bloomAccum /= 8.0;
-        // Extract only bright regions (soft knee at 0.55)
-        float bloomLum = dot(bloomAccum, vec3(0.299, 0.587, 0.114));
-        float bloomMask = smoothstep(0.45, 0.90, bloomLum);
-        vec3 bloomColor = bloomAccum * bloomMask;
+        // ── Video bloom — light bursting through the coating ─────────────────
+        // Large radius so light spreads wide; very low threshold so most video bleeds
+        float br = 0.032;
+        vec3 bAccum = vec3(0.0);
+        bAccum += texture2D(uVideoTexture, wuv + vec2( br,    0.0 )).rgb;
+        bAccum += texture2D(uVideoTexture, wuv + vec2(-br,    0.0 )).rgb;
+        bAccum += texture2D(uVideoTexture, wuv + vec2( 0.0,   br  )).rgb;
+        bAccum += texture2D(uVideoTexture, wuv + vec2( 0.0,  -br  )).rgb;
+        bAccum += texture2D(uVideoTexture, wuv + vec2( br*.7,  br*.7)).rgb;
+        bAccum += texture2D(uVideoTexture, wuv + vec2(-br*.7,  br*.7)).rgb;
+        bAccum += texture2D(uVideoTexture, wuv + vec2( br*.7, -br*.7)).rgb;
+        bAccum += texture2D(uVideoTexture, wuv + vec2(-br*.7, -br*.7)).rgb;
+        bAccum /= 8.0;
+        float bLum  = dot(bAccum, vec3(0.299, 0.587, 0.114));
+        // Super-low threshold — all video color bleeds aggressively
+        float bMask = smoothstep(0.04, 0.50, bLum);
+        vec3  bloomRaw = bAccum * bMask;
 
-        // ── Dark glass body — near-black with a cool blue-grey tint ─────────────
-        vec3 glassBody = vec3(0.04, 0.05, 0.09);
+        // ── Oil-slick / thin-film coating ─────────────────────────────────────
+        float filmThickness = 3.5;
+        float phase = NdotV * filmThickness * 6.283
+                    + sin(screenUV.x * 2.8 + t * 0.18) * 1.2
+                    + cos(screenUV.y * 2.2 + t * 0.14) * 1.0
+                    + t * 0.25;
 
-        // ── Chrome rim — silver-blue at Fresnel edges ────────────────────────────
-        vec3 rimColor  = vec3(0.50, 0.62, 0.80);
+        float filmBrightness = thinFilm(phase);
+        vec3 filmColor = vec3(filmBrightness);
 
-        // ── Specular hotspot — animated reflection on the glass face ─────────────
-        float spec = pow(NdotV, 14.0) * 0.25;
-        vec3 specColor = vec3(0.65, 0.72, 0.88) * spec;
+        // ── Bloom ↔ coating interaction ───────────────────────────────────────
+        // Bright video light pushes hard through the film, illuminating it
+        float bloomMod = 1.0 + bMask * 3.20;  // coating brightens up to 4.2× at hotspots
+        filmColor *= bloomMod;
 
-        // ── Composite ─────────────────────────────────────────────────────────────
-        // Base: video clearly visible through the glass (increased mix)
-        vec3 finalColor = mix(glassBody, videoColor * 0.75, 0.55);
-        // Dark smoked-glass tint — cool near-black shade like tinted car glass
-        finalColor *= vec3(0.50, 0.52, 0.60);
-        // Add Fresnel rim glow at edges
-        finalColor += rimColor * fresnel * 0.55;
-        // Add specular highlight on front face
-        finalColor += specColor;
-        // ── Bloom layer — additive bright bleed on top of everything ─────────────
-        finalColor += bloomColor * 0.55;
+        // Coating intensity
+        float coatFace  = 0.30;
+        float coatEdge  = fresnel * 0.45;
+        float coatTotal = coatFace + coatEdge;
+        vec3  coating   = filmColor * coatTotal;
 
-        // ── Alpha — higher base so dark glass body/shade is present ──────────────
-        float alpha = 0.55 + 0.38 * fresnel;
-        alpha = clamp(alpha, 0.45, 0.93);
+        // Emissive bloom escaping through the surface — very strong, coloured by video
+        vec3 bloomEmit = bloomRaw * 2.00;
 
-        // Discard fully transparent fragments so they don't write depth
-        // (prevents the empty letterform cutouts from blocking particles behind)
-        if (alpha < 0.12) discard;
+        // ── Sharp metallic chrome rim — double layer for depth ────────────────
+        float rim      = pow(1.0 - NdotV, 6.0);
+        float rimSharp = pow(1.0 - NdotV, 20.0);
+        vec3 rimColor  = vec3(0.88, 0.90, 1.00) * rim * 1.20
+                       + vec3(1.00, 1.00, 1.00) * rimSharp * 0.90;
+
+        // ── Specular hotspot — hard reflection on the coating ─────────────────
+        vec3 L  = normalize(vec3(0.4, 1.0, 0.6));
+        vec3 H  = normalize(L + V);
+        float spec  = pow(max(0.0, dot(N, H)), 90.0) * 0.60;
+        vec3 L2 = normalize(vec3(sin(t * 0.3) * 0.5, 0.8, cos(t * 0.2) * 0.5));
+        vec3 H2 = normalize(L2 + V);
+        float spec2 = pow(max(0.0, dot(N, H2)), 28.0) * 0.20;
+        vec3 specColor = vec3(0.90, 0.92, 1.00) * (spec + spec2);
+
+        // ── Dark glass base ───────────────────────────────────────────────────
+        vec3 glassBase = vec3(0.012, 0.013, 0.020);
+
+        // ── Composite ─────────────────────────────────────────────────────────
+        vec3 finalColor = glassBase;
+        finalColor += videoUnder;      // hazy video glow under the coating
+        finalColor += coating;         // film (locally brightened by bloom)
+        finalColor += bloomEmit;       // emissive light escaping through the coating
+        finalColor += rimColor;        // deep chrome border
+        finalColor += specColor;       // hard specular on coating
+
+        // ── Alpha: face semi-transparent (coating shows), rim fully opaque ────
+        float alpha = 0.35 + 0.60 * fresnel;  // face ~0.35, rim ~0.95
+        alpha = clamp(alpha, 0.30, 0.97);
+
+        if (alpha < 0.10) discard;
 
         gl_FragColor = vec4(finalColor, alpha);
     }
@@ -119,7 +158,6 @@ export const ExovanceLogo = (props: any) => {
     // Normalized mouse target (-1 to 1) and smoothed current value
     const mouseTgt = useRef({ x: 0, y: 0 })
     const mouseCur = useRef({ x: 0, y: 0 })
-
     const uniforms = useMemo(() => ({
         uTime: { value: 0 },
         uVideoTexture: { value: new THREE.Texture() },
@@ -173,26 +211,22 @@ export const ExovanceLogo = (props: any) => {
         const ease = 0.06
         mouseCur.current.x += (mouseTgt.current.x - mouseCur.current.x) * ease
         mouseCur.current.y += (mouseTgt.current.y - mouseCur.current.y) * ease
-
         if (groupRef.current) {
             // Idle float
             groupRef.current.position.y = 0.7 + Math.sin(t * 0.45) * 0.15
             groupRef.current.position.x = Math.sin(t * 0.30) * 0.1
-            // Mouse tilt — base rotation is [-PI/2, PI, PI], add delta on top
-            // mx → tilt left/right (Y axis), my → tilt up/down (X axis)
-            const tiltX =  mouseCur.current.y * 0.08   // ~4.5° max up/down
-            const tiltY =  mouseCur.current.x * 0.06   // ~3.5° max left/right
-            const tiltZ = -mouseCur.current.x * 0.04   // ~2.3° roll — follows X movement
-            groupRef.current.rotation.x = -Math.PI / 2 + tiltX  // base flat, mouse adds subtle tilt
-            groupRef.current.rotation.y =  Math.PI     + tiltY
-            groupRef.current.rotation.z =  Math.PI + 0.08 + tiltZ  // subtle Z tilt + mouse roll
+            const tiltX =  mouseCur.current.y * 0.08
+            const tiltY =  mouseCur.current.x * 0.06
+            const tiltZ = -mouseCur.current.x * 0.04
+            groupRef.current.rotation.x = -Math.PI / 2 + tiltX
+            groupRef.current.rotation.y =  Math.PI + tiltY
+            groupRef.current.rotation.z =  Math.PI + 0.08 + tiltZ
         }
     })
 
     return (
         <>
-            <Float speed={0.4} rotationIntensity={0.05} floatIntensity={0.0} floatingRange={[0, 0]}>
-                <group ref={groupRef} {...props} dispose={null} rotation={[-Math.PI / 2, Math.PI, Math.PI]} position={[0, 0.7, 0.5]}>
+            <group ref={groupRef} {...props} dispose={null} rotation={[-Math.PI / 2, Math.PI, Math.PI]} position={[0, 0.7, 0.5]}>
                     <mesh geometry={nodes.Curve003.geometry} position={[0, 0, 0.1]} scale={8} renderOrder={2}>
                         <shaderMaterial
                             ref={matRef}
@@ -205,8 +239,7 @@ export const ExovanceLogo = (props: any) => {
                             blending={THREE.NormalBlending}
                         />
                     </mesh>
-                </group>
-            </Float>
+            </group>
         </>
     )
 }

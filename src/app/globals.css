@@ -30,7 +30,11 @@ html {
   padding: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  cursor: none;
+  cursor: none; /* overridden on touch devices by AnimatedCursor returning null */
+}
+
+@media (pointer: coarse) {
+  html { cursor: auto; }
 }
 
 body {
