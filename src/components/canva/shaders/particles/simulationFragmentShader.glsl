@@ -535,15 +535,52 @@ float snoise(vec3 v){
                         snoise(pos.zxy*uFrequency+uTime*.10)
                     )*.035*(1.-slt9);
                 }else if(uCurrentPosition==10.){
-                    // ── D → LOGO: particles flow from face-disperse (D) positions to logo ──
-                    // Source is posD.xyz — the same positions particles held at the
-                    // end of C-D (transitionProgress=1), so there is zero pop or
-                    // helix artifact at t=0. Pure seamless scatter→logo convergence.
-                    float dHash10=fract(sin(dot(vUv,vec2(53.7,311.9)))*73141.7);
-                    float t10=uTransitionProgress*uTransitionProgress*(3.-2.*uTransitionProgress);
-                    float pNoise10=dHash10*.04-.02;
-                    float t10n=clamp(t10+pNoise10,0.,1.);
-                    pos=mix(posD.xyz,posE.xyz,t10n);
+                    // ── D → LOGO: grouped wavy sand streams from spiral (D) to logo (E) ──
+                    // Particles dissolve from the DNA spiral into 8 curving ribbon streams
+                    // that arc through space before converging onto the logo shape.
+                    vec3 srcPos10=posD.xyz;
+                    vec3 dstPos10=posE.xyz;
+                    
+                    float h10=fract(sin(dot(vUv,vec2(53.7,311.9)))*73141.7);
+                    float gId10=floor(h10*8.);
+                    float gPhase10=gId10*(3.14159/4.);
+                    // Stagger: each of the 8 groups starts slightly later
+                    float gDelay10=gId10*.048;
+                    // Per-particle offset so the stream has organic spread
+                    float localT10=clamp((uTransitionProgress-gDelay10-h10*.09)/.68,0.,1.);
+                    float slt10=localT10*localT10*(3.-2.*localT10);
+                    
+                    // Arc envelope — rises then falls so particles swing outward mid-flight
+                    float flyEnv10=sin(localT10*3.14159);
+                    
+                    // Group-shared wave so each ribbon bends together
+                    float waveT10=uTime*.55+gPhase10;
+                    vec3 groupWave10=vec3(
+                        sin(waveT10*1.10+srcPos10.y*1.8)*.55,
+                        cos(waveT10*.85+srcPos10.x*1.5)*.45,
+                        sin(waveT10*.70+gPhase10)*.30
+                    )*flyEnv10;
+                    
+                    // Per-particle micro-variation inside the stream
+                    float microT10=uTime*.80+h10*6.28318;
+                    vec3 microWave10=vec3(
+                        snoise(srcPos10*2.5+vec3(microT10,0.,0.))*.12,
+                        snoise(srcPos10.yzx*2.5+vec3(0.,microT10,0.))*.10,
+                        snoise(srcPos10.zxy*2.5+vec3(0.,0.,microT10))*.06
+                    )*flyEnv10;
+                    
+                    // Outward burst at the start of the arc so ribbons visibly diverge
+                    vec3 burstDir10=normalize(srcPos10+vec3(.0001));
+                    float burstScale10=flyEnv10*(.40+h10*.25);
+                    
+                    pos=mix(srcPos10+groupWave10+microWave10+burstDir10*burstScale10,dstPos10,slt10);
+                    
+                    // Settle noise fades as particles lock into the logo
+                    pos+=vec3(
+                        snoise(pos*uFrequency+uTime*.12),
+                        snoise(pos.yzx*uFrequency+uTime*.12),
+                        snoise(pos.zxy*uFrequency+uTime*.12)
+                    )*.04*(1.-slt10);
                 }else if(uCurrentPosition==11.){
                     // ── LOGO HOLD — particles rest on the logo shape with subtle breathing ──
                     float breatheLogo=1.+.025*sin(uTime*.6+posE.x*3.+posE.y*2.);

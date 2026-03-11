@@ -49,9 +49,9 @@ const logoFragmentShader = `
         // ── Screen-space UV for video ─────────────────────────────────────────
         vec2 ndc      = vClipPos.xy / vClipPos.w;
         vec2 screenUV = ndc * 0.5 + 0.5;
-        
+
         // Zoom out the video by scaling from the center
-        float videoZoom = 3.0; // Change this value to zoom more or less (>1 zooms out)
+        float videoZoom = 1.5;
         screenUV = (screenUV - 0.5) * videoZoom + 0.5;
 
         // ── Normal / view ─────────────────────────────────────────────────────
@@ -59,26 +59,96 @@ const logoFragmentShader = `
         vec3 V    = normalize(vViewDir);
         float NdotV = max(0.0, dot(N, V));
 
-        // ── Fresnel — crisp metallic falloff ─────────────────────────────────
-        float fresnel = pow(1.0 - NdotV, 4.0);
+        // ── Fresnel — glass-like exponential falloff ─────────────────────────
+        float fresnel = pow(1.0 - NdotV, 3.5);
 
-        // ── Refraction warp for video beneath the coating ─────────────────────
-        float refrStr = 0.006 + fresnel * 0.010;
+        // ── Edge darkness mask — dark blurred border for depth ────────────────
+        // NdotV is ~1 at face center, ~0 at silhouette edges.
+        // edgeDark is 0 at center (clear glass) and 1 at edges (dark border).
+        float edgeDark = smoothstep(0.45, 0.0, NdotV);   // starts darkening at 45°
+        float edgeHard = pow(1.0 - NdotV, 5.0);          // sharper falloff layer
+        float borderMask = mix(edgeDark, edgeHard, 0.5);  // blend soft+hard
+
+        // ── Refraction warp — heavy distortion for blurred-light glass look ───
+        float refrStr = 0.022 + fresnel * 0.038;
         vec2 wuv = screenUV;
-        wuv.x += sin(screenUV.y * 6.0 + t * 0.35) * refrStr
-               + sin(screenUV.y * 17.0 - t * 0.7) * refrStr * 0.35;
-        wuv.y += cos(screenUV.x * 5.0 + t * 0.28) * refrStr
-               + cos(screenUV.x * 13.0 + t * 0.5) * refrStr * 0.35;
+        // Multi-frequency distortion layers — like light bending through thick glass
+        wuv.x += sin(screenUV.y * 4.0 + t * 0.30) * refrStr
+               + sin(screenUV.y * 11.0 - t * 0.55) * refrStr * 0.50
+               + sin(screenUV.y * 23.0 + t * 0.90) * refrStr * 0.18;
+        wuv.y += cos(screenUV.x * 3.5 + t * 0.25) * refrStr
+               + cos(screenUV.x * 9.0 + t * 0.45) * refrStr * 0.50
+               + cos(screenUV.x * 19.0 - t * 0.75) * refrStr * 0.18;
+        // Normal-based chromatic offset — edges refract more than center
+        vec2 normalWarp = N.xy * 0.015 * (1.0 + fresnel * 1.5);
+        wuv += normalWarp;
 
-        // ── Video — subdued underneath the coating ───────────────────────────
-        vec3 videoColor = texture2D(uVideoTexture, wuv).rgb;
+        // ── Refracted video with per-channel chromatic aberration ────────────
+        // Slightly different UV per channel — light splits through glass
+        float chromaSpread = 0.004 + fresnel * 0.008;
+        vec2 rUV = wuv + vec2( chromaSpread,  chromaSpread * 0.5);
+        vec2 gUV = wuv;
+        vec2 bUV = wuv + vec2(-chromaSpread, -chromaSpread * 0.5);
+        vec3 videoColor = vec3(
+            texture2D(uVideoTexture, rUV).r,
+            texture2D(uVideoTexture, gUV).g,
+            texture2D(uVideoTexture, bUV).b
+        );
+
+        // ── Gaussian-ish blur over the entire video for soft refracted look ──
+        // Two-ring 16-tap blur — the light itself looks diffused through glass
+        float glassBlur = 0.012 + borderMask * 0.035;
+        vec3 blurSum = videoColor;  // center sample (weight 1)
+        float totalW = 1.0;
+        // Inner ring (8 taps, radius = glassBlur)
+        float r1 = glassBlur;
+        blurSum += texture2D(uVideoTexture, wuv + vec2( r1,     0.0  )).rgb;
+        blurSum += texture2D(uVideoTexture, wuv + vec2(-r1,     0.0  )).rgb;
+        blurSum += texture2D(uVideoTexture, wuv + vec2( 0.0,    r1   )).rgb;
+        blurSum += texture2D(uVideoTexture, wuv + vec2( 0.0,   -r1   )).rgb;
+        blurSum += texture2D(uVideoTexture, wuv + vec2( r1*.71,  r1*.71)).rgb;
+        blurSum += texture2D(uVideoTexture, wuv + vec2(-r1*.71,  r1*.71)).rgb;
+        blurSum += texture2D(uVideoTexture, wuv + vec2( r1*.71, -r1*.71)).rgb;
+        blurSum += texture2D(uVideoTexture, wuv + vec2(-r1*.71, -r1*.71)).rgb;
+        totalW += 8.0;
+        // Outer ring (8 taps, radius = glassBlur*2.2, lower weight)
+        float r2 = glassBlur * 2.2;
+        float w2 = 0.5;  // half-weight for outer ring
+        blurSum += texture2D(uVideoTexture, wuv + vec2( r2,     0.0  )).rgb * w2;
+        blurSum += texture2D(uVideoTexture, wuv + vec2(-r2,     0.0  )).rgb * w2;
+        blurSum += texture2D(uVideoTexture, wuv + vec2( 0.0,    r2   )).rgb * w2;
+        blurSum += texture2D(uVideoTexture, wuv + vec2( 0.0,   -r2   )).rgb * w2;
+        blurSum += texture2D(uVideoTexture, wuv + vec2( r2*.71,  r2*.71)).rgb * w2;
+        blurSum += texture2D(uVideoTexture, wuv + vec2(-r2*.71,  r2*.71)).rgb * w2;
+        blurSum += texture2D(uVideoTexture, wuv + vec2( r2*.71, -r2*.71)).rgb * w2;
+        blurSum += texture2D(uVideoTexture, wuv + vec2(-r2*.71, -r2*.71)).rgb * w2;
+        totalW += 8.0 * w2;
+        vec3 blurredVideo = blurSum / totalW;
+
+        // Blend sharp refracted video with blur — more blur everywhere for soft light
+        float blurMix = 0.55 + borderMask * 0.40;  // center 55% blurred, edges 95%
+        videoColor = mix(videoColor, blurredVideo, blurMix);
+
         float videoLum  = dot(videoColor, vec3(0.299, 0.587, 0.114));
-        // Visible hazy glow of the video under the film — not just 18%
-        vec3 videoUnder = mix(vec3(videoLum), videoColor, 0.80) * 0.45;
+        vec3 videoUnder = mix(vec3(videoLum), videoColor, 0.90) * 0.72;
+        videoUnder *= (1.0 - borderMask * 0.85);
 
-        // ── Video bloom — light bursting through the coating ─────────────────
-        // Large radius so light spreads wide; very low threshold so most video bleeds
-        float br = 0.032;
+        // ── Blurred video at edges — frosted thick border glass ──────────────
+        float edgeBlurR = 0.055 * borderMask;
+        vec3 blurAccum = vec3(0.0);
+        blurAccum += texture2D(uVideoTexture, wuv + vec2( edgeBlurR,    0.0     )).rgb;
+        blurAccum += texture2D(uVideoTexture, wuv + vec2(-edgeBlurR,    0.0     )).rgb;
+        blurAccum += texture2D(uVideoTexture, wuv + vec2( 0.0,       edgeBlurR  )).rgb;
+        blurAccum += texture2D(uVideoTexture, wuv + vec2( 0.0,      -edgeBlurR  )).rgb;
+        blurAccum += texture2D(uVideoTexture, wuv + vec2( edgeBlurR*.7,  edgeBlurR*.7)).rgb;
+        blurAccum += texture2D(uVideoTexture, wuv + vec2(-edgeBlurR*.7,  edgeBlurR*.7)).rgb;
+        blurAccum += texture2D(uVideoTexture, wuv + vec2( edgeBlurR*.7, -edgeBlurR*.7)).rgb;
+        blurAccum += texture2D(uVideoTexture, wuv + vec2(-edgeBlurR*.7, -edgeBlurR*.7)).rgb;
+        blurAccum /= 8.0;
+        vec3 edgeBlurVideo = blurAccum * 0.25 * borderMask;
+
+        // ── Video bloom — light bursting through the glass ───────────────────
+        float br = 0.040;
         vec3 bAccum = vec3(0.0);
         bAccum += texture2D(uVideoTexture, wuv + vec2( br,    0.0 )).rgb;
         bAccum += texture2D(uVideoTexture, wuv + vec2(-br,    0.0 )).rgb;
@@ -90,11 +160,10 @@ const logoFragmentShader = `
         bAccum += texture2D(uVideoTexture, wuv + vec2(-br*.7, -br*.7)).rgb;
         bAccum /= 8.0;
         float bLum  = dot(bAccum, vec3(0.299, 0.587, 0.114));
-        // Super-low threshold — all video color bleeds aggressively
         float bMask = smoothstep(0.04, 0.50, bLum);
         vec3  bloomRaw = bAccum * bMask;
 
-        // ── Oil-slick / thin-film coating ─────────────────────────────────────
+        // ── Thin-film coating — subtle, glass doesn't overpower video ─────────
         float filmThickness = 3.5;
         float phase = NdotV * filmThickness * 6.283
                     + sin(screenUV.x * 2.8 + t * 0.18) * 1.2
@@ -104,51 +173,66 @@ const logoFragmentShader = `
         float filmBrightness = thinFilm(phase);
         vec3 filmColor = vec3(filmBrightness);
 
-        // ── Bloom ↔ coating interaction ───────────────────────────────────────
-        // Bright video light pushes hard through the film, illuminating it
-        float bloomMod = 1.0 + bMask * 3.20;  // coating brightens up to 4.2× at hotspots
+        // Bloom brightens the coating at video hotspots
+        float bloomMod = 1.0 + bMask * 2.40;
         filmColor *= bloomMod;
 
-        // Coating intensity
-        float coatFace  = 0.30;
-        float coatEdge  = fresnel * 0.45;
+        // Coating: very light on face (see-through), stronger at edges
+        float coatFace  = 0.12;
+        float coatEdge  = fresnel * 0.35;
         float coatTotal = coatFace + coatEdge;
         vec3  coating   = filmColor * coatTotal;
 
-        // Emissive bloom escaping through the surface — very strong, coloured by video
-        vec3 bloomEmit = bloomRaw * 2.00;
+        // Bloom emission — light escaping through glass
+        vec3 bloomEmit = bloomRaw * 1.60;
 
-        // ── Sharp metallic chrome rim — double layer for depth ────────────────
-        float rim      = pow(1.0 - NdotV, 6.0);
-        float rimSharp = pow(1.0 - NdotV, 20.0);
-        vec3 rimColor  = vec3(0.88, 0.90, 1.00) * rim * 1.20
-                       + vec3(1.00, 1.00, 1.00) * rimSharp * 0.90;
+        // ── Dark border shadow — deep black rim for glass depth ───────────────
+        // Multiple falloff curves blended for a wide, soft dark border
+        vec3 darkBorder = vec3(0.0);
+        float borderSoft  = smoothstep(0.50, 0.0, NdotV) * 0.90;  // wide soft shadow
+        float borderMid   = pow(1.0 - NdotV, 4.0) * 0.70;         // medium falloff
+        float borderSharp = pow(1.0 - NdotV, 10.0) * 0.50;        // tight inner rim
+        float borderTotal = borderSoft + borderMid + borderSharp;
+        // This darkens everything proportionally — like a dark glass bevel
+        float darkenFactor = 1.0 - clamp(borderTotal, 0.0, 0.92);
 
-        // ── Specular hotspot — hard reflection on the coating ─────────────────
+        // ── Subtle chrome rim highlight sitting on top of the dark border ─────
+        float rim      = pow(1.0 - NdotV, 7.0);
+        float rimSharp = pow(1.0 - NdotV, 22.0);
+        vec3 rimColor  = vec3(0.75, 0.78, 0.90) * rim * 0.55
+                       + vec3(1.00, 1.00, 1.00) * rimSharp * 0.45;
+
+        // ── Specular hotspot — hard reflection on the glass ───────────────────
         vec3 L  = normalize(vec3(0.4, 1.0, 0.6));
         vec3 H  = normalize(L + V);
-        float spec  = pow(max(0.0, dot(N, H)), 90.0) * 0.60;
+        float spec  = pow(max(0.0, dot(N, H)), 120.0) * 0.45;
         vec3 L2 = normalize(vec3(sin(t * 0.3) * 0.5, 0.8, cos(t * 0.2) * 0.5));
         vec3 H2 = normalize(L2 + V);
-        float spec2 = pow(max(0.0, dot(N, H2)), 28.0) * 0.20;
-        vec3 specColor = vec3(0.90, 0.92, 1.00) * (spec + spec2);
+        float spec2 = pow(max(0.0, dot(N, H2)), 40.0) * 0.15;
+        vec3 specColor = vec3(0.92, 0.94, 1.00) * (spec + spec2);
 
         // ── Dark glass base ───────────────────────────────────────────────────
-        vec3 glassBase = vec3(0.012, 0.013, 0.020);
+        vec3 glassBase = vec3(0.008, 0.009, 0.016);
 
         // ── Composite ─────────────────────────────────────────────────────────
         vec3 finalColor = glassBase;
-        finalColor += videoUnder;      // hazy video glow under the coating
-        finalColor += coating;         // film (locally brightened by bloom)
-        finalColor += bloomEmit;       // emissive light escaping through the coating
-        finalColor += rimColor;        // deep chrome border
-        finalColor += specColor;       // hard specular on coating
+        finalColor += videoUnder;        // clear video through the glass
+        finalColor += edgeBlurVideo;     // blurred dark video at borders
+        finalColor += coating;           // light thin-film
+        finalColor += bloomEmit;         // bloom escaping through glass
+        // Apply dark border shadow — multiplies everything darker at edges
+        finalColor *= darkenFactor;
+        // Rim highlight and specular sit ON TOP of the dark border
+        finalColor += rimColor;
+        finalColor += specColor;
 
-        // ── Alpha: face semi-transparent (coating shows), rim fully opaque ────
-        float alpha = 0.35 + 0.60 * fresnel;  // face ~0.35, rim ~0.95
-        alpha = clamp(alpha, 0.30, 0.97);
+        // ── Alpha: center is transparent glass, rim is solid dark border ──────
+        float alpha = 0.30 + 0.65 * fresnel;   // face ~0.30 (very see-through), rim ~0.95
+        // Border darkening also boosts alpha so the dark edge feels solid
+        alpha += borderMask * 0.20;
+        alpha = clamp(alpha, 0.25, 0.98);
 
-        if (alpha < 0.10) discard;
+        if (alpha < 0.08) discard;
 
         gl_FragColor = vec4(finalColor, alpha);
     }
@@ -255,7 +339,7 @@ export const ExovanceLogo = (props: any) => {
             const tiltZ = -mouseCur.current.x * 0.04
 
             // Coin spin based on scroll (exactly 140 degrees across the free scroll range)
-            const scrollSpin = maxScrollY > 0 ? (compensatedScroll / maxScrollY) * (140 * Math.PI / 180) : 0
+            const scrollSpin = maxScrollY > 0 ? (compensatedScroll / maxScrollY) * (70 * Math.PI / 180) : 0
 
             groupRef.current.rotation.x = -Math.PI / 2 + tiltX
             groupRef.current.rotation.y =  Math.PI + tiltY
