@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 
-const BASE = 'https://exovance.in';
+const BASE = 'https://www.exovance.in';
 const PATHS = ['/', '/about', '/products', '/product/campus-suite', '/product/aiva', '/team', '/contact'];
 
 export default function sitemap(): MetadataRoute.Sitemap {

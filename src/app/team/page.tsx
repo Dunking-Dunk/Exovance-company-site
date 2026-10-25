@@ -1,4 +1,5 @@
 import React from 'react'
+import type { Metadata } from 'next'
 import { TextGenerateEffect } from '@/components/ui/text-generate-effect'
 import Leadership from './_section/Leadership'
 import CoreTeam from './_section/CoreTeam'
@@ -6,6 +7,12 @@ import CommunityAdvisors from './_section/CommunityAdvisors'
 import CultureValues from './_section/CultureValues'
 import JoinTeam from './_section/JoinTeam'
 
+
+export const metadata: Metadata = {
+    title: 'Team',
+    description: 'Meet the founder of Exovance.',
+    alternates: { canonical: '/team' },
+}
 
 const TeamPage = () => {
     return (

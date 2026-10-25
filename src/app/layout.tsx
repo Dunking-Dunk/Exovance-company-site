@@ -7,7 +7,7 @@ import { memo } from 'react';
 
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://exovance.in"),
+  metadataBase: new URL("https://www.exovance.in"),
   applicationName: "Exovance",
   title: {
     default: "Exovance — Technology and Innovation",
@@ -25,15 +25,12 @@ export const metadata: Metadata = {
     "digital solutions",
     "India",
   ],
-  authors: [{ name: "Exovance", url: "https://exovance.in" }],
+  authors: [{ name: "Exovance", url: "https://www.exovance.in" }],
   creator: "Exovance",
   publisher: "Exovance",
-  alternates: {
-    canonical: "/",
-  },
   openGraph: {
     type: "website",
-    url: "https://exovance.in/",
+    url: "https://www.exovance.in/",
     title: "Exovance — Technology and Innovation",
     siteName: "Exovance",
     description:
