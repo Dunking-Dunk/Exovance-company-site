@@ -22,8 +22,9 @@ const logoVertexShader = `
 `
 
 // ─── FRAGMENT ────────────────────────────────────────────────────
-// Clear glass: the video plays underneath, refracted through the pane with a little
-// chromatic aberration, a light frost on the face, crisp edge highlights and specular glints.
+// Rough glass: the video plays underneath, refracted through a slightly rough surface (hammered
+// micro-normals), with light diffraction: colour fringes, a rainbow sheen along the bevels and
+// sparkling glints.
 const logoFragmentShader = `
     uniform float uTime;
     uniform sampler2D uVideoTexture;
@@ -48,6 +49,13 @@ const logoFragmentShader = `
         return acc / 10.0;
     }
 
+    float vnoise(vec2 p) {
+        vec2 i = floor(p), f = fract(p);
+        f = f * f * (3.0 - 2.0 * f);
+        return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
+                   mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+    }
+
     void main() {
         float t = uTime;
 
@@ -56,16 +64,23 @@ const logoFragmentShader = `
 
         vec3 N = gl_FrontFacing ? normalize(vNormal) : -normalize(vNormal);
         vec3 V = normalize(vViewDir);
+
+        // Roughness: broad hammered ripples plus fine grit tilt the surface normal
+        vec2 fc = gl_FragCoord.xy;
+        vec2 ripple = vec2(vnoise(fc * 0.045), vnoise(fc * 0.045 + 17.0)) - 0.5;
+        vec2 grit = vec2(hash(fc), hash(fc.yx + 5.0)) - 0.5;
+        N = normalize(N + vec3(ripple * 0.32 + grit * 0.14, 0.0));
+
         float NdotV   = max(0.0, dot(N, V));
         float fresnel = pow(1.0 - NdotV, 3.0);
 
         // Refraction: the video bends more toward the edges, like a thick pane
-        vec2 bend = N.xy * (0.035 + fresnel * 0.07);
+        vec2 bend = N.xy * (0.045 + fresnel * 0.07);
         vec2 uv = screenUV + bend;
         uv += 0.006 * vec2(sin(t * 0.25 + screenUV.y * 3.0), cos(t * 0.20 + screenUV.x * 3.0));
 
         // Chromatic aberration: each colour channel bends a touch differently
-        float ca = 0.004 + fresnel * 0.012;
+        float ca = 0.008 + fresnel * 0.022; // diffraction: the colours split apart
         vec3 clear = vec3(
             texture2D(uVideoTexture, uv + N.xy * ca).r,
             texture2D(uVideoTexture, uv).g,
@@ -73,14 +88,22 @@ const logoFragmentShader = `
         );
 
         // Light frost on the face only: a little blur blended under the clear video
-        vec3 soft = discBlur(uv, 0.018);
-        vec3 vid = mix(clear, soft, 0.35);
+        vec3 soft = discBlur(uv, 0.034);
+        vec3 vid = mix(clear, soft, 0.58);
 
         float lum = dot(vid, vec3(0.299, 0.587, 0.114));
-        vid = mix(vec3(lum), vid, 1.35) * 1.15;
+        vid = mix(vec3(lum), vid, 1.15) * 0.95;
+        // pull the video toward the site's violet so the glass sits with the particles and glow
+        vid *= vec3(0.92, 0.80, 1.08);
 
         // Faint cool tint of the glass body
         vec3 col = vid * 0.9 + vec3(0.05, 0.06, 0.10);
+
+        // Diffraction sheen: a rainbow that slides across the bevels and rough patches
+        float phase = NdotV * 5.0 + ripple.x * 3.0 + screenUV.x * 2.0 + t * 0.12;
+        // a narrow band of hues (violet, blue, pink) so the diffraction matches the palette
+        vec3 spectrum = 0.5 + 0.5 * cos(6.2832 * (vec3(0.62, 0.72, 0.84) + phase * 0.35));
+        col += spectrum * (fresnel * 0.32 + 0.03 + pow(abs(ripple.x * 2.0), 2.0) * 0.10);
 
         // Bright parts of the video glow softly through the glass
         col += vid * vid * 0.25;
@@ -88,7 +111,7 @@ const logoFragmentShader = `
         // Specular glints: a sharp one and a broad soft one that drifts slowly
         vec3 L  = normalize(vec3(-0.4, 0.9, 0.7));
         vec3 H  = normalize(L + V);
-        float spec = pow(max(0.0, dot(N, H)), 90.0) * 0.9;
+        float spec = pow(max(0.0, dot(N, H)), 60.0) * 0.9;
         vec3 L2 = normalize(vec3(0.6 + sin(t * 0.3) * 0.3, 0.5, 0.8));
         float spec2 = pow(max(0.0, dot(N, normalize(L2 + V))), 14.0) * 0.18;
         col += vec3(0.95, 0.97, 1.0) * (spec + spec2);
@@ -103,7 +126,7 @@ const logoFragmentShader = `
         col += (hash(gl_FragCoord.xy + fract(t) * 91.0) - 0.5) * 0.015;
 
         // Mostly see-through on the face, denser toward the bevel
-        float alpha = clamp(0.40 + 0.45 * fresnel + inner * 0.18 + spec * 0.4, 0.0, 0.96);
+        float alpha = clamp(0.50 + 0.40 * fresnel + inner * 0.18 + spec * 0.4, 0.0, 0.96);
         gl_FragColor = vec4(col, alpha);
     }
 `

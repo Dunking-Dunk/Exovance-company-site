@@ -9,6 +9,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import SimulationMaterial from './shaders/particles/simulationMaterial';
+import { FluidSim, FluidGuard, canRunFluid } from './fluid/FluidSim';
 import vertexShader from "!!raw-loader!./shaders/particles/vertexShader.glsl";
 import fragmentShader from "!!raw-loader!./shaders/particles/fragmentShader.glsl";
 import { getVariableColor } from "@/lib/utils";
@@ -96,9 +97,16 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
         uMouse: { value: new THREE.Vector3(-9, -9, 0) },
         uMouseActive: { value: 0 },
         uPixelRatio: { value: 1 },
+        uFluid: { value: null },
+        uFluidOn: { value: 0 },
+        uFluidStrength: { value: 1.6 },
         uTrail: { value: Array.from({ length: TRAIL }, () => new THREE.Vector4(0, 0, 0, 0)) },
     }), []);
     const trailVel = useRef(Array.from({ length: TRAIL }, () => ({ vx: 0, vy: 0, born: -1e9 })));
+    // GPU water simulation: only created when the GPU can run it and keeps up
+    const fluid = useRef<FluidSim | null>(null);
+    const fluidGuard = useRef<FluidGuard | null>(null);
+    const fluidChecked = useRef(false);
     const trailIdx = useRef(0);
     const lastTrailAt = useRef(0);
     const lastRaw = useRef({ x: 0, y: 0, set: false });
@@ -356,13 +364,24 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
     }, []);
 
 
+    // Feed the cursor into the water, and free its GPU memory when leaving the page
+    useEffect(() => {
+        const onMove = (e: MouseEvent) => fluid.current?.pointer(e.clientX / window.innerWidth, 1 - e.clientY / window.innerHeight);
+        window.addEventListener('mousemove', onMove, { passive: true });
+        return () => {
+            window.removeEventListener('mousemove', onMove);
+            fluid.current?.dispose();
+            fluid.current = null;
+        };
+    }, []);
+
     useEffect(() => {
         window.addEventListener('mousemove', updateMousePosition);
         return () => window.removeEventListener('mousemove', updateMousePosition);
     }, [updateMousePosition]);
 
 
-    useFrame((state) => {
+    useFrame((state, delta) => {
         const { gl, clock } = state;
         const elapsedTime = clock.getElapsedTime();
 
@@ -435,6 +454,33 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
         points.current.material.uniforms.uMouse.value = mouse.current;
         points.current.material.uniforms.uMouseActive.value = mouseActive.current;
         points.current.material.uniforms.uPixelRatio.value = gl.getPixelRatio();
+        // GPU water: set up once, then step every frame while it keeps up
+        if (!fluidChecked.current) {
+            fluidChecked.current = true;
+            const cap = canRunFluid(gl);
+            if (cap.ok) {
+                try {
+                    fluid.current = new FluidSim(gl);
+                    fluidGuard.current = new FluidGuard();
+                } catch (err) {
+                    fluid.current = null;
+                    console.info('Particles: fluid simulation unavailable', err);
+                }
+            }
+            console.info(`Particles: GPU fluid ${fluid.current ? 'on' : 'off'} (${cap.reason})`);
+        }
+        if (fluid.current && points.current) {
+            fluid.current.step(delta);
+            points.current.material.uniforms.uFluid.value = fluid.current.texture;
+            points.current.material.uniforms.uFluidOn.value = 1;
+            if (fluidGuard.current?.tick(delta * 1000)) {
+                // The page is running slowly: fall back to the light cursor wake for good
+                fluid.current.dispose();
+                fluid.current = null;
+                points.current.material.uniforms.uFluidOn.value = 0;
+                console.info('Particles: GPU fluid switched off, frame rate too low');
+            }
+        }
         // The wake fades out so the particles settle back like water
         // Each point eases in over 150ms, then fades out quickly, so nothing pops in or out
         const trail = points.current.material.uniforms.uTrail.value;

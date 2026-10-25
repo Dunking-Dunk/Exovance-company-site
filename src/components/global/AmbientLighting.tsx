@@ -66,8 +66,20 @@ uniform vec2 uRes;
 uniform float uTime;
 uniform vec2 uMouse;
 uniform float uEnergy;
+uniform float uIntensity;
 uniform vec3 uPos[5];
 uniform vec4 uCol[5];
+float hash21(vec2 p) {
+    p = fract(p * vec2(123.34, 456.21));
+    p += dot(p, p + 45.32);
+    return fract(p.x * p.y);
+}
+float vnoise(vec2 p) {
+    vec2 i = floor(p), f = fract(p);
+    f = f * f * (3. - 2. * f);
+    return mix(mix(hash21(i), hash21(i + vec2(1., 0.)), f.x),
+               mix(hash21(i + vec2(0., 1.)), hash21(i + vec2(1., 1.)), f.x), f.y);
+}
 void main(){
     vec2 uv = gl_FragCoord.xy / uRes;
     uv.y = 1. - uv.y;
@@ -86,7 +98,14 @@ void main(){
     // low horizon light
     float h = (uv.y - .97) / .09;
     c += vec3(.30, .16, .62) * exp(-h * h) * .10;
-    c = 1. - exp(-c * .8);
+    // mottled texture: slow cloud noise breaks up the smooth gradients
+    vec2 np = uv * vec2(asp, 1.) * 3.2 + vec2(uTime * .012, -uTime * .009);
+    float cloud = vnoise(np) * .6 + vnoise(np * 2.3 + 7.1) * .3 + vnoise(np * 5.1 + 3.7) * .1;
+    c *= .62 + .75 * cloud;
+    c = 1. - exp(-c * .8 * uIntensity);
+    // fine dither noise so dark gradients never band
+    c += (hash21(gl_FragCoord.xy + fract(uTime) * 37.) - .5) * .035;
+    c = max(c, 0.);
     // premultiplied alpha: the glow adds light over whatever is behind it (stars, logo, page)
     gl_FragColor = vec4(c, max(c.r, max(c.g, c.b)));
 }`
@@ -121,7 +140,7 @@ export default function AmbientLighting() {
         gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0)
 
         const u = (n: string) => gl.getUniformLocation(prog, n)
-        const uRes = u('uRes'), uTime = u('uTime'), uMouse = u('uMouse'), uEnergy = u('uEnergy'), uPos = u('uPos'), uCol = u('uCol')
+        const uRes = u('uRes'), uTime = u('uTime'), uMouse = u('uMouse'), uEnergy = u('uEnergy'), uIntensity = u('uIntensity'), uPos = u('uPos'), uCol = u('uCol')
 
         // The glow is soft, so it renders at half size and the browser scales it up
         const resize = () => {
@@ -189,6 +208,8 @@ export default function AmbientLighting() {
             gl.uniform1f(uTime, reduceMotion ? 0 : (now - t0) / 1000)
             gl.uniform2f(uMouse, mouse.x, mouse.y)
             gl.uniform1f(uEnergy, mouse.energy)
+            // calmer on phones, where the glow fills most of the screen
+            gl.uniform1f(uIntensity, window.innerWidth < 768 ? 0.5 : 0.72)
             gl.uniform3fv(uPos, posArr)
             gl.uniform4fv(uCol, colArr)
             gl.drawArrays(gl.TRIANGLES, 0, 3)
@@ -214,15 +235,15 @@ export default function AmbientLighting() {
             <div
                 style={{
                     position: 'absolute', inset: 0,
-                    background: 'radial-gradient(ellipse at center, transparent 55%, rgba(3,3,8,0.4) 100%)',
+                    background: 'radial-gradient(ellipse at center, transparent 55%, rgba(3,3,8,0.5) 100%)',
                 }}
             />
             {/* fine film grain removes banding in the dark gradients */}
             <div
                 style={{
-                    position: 'absolute', inset: 0, opacity: 0.05,
+                    position: 'absolute', inset: 0, opacity: 0.09,
                     backgroundImage:
-                        "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
+                        "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
                 }}
             />
         </div>

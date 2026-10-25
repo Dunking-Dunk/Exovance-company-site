@@ -22,6 +22,9 @@ uniform float uCurrentPosition;
 uniform float uParticleOffset;
 uniform float uMouseActive;// 0 = mouse never moved, >0 = timestamp of last move
 uniform vec4 uTrail[12];
+uniform sampler2D uFluid;// water displacement field from the GPU fluid simulation
+uniform float uFluidOn;
+uniform float uFluidStrength;
 uniform float uPixelRatio;// keeps particles the same on-screen size at any resolution// recent cursor positions (xy) with fading velocity (zw)
 
 varying vec4 vColor;
@@ -65,7 +68,7 @@ vec3 calculatePosition(vec3 pos){
         vec2 d=finalPos.xy-tr.xy*MOUSE_INFLUENCE;
         float f=exp(-dot(d,d)*.7);
         vec2 v=tr.zw*MOUSE_INFLUENCE;
-        finalPos.xy+=(v+vec2(-v.y,v.x)*.35*sin(d.x*2.+d.y*2.+uTime))*f*.9;
+        finalPos.xy+=(v+vec2(-v.y,v.x)*.35*sin(d.x*2.+d.y*2.+uTime))*f*.9*(1.-uFluidOn);
     }
     // Slow ambient current so the field never sits still
     finalPos.xy+=vec2(sin(finalPos.y*1.4+uTime*.4),cos(finalPos.x*1.2+uTime*.35))*.04;
@@ -136,6 +139,12 @@ void main(){
     vec4 projectedPosition=projectionMatrix*viewPosition;
     
     gl_Position=projectedPosition;
+    // GPU water: ride the flow field at this particle's place on screen
+    if(uFluidOn>.5){
+        vec2 suv=projectedPosition.xy/projectedPosition.w*.5+.5;
+        vec2 fd=clamp(texture2D(uFluid,suv).xy,vec2(-.14),vec2(.14));
+        gl_Position.xy+=fd*2.*gl_Position.w*uFluidStrength;
+    }
     
     // Dynamic point size with enhanced falloff, pulse & randomized size
     float distance=length(viewPosition.xyz);
