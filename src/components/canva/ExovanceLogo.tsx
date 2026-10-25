@@ -93,16 +93,16 @@ const logoFragmentShader = `
 
         float lum = dot(vid, vec3(0.299, 0.587, 0.114));
         vid = mix(vec3(lum), vid, 1.15) * 0.95;
-        // pull the video toward the site's violet so the glass sits with the particles and glow
-        vid *= vec3(0.92, 0.80, 1.08);
+        // strip the video to grey so the glass stays black and white
+        vid = vec3(dot(vid, vec3(0.299, 0.587, 0.114))) * 0.95;
 
-        // Faint cool tint of the glass body
-        vec3 col = vid * 0.9 + vec3(0.05, 0.06, 0.10);
+        // Faint neutral lift of the glass body
+        vec3 col = vid * 0.9 + vec3(0.06);
 
         // Diffraction sheen: a rainbow that slides across the bevels and rough patches
         float phase = NdotV * 5.0 + ripple.x * 3.0 + screenUV.x * 2.0 + t * 0.12;
-        // a narrow band of hues (violet, blue, pink) so the diffraction matches the palette
-        vec3 spectrum = 0.5 + 0.5 * cos(6.2832 * (vec3(0.62, 0.72, 0.84) + phase * 0.35));
+        // the one place colour shows: a pale violet diffraction on a grey glass
+        vec3 spectrum = mix(vec3(0.5 + 0.5 * cos(6.2832 * (0.72 + phase * 0.35))), 0.5 + 0.5 * cos(6.2832 * (vec3(0.62, 0.72, 0.84) + phase * 0.35)), 0.7);
         col += spectrum * (fresnel * 0.32 + 0.03 + pow(abs(ripple.x * 2.0), 2.0) * 0.10);
 
         // Bright parts of the video glow softly through the glass
@@ -114,13 +114,13 @@ const logoFragmentShader = `
         float spec = pow(max(0.0, dot(N, H)), 60.0) * 0.9;
         vec3 L2 = normalize(vec3(0.6 + sin(t * 0.3) * 0.3, 0.5, 0.8));
         float spec2 = pow(max(0.0, dot(N, normalize(L2 + V))), 14.0) * 0.18;
-        col += vec3(0.95, 0.97, 1.0) * (spec + spec2);
+        col += vec3(1.0) * (spec + spec2);
 
         // Edge: thin bright bevel line with a darker inner shade, like cut glass
         float rim = pow(1.0 - NdotV, 6.0);
         float inner = smoothstep(0.55, 0.15, NdotV);
         col *= 1.0 - inner * 0.30;
-        col += vec3(0.80, 0.85, 1.0) * rim * 0.85;
+        col += vec3(0.9) * rim * 0.85;
 
         // Barely-there grain keeps the surface from looking flat
         col += (hash(gl_FragCoord.xy + fract(t) * 91.0) - 0.5) * 0.015;

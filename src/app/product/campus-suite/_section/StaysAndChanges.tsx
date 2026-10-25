@@ -11,7 +11,7 @@ const List = ({ title, items }: { title: string; items: string[] }) => (
         <ul className="space-y-4 text-lg text-customGray">
             {items.map((i) => (
                 <li key={i} className="flex gap-3">
-                    <span aria-hidden="true" className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-violet-300" />
+                    <span aria-hidden="true" className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-300" />
                     {i}
                 </li>
             ))}

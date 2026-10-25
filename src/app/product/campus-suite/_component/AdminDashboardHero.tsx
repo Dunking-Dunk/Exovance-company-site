@@ -62,7 +62,7 @@ const AdminDashboardHero = () => {
         { label: 'Unplaced', value: done ? '0' : '—', color: done ? '#22c55e' : 'var(--exo-muted)' },
         { label: 'Sessions', value: done ? '27' : '—', color: done ? '#a78bfa' : 'var(--exo-muted)' },
     ];
-    const btn = 'inline-flex min-h-[44px] items-center gap-1.5 rounded-xl px-4 py-2 text-[13px] font-semibold transition-opacity disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300';
+    const btn = 'inline-flex min-h-[44px] items-center gap-1.5 rounded-xl px-4 py-2 text-[13px] font-semibold transition-opacity disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-appviolet-300';
 
     return (
         <section aria-labelledby="dash-title" style={EXO_TOKENS} className="overflow-hidden rounded-2xl border text-left shadow-2xl shadow-black/50" >

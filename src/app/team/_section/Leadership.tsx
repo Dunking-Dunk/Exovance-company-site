@@ -15,7 +15,7 @@ const Leadership = () => {
 
             {/* Ambient bloom */}
             <div className="absolute top-0 right-0 w-[500px] h-[400px] opacity-[0.04] pointer-events-none"
-                style={{ background: 'radial-gradient(ellipse at 80% 0%, #7800ff 0%, transparent 60%)' }} />
+                style={{ background: 'radial-gradient(ellipse at 80% 0%, #8a8a8a 0%, transparent 60%)' }} />
 
             <div className="relative z-10">
                 <motion.p

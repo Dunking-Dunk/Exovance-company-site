@@ -22,6 +22,17 @@ const config: Config = {
         exo: ['"Exo"', ...defaultTheme.fontFamily.sans],
       },
       colors: {
+        // Monochrome experiment: every accent family resolves to neutral grey
+        // the one accent: a pale violet, used sparingly
+        accent: colors.violet,
+        // the interactive demo keeps its original colours
+        appviolet: colors.violet,
+        apppurple: colors.purple,
+        appindigo: colors.indigo,
+        violet: colors.neutral,
+        purple: colors.neutral,
+        indigo: colors.neutral,
+        fuchsia: colors.neutral,
         customBlack: 'var(--custom-black)',
         customBlackAlt: 'var(--custom-black-alt)',
         customGrayLight: 'var(--custom-gray-light)',

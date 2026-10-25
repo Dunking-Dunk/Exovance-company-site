@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
-const FIELD = "w-full px-4 py-3 rounded-lg bg-white/[0.04] border border-customGrayDark/50 text-customGrayLight placeholder-customGrayDark/70 text-base focus:outline-none focus-visible:border-violet-300 focus-visible:ring-2 focus-visible:ring-violet-400/60";
+const FIELD = "w-full px-4 py-3 rounded-lg bg-white/[0.04] border border-customGrayDark/50 text-customGrayLight placeholder-customGrayDark/70 text-base focus:outline-none focus-visible:border-violet-300 focus-visible:ring-2 focus-visible:ring-accent-400/60";
 const LABEL = "block text-sm text-customGray mb-2";
 
 type Status = 'idle' | 'sending' | 'sent' | 'error';
@@ -87,7 +87,7 @@ const EnquiryForm = () => {
             <button
                 type="submit"
                 disabled={status === 'sending'}
-                className="inline-flex items-center justify-center w-full sm:w-auto min-h-[48px] px-8 rounded-full bg-violet-500 hover:bg-violet-400 disabled:opacity-60 text-white font-semibold text-base transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 focus-visible:ring-offset-2 focus-visible:ring-offset-customBlack"
+                className="inline-flex items-center justify-center w-full sm:w-auto min-h-[48px] px-8 rounded-full bg-white hover:bg-white/85 disabled:opacity-60 text-black font-semibold text-base transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-200 focus-visible:ring-offset-2 focus-visible:ring-offset-customBlack"
             >
                 {status === 'sending' ? 'Sending…' : 'Send enquiry'}
             </button>

@@ -26,7 +26,7 @@ const Scene = memo(({ bloom = false, ...props }: any) => {
         <Canvas {...props}
             onCreated={(state) => {
                 state.gl.toneMapping = THREE.AgXToneMapping;
-                state.gl.setClearColor(0x06060c, 1);
+                state.gl.setClearColor(0x050505, 1);
             }}
             dpr={[1, 1.5]}
             performance={{ min: 1 }}

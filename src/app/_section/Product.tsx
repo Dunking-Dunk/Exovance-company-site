@@ -37,7 +37,7 @@ const itemVariants = {
 
 const Product = () => {
     return (
-        <div className="w-full relative z-20 bg-[#06060c]/50">
+        <div className="w-full relative z-20 bg-[#050505]/50">
 
             {/* Top hairline */}
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/20 to-transparent" />

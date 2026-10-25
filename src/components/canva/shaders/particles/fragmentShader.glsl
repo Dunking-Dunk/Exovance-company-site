@@ -31,7 +31,7 @@ void main(){
     // Sparkle contributes extra brightness and the star cross shape
     // vSparkle=0 → normal round dot; vSparkle=1 → bright star burst
     float sparkleAlpha=starShape*vSparkle*vColor.a*2.5;
-    vec3 sparkleColor=vec3(1.,1.,1.);// pure white flash for the cross rays
+    vec3 sparkleColor=vec3(.86,.78,1.);// pale violet flash for the cross rays
     
     float totalAlpha=baseAlpha+sparkleAlpha;
     // Blend sparkle white into base colour proportional to sparkle intensity

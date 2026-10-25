@@ -106,8 +106,9 @@ const RootLayout = memo(({ children }: RootLayoutProps) => {
       <body className="antialiased min-h-screen bg-background">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="dark"
+          enableSystem={false}
+          storageKey="exovance-theme"
           disableTransitionOnChange
         >
           <ScrollThemeProvider>

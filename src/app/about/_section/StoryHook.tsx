@@ -17,7 +17,7 @@ const StoryHook = () => {
             {/* Ambient bloom */}
             <div
                 className="absolute top-0 left-0 right-0 h-[50vh] pointer-events-none"
-                style={{ background: 'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(100,0,200,0.06) 0%, transparent 100%)' }}
+                style={{ background: 'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(255,255,255,0.027) 0%, transparent 100%)' }}
             />
 
             {/* Left rule */}

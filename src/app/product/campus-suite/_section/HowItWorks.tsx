@@ -16,7 +16,7 @@ const HowItWorks = () => (
                     <span aria-hidden="true" className="mb-5 flex h-10 w-10 items-center justify-center rounded-full border border-violet-300/60 text-violet-200 font-semibold">{s.n}</span>
                     <p className="text-sm text-violet-300 mb-2">Step {s.n}</p>
                     <p className="text-xl text-customGrayLight leading-snug">{s.text}</p>
-                    {s.to && <ScrollLink to={s.to} className="mt-4 inline-block text-violet-300 underline underline-offset-4 hover:text-violet-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 rounded">{s.label}</ScrollLink>}
+                    {s.to && <ScrollLink to={s.to} className="mt-4 inline-block text-violet-300 underline underline-offset-4 hover:text-violet-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-300 rounded">{s.label}</ScrollLink>}
                 </li>
             ))}
         </ol>

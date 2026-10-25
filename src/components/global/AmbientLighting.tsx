@@ -6,8 +6,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
-// One full-screen fragment shader paints the whole background: five soft glows (four purples
-// plus one cool blue accent), a slow drift, a low horizon light and a faint glow that follows
+// One full-screen fragment shader paints the whole background: five soft glows (four greys
+// plus one darker accent), a slow drift, a low horizon light and a faint glow that follows
 // the cursor. Grain and the vignette are plain CSS layers on top.
 
 // Each orb: [x, y, radius, r, g, b, strength]. x and y are fractions of the viewport (y down).
@@ -19,40 +19,40 @@ const hex = (h: string): [number, number, number] => [
     parseInt(h.slice(3, 5), 16) / 255,
     parseInt(h.slice(5, 7), 16) / 255,
 ]
-const orb = (x: number, y: number, r: number, color: string, a: number): Orb => [x, y, r, ...hex(color), a]
+const orb = (x: number, y: number, r: number, color: string, a: number): Orb => [x, y, r, ...hex(color), a * 0.4]
 
-// Cool accent that keeps the purple from feeling flat
-const BLUE = '#1d6fb8'
+// Darker accent that keeps the greys from feeling flat
+const BLUE = '#6e6e6e'
 
 const SCENES: Record<string, Scene> = {
     hero: [
-        orb(0.5, -0.18, 0.55, '#6d28d9', 0.55), orb(1.05, 0.3, 0.5, '#7c3aed', 0.4),
-        orb(-0.2, 0.8, 0.5, '#4c1d95', 0.18), orb(0.8, 0.7, 0.4, '#8b5cf6', 0.12),
+        orb(0.5, -0.18, 0.55, '#8a8a8a', 0.55), orb(1.05, 0.3, 0.5, '#d4d4d4', 0.4),
+        orb(-0.2, 0.8, 0.5, '#5c5c5c', 0.18), orb(0.8, 0.7, 0.4, '#a3a3a3', 0.12),
         orb(0.12, 0.38, 0.4, BLUE, 0.16),
     ],
     about: [
-        orb(-0.1, 0.1, 0.55, '#5b21b6', 0.3), orb(1.1, 0.5, 0.5, '#7c3aed', 0.5),
-        orb(0.2, 0.9, 0.5, '#6d28d9', 0.25), orb(0.6, 0.2, 0.4, '#8b5cf6', 0.1),
+        orb(-0.1, 0.1, 0.55, '#707070', 0.3), orb(1.1, 0.5, 0.5, '#d4d4d4', 0.5),
+        orb(0.2, 0.9, 0.5, '#8a8a8a', 0.25), orb(0.6, 0.2, 0.4, '#a3a3a3', 0.1),
         orb(0.9, 0.92, 0.42, BLUE, 0.18),
     ],
     vision: [
-        orb(0.5, -0.1, 0.55, '#7c3aed', 0.45), orb(1.08, 0.2, 0.5, '#8b5cf6', 0.65),
-        orb(-0.15, 0.6, 0.5, '#3b0764', 0.2), orb(0.75, 0.85, 0.4, '#6d28d9', 0.15),
+        orb(0.5, -0.1, 0.55, '#d4d4d4', 0.45), orb(1.08, 0.2, 0.5, '#a3a3a3', 0.65),
+        orb(-0.15, 0.6, 0.5, '#3a3a3a', 0.2), orb(0.75, 0.85, 0.4, '#8a8a8a', 0.15),
         orb(0.08, 0.15, 0.42, BLUE, 0.2),
     ],
     product: [
-        orb(0.15, -0.05, 0.55, '#4c1d95', 0.3), orb(1.12, 0.4, 0.5, '#7c3aed', 0.55),
-        orb(-0.05, 0.75, 0.5, '#5b21b6', 0.35), orb(0.85, 0.15, 0.4, '#8b5cf6', 0.2),
+        orb(0.15, -0.05, 0.55, '#5c5c5c', 0.3), orb(1.12, 0.4, 0.5, '#d4d4d4', 0.55),
+        orb(-0.05, 0.75, 0.5, '#707070', 0.35), orb(0.85, 0.15, 0.4, '#a3a3a3', 0.2),
         orb(0.5, 0.98, 0.45, BLUE, 0.18),
     ],
     abstract: [
-        orb(0.5, 0.5, 0.55, '#5b21b6', 0.2), orb(1.05, 0.6, 0.5, '#7c3aed', 0.35),
-        orb(-0.1, 0.3, 0.5, '#4c1d95', 0.28), orb(0.7, -0.05, 0.4, '#6d28d9', 0.22),
+        orb(0.5, 0.5, 0.55, '#707070', 0.2), orb(1.05, 0.6, 0.5, '#d4d4d4', 0.35),
+        orb(-0.1, 0.3, 0.5, '#5c5c5c', 0.28), orb(0.7, -0.05, 0.4, '#8a8a8a', 0.22),
         orb(0.92, 0.2, 0.4, BLUE, 0.16),
     ],
     contact: [
-        orb(0.5, 1.1, 0.55, '#6d28d9', 0.45), orb(1.08, 0.7, 0.5, '#8b5cf6', 0.45),
-        orb(-0.15, 0.85, 0.5, '#4c1d95', 0.3), orb(0.25, 0.4, 0.4, '#7c3aed', 0.15),
+        orb(0.5, 1.1, 0.55, '#8a8a8a', 0.45), orb(1.08, 0.7, 0.5, '#a3a3a3', 0.45),
+        orb(-0.15, 0.85, 0.5, '#5c5c5c', 0.3), orb(0.25, 0.4, 0.4, '#d4d4d4', 0.15),
         orb(0.1, 0.12, 0.4, BLUE, 0.14),
     ],
 }
@@ -94,10 +94,10 @@ void main(){
     }
     // faint glow that follows the cursor and brightens while it moves
     vec2 dm = (uv - uMouse) * vec2(asp, 1.);
-    c += vec3(.55, .35, 1.) * uEnergy * .12 * exp(-dot(dm, dm) / .05);
+    c += vec3(.55, .42, 1.) * uEnergy * .12 * exp(-dot(dm, dm) / .05);
     // low horizon light
     float h = (uv.y - .97) / .09;
-    c += vec3(.30, .16, .62) * exp(-h * h) * .10;
+    c += vec3(.4) * exp(-h * h) * .10;
     // mottled texture: slow cloud noise breaks up the smooth gradients
     vec2 np = uv * vec2(asp, 1.) * 3.2 + vec2(uTime * .012, -uTime * .009);
     float cloud = vnoise(np) * .6 + vnoise(np * 2.3 + 7.1) * .3 + vnoise(np * 5.1 + 3.7) * .1;
@@ -235,7 +235,7 @@ export default function AmbientLighting() {
             <div
                 style={{
                     position: 'absolute', inset: 0,
-                    background: 'radial-gradient(ellipse at center, transparent 55%, rgba(3,3,8,0.5) 100%)',
+                    background: 'radial-gradient(ellipse at center, transparent 55%, rgba(2,2,2,0.5) 100%)',
                 }}
             />
             {/* fine film grain removes banding in the dark gradients */}

@@ -93,7 +93,7 @@ const AdminConsole = () => {
                         aria-selected={tab === key}
                         aria-controls="admin-panel"
                         onClick={() => setTab(key)}
-                        className="flex min-h-[44px] shrink-0 items-center gap-2 rounded-lg px-4 text-sm font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300"
+                        className="flex min-h-[44px] shrink-0 items-center gap-2 rounded-lg px-4 text-sm font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-appviolet-300"
                         style={{ background: tab === key ? 'var(--exo-surface-high)' : 'transparent', color: tab === key ? 'var(--exo-fg)' : 'var(--exo-muted)', boxShadow: tab === key ? 'inset 0 -2px 0 #a78bfa' : 'none' }}
                     >
                         <Icon size={14} /> {label}

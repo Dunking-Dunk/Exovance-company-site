@@ -108,7 +108,7 @@ const Vision = () => {
     return (
         <div ref={containerRef} className="w-full h-[100dvh] overflow-hidden relative z-10">
             {/* Faint violet bloom top */}
-            <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 35% at 50% -5%, rgba(100,0,200,0.08) 0%, transparent 100%)' }} />
+            <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 35% at 50% -5%, rgba(255,255,255,0.036) 0%, transparent 100%)' }} />
 
             {/* Corner ambient text — mono small caps */}
             <p className="absolute top-1/3 left-[5%] md:left-[12%] font-mono text-[9px] tracking-[0.35em] text-violet-400/45 uppercase leading-loose">

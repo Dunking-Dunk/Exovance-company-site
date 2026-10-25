@@ -107,18 +107,15 @@ void main(){
     float sparkleFlash=pow(max(0.,sin(uTime*twinkleFreq+particlePhase)),8.);
     vSparkle=sparkleFlash;
     
-    // DARK PURPLE + WHITE PALETTE
+    // MONOCHROME PALETTE
     // Each particle renders dark purple; additive blending naturally creates bright
     // white-purple cores where particles cluster (logo/brain/face shapes).
     float hueShift=fract(sin(dot(position.xy,vec2(17.2,53.7)))*43758.5453);
     // dark purple: equal push of red + blue, near-zero green
-    vec3 darkPurple=vec3(
-        .48+hueShift*.12+shimmer,// R: 0.48-0.60 (boosted for purple hue, was .38)
-        .00+hueShift*.005,// G: ~0 (keep pure)
-        .55+hueShift*.14+shimmer// B: 0.55-0.69 (reduced from .72, balances with R)
-    );
+    float grey=.5+hueShift*.14+shimmer;
+    vec3 darkPurple=vec3(grey);
     // Sparkle cross-rays: pure white burst
-    vec3 sparkleColor=vec3(1.,1.,1.);
+    vec3 sparkleColor=vec3(.82,.72,1.);
     // Lower multiplier (1.8 vs 3.8) keeps individual particles dark;
     // the additive overlap on dense shapes provides the bright glow naturally.
     vec3 finalColor=mix(darkPurple*colorIntensity*1.8,sparkleColor*4.,sparkleFlash);

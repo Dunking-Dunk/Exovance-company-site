@@ -29,7 +29,7 @@ const PlanningTab = ({ ctx }: { ctx: Ctx }) => {
                     </div>
                     <div role="tablist" aria-label="Department" className="flex gap-1 rounded-xl border p-1" style={{ background: 'var(--exo-surface)', borderColor: 'var(--exo-border)' }}>
                         {DEPT_LIST.map((d) => (
-                            <button key={d} type="button" role="tab" aria-selected={dept === d} onClick={() => setDept(d)} className="min-h-[36px] rounded-lg px-4 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300" style={{ background: dept === d ? 'var(--exo-surface-high)' : 'transparent', color: dept === d ? 'var(--exo-fg)' : 'var(--exo-muted)' }}>{d}</button>
+                            <button key={d} type="button" role="tab" aria-selected={dept === d} onClick={() => setDept(d)} className="min-h-[36px] rounded-lg px-4 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-appviolet-300" style={{ background: dept === d ? 'var(--exo-surface-high)' : 'transparent', color: dept === d ? 'var(--exo-fg)' : 'var(--exo-muted)' }}>{d}</button>
                         ))}
                     </div>
                 </div>
@@ -56,7 +56,7 @@ const PlanningTab = ({ ctx }: { ctx: Ctx }) => {
                                         value={assign[c.code]}
                                         disabled={locked}
                                         onChange={(e) => change(c.code, e.target.value)}
-                                        className="min-h-[44px] w-full rounded-xl border px-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 disabled:opacity-60 sm:w-56"
+                                        className="min-h-[44px] w-full rounded-xl border px-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-appviolet-300 disabled:opacity-60 sm:w-56"
                                         style={{ background: 'var(--exo-surface-high)', borderColor: 'var(--exo-border)', color: 'var(--exo-fg)' }}
                                     >
                                         {FACULTY.map((f) => {

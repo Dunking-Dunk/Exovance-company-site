@@ -22,7 +22,7 @@ const TeamPage = () => {
                 {/* Ambient bloom */}
                 <div
                     className="absolute top-0 left-0 right-0 h-[60vh] pointer-events-none"
-                    style={{ background: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(100,0,200,0.07) 0%, transparent 100%)' }}
+                    style={{ background: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255,255,255,0.032) 0%, transparent 100%)' }}
                 />
                 <div className="relative z-10 px-6 md:px-12 lg:px-28 mb-20">
                     <p className='font-mono text-[10px] tracking-[0.5em] text-violet-400/50 uppercase mb-10'>

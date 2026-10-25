@@ -12,7 +12,7 @@ export const Common = ({ color }: { color?: string }) => (
         {color && <color attach='background' args={[color]} />}
         <ambientLight />
         <pointLight position={[20, 30, 10]} intensity={3} decay={0.2} />
-        <pointLight position={[-10, -10, -10]} color='blue' decay={0.2} />
+        <pointLight position={[-10, -10, -10]} color='white' decay={0.2} />
         {/* We rely on the global camera in Scene.tsx now, so no local camera is strictly needed, 
             but if a component relies on it internally, we'll keep it commented or disabled. */}
     </Suspense>

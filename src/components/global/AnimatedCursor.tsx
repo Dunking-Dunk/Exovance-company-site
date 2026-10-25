@@ -78,7 +78,7 @@ export default function BlobCursor({ zIndex = 100 }: BlobCursorProps) {
       const isClickable = el.closest('a, button, [role="button"], input, textarea, select, label');
       gsap.to(ringRef.current, {
         scale: isClickable ? 1.6 : 1,
-        borderColor: isClickable ? "rgba(180,100,255,0.85)" : "rgba(150,80,255,0.50)",
+        borderColor: isClickable ? "rgba(190,160,255,0.9)" : "rgba(255,255,255,0.50)",
         duration: 0.25,
         ease: "power2.out",
       });
@@ -115,7 +115,7 @@ export default function BlobCursor({ zIndex = 100 }: BlobCursorProps) {
           height: 5,
           borderRadius: "50%",
           backgroundColor: "rgba(232, 232, 240, 0.95)",
-          boxShadow: "0 0 6px 2px rgba(150, 80, 255, 0.55)",
+          boxShadow: "0 0 6px 2px rgba(255, 255, 255, 0.4)",
           transform: "translate(-50%, -50%)",
           willChange: "transform",
           pointerEvents: "none",
@@ -129,8 +129,8 @@ export default function BlobCursor({ zIndex = 100 }: BlobCursorProps) {
           width: 32,
           height: 32,
           borderRadius: "50%",
-          border: "1px solid rgba(150, 80, 255, 0.50)",
-          boxShadow: "0 0 10px 0px rgba(120, 0, 255, 0.20), inset 0 0 6px 0px rgba(150, 80, 255, 0.08)",
+          border: "1px solid rgba(255, 255, 255, 0.5)",
+          boxShadow: "0 0 10px 0px rgba(255,255,255,0.09), inset 0 0 6px 0px rgba(255, 255, 255, 0.08)",
           transform: "translate(-50%, -50%)",
           willChange: "transform",
           pointerEvents: "none",

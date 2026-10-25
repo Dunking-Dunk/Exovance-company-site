@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { Menu, X } from 'lucide-react'
+import { Menu, Moon, Sun, X } from 'lucide-react'
+import { useTheme } from 'next-themes'
 import { useCurrentScrollTheme } from '../provider/scroll-theme-provider'
 import { gsap } from 'gsap'
 import { navigateTo } from './PageTransition'
@@ -10,6 +11,10 @@ import ScrollLink from './ScrollLink'
 const Header = () => {
     const theme = useCurrentScrollTheme()
     const pathname = usePathname()
+    const { resolvedTheme, setTheme } = useTheme()
+    const [mounted, setMounted] = useState(false)
+    useEffect(() => setMounted(true), [])
+    const isLight = mounted && resolvedTheme === 'light'
     const [isOpen, setIsOpen] = useState(false)
     const [viewport, setViewport] = useState({ w: 0, h: 0 })
     const overlayRef = useRef<HTMLDivElement | null>(null)
@@ -126,7 +131,7 @@ const Header = () => {
     return (
         <div className='fixed w-full top-0 z-50'>
             {pathname === '/product/campus-suite' && (
-                <div aria-hidden='true' className='pointer-events-none absolute inset-x-0 top-0 -z-10 h-24 bg-[#06060c]/60 backdrop-blur-md' style={{ maskImage: 'linear-gradient(to bottom, black 55%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, black 55%, transparent)' }} />
+                <div aria-hidden='true' className='pointer-events-none absolute inset-x-0 top-0 -z-10 h-24 bg-[#050505]/60 backdrop-blur-md' style={{ maskImage: 'linear-gradient(to bottom, black 55%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, black 55%, transparent)' }} />
             )}
             <div className='flex justify-between items-center w-full md:px-12 px-4 py-6'>
                 <div className='cursor-pointer z-[500] flex items-center gap-3'>
@@ -144,11 +149,19 @@ const Header = () => {
                 {pathname === '/product/campus-suite' && (
                     <ScrollLink
                         to='contact'
-                        className='inline-flex items-center px-5 py-2.5 rounded-full bg-violet-500 hover:bg-violet-400 text-white text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-200'
+                        className='inline-flex items-center px-5 py-2.5 rounded-full bg-white hover:bg-white/85 text-black text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-200'
                     >
                         Get in touch
                     </ScrollLink>
                 )}
+                <button
+                    type='button'
+                    aria-label={isLight ? 'Switch to dark mode' : 'Switch to light mode'}
+                    onClick={() => setTheme(isLight ? 'dark' : 'light')}
+                    className='inline-flex h-10 w-10 items-center justify-center rounded-full border border-customGrayDark/30 text-customGrayDark hover:border-violet-500/40 hover:text-customGrayLight transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-300'
+                >
+                    {isLight ? <Moon className='w-4 h-4' /> : <Sun className='w-4 h-4' />}
+                </button>
                 <button
                     aria-label={isOpen ? 'Close menu' : 'Open menu'}
                     onClick={() => (isOpen ? closeMenu() : openMenu())}

@@ -41,7 +41,7 @@ const WorkloadTab = ({ ctx }: { ctx: Ctx }) => {
                 <div className="flex flex-wrap items-center gap-3 border-b px-[18px] py-[14px]" style={{ borderColor: 'var(--exo-border)' }}>
                     <p className="flex-1 text-[13px] font-semibold" style={{ color: 'var(--exo-fg)' }}>Faculty workload</p>
                     <label className="sr-only" htmlFor="wl-search">Search faculty</label>
-                    <input id="wl-search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search faculty" className="min-h-[40px] w-full rounded-lg border px-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 sm:w-52" style={{ background: 'var(--exo-surface-high)', borderColor: 'var(--exo-border)', color: 'var(--exo-fg)' }} />
+                    <input id="wl-search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search faculty" className="min-h-[40px] w-full rounded-lg border px-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-appviolet-300 sm:w-52" style={{ background: 'var(--exo-surface-high)', borderColor: 'var(--exo-border)', color: 'var(--exo-fg)' }} />
                 </div>
                 <div className="grid grid-cols-[1.5rem_1fr_3.5rem_4.5rem_minmax(0,8rem)] gap-3 px-[18px] py-2 text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--exo-muted)' }}>
                     <span>#</span><span>Faculty</span><span className="text-right">Sessions</span><span className="text-right">Hours</span><span>Load</span>

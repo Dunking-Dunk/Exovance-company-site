@@ -154,7 +154,7 @@ const StudentChoiceDemo = () => {
                         );
                     })}
                 </ul>
-                <button type="button" onClick={reset} className="mt-5 flex items-center gap-1.5 rounded-xl border px-4 py-2.5 text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300" style={{ background: 'var(--exo-surface)', borderColor: 'var(--exo-border)', color: 'var(--exo-fg)' }}>
+                <button type="button" onClick={reset} className="mt-5 flex items-center gap-1.5 rounded-xl border px-4 py-2.5 text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-appviolet-300" style={{ background: 'var(--exo-surface)', borderColor: 'var(--exo-border)', color: 'var(--exo-fg)' }}>
                     <RotateCcw size={13} /> Start again
                 </button>
             </div>
@@ -171,10 +171,10 @@ const StudentChoiceDemo = () => {
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                    <button type="button" onClick={reset} disabled={done === 0} className="flex min-h-[44px] items-center gap-1.5 rounded-xl border px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300" style={{ background: 'var(--exo-surface)', borderColor: 'var(--exo-border)', color: 'var(--exo-fg)' }}>
+                    <button type="button" onClick={reset} disabled={done === 0} className="flex min-h-[44px] items-center gap-1.5 rounded-xl border px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-appviolet-300" style={{ background: 'var(--exo-surface)', borderColor: 'var(--exo-border)', color: 'var(--exo-fg)' }}>
                         <RotateCcw size={13} /> Clear all
                     </button>
-                    <button type="button" onClick={() => setConfirmed(true)} disabled={!canConfirm} className="flex min-h-[44px] items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-opacity disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-200" style={{ background: canConfirm ? 'var(--exo-gradient-cta)' : 'var(--exo-surface-high)', color: canConfirm ? '#fff' : 'var(--exo-muted)' }}>
+                    <button type="button" onClick={() => setConfirmed(true)} disabled={!canConfirm} className="flex min-h-[44px] items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-opacity disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-appviolet-200" style={{ background: canConfirm ? 'var(--exo-gradient-cta)' : 'var(--exo-surface-high)', color: canConfirm ? '#fff' : 'var(--exo-muted)' }}>
                         Confirm selection <ChevronRight size={14} />
                     </button>
                 </div>
@@ -217,7 +217,7 @@ const StudentChoiceDemo = () => {
                                                 const active = activeKey === key;
                                                 return (
                                                     <div key={key} className="overflow-hidden rounded-xl border" style={{ borderColor: active ? 'rgba(167,139,250,0.5)' : 'var(--exo-border)' }}>
-                                                        <button type="button" onClick={() => chooseFaculty(b.id, key)} aria-expanded={active} className="flex min-h-[44px] w-full items-start gap-3 px-3 py-2.5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-300" style={{ background: active ? 'rgba(124,58,237,0.12)' : 'var(--exo-surface-high)', borderBottom: `1px solid ${active ? 'rgba(167,139,250,0.3)' : 'var(--exo-border)'}` }}>
+                                                        <button type="button" onClick={() => chooseFaculty(b.id, key)} aria-expanded={active} className="flex min-h-[44px] w-full items-start gap-3 px-3 py-2.5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-appviolet-300" style={{ background: active ? 'rgba(124,58,237,0.12)' : 'var(--exo-surface-high)', borderBottom: `1px solid ${active ? 'rgba(167,139,250,0.3)' : 'var(--exo-border)'}` }}>
                                                             <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border" style={{ borderColor: active ? 'var(--exo-primary)' : 'var(--exo-dim)', color: 'var(--exo-primary)' }}>{active && <CheckCircle2 size={10} />}</span>
                                                             <span className="min-w-0 flex-1">
                                                                 <span className="block text-xs font-semibold" style={{ color: 'var(--exo-fg)' }}>{list[0].name}</span>
@@ -278,7 +278,7 @@ const Row = ({ o, selected, st, onPick, onHover, sub }: RowProps) => {
             onMouseLeave={() => onHover(null)}
             onFocus={() => onHover(o.id)}
             onBlur={() => onHover(null)}
-            className={`w-full min-h-[44px] border text-left transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 ${sub ? 'rounded-none px-4 py-2.5' : 'rounded-xl px-3.5 py-3'} ${disabled ? 'cursor-not-allowed opacity-70' : ''}`}
+            className={`w-full min-h-[44px] border text-left transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-appviolet-300 ${sub ? 'rounded-none px-4 py-2.5' : 'rounded-xl px-3.5 py-3'} ${disabled ? 'cursor-not-allowed opacity-70' : ''}`}
             style={{ background: bg, borderColor: sub ? 'transparent' : border }}
         >
             <div className="flex items-start justify-between gap-2">

@@ -21,7 +21,7 @@ const Footer = () => {
             <h2 className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[25vw] sm:text-[20vw] z-10 font-display font-bold text-violet-500/[0.04] select-none pointer-events-none whitespace-nowrap'>EXOVANCE</h2>
 
             <Dither
-                waveColor={[0.18, 0.04, 0.32]}
+                waveColor={[0.16, 0.16, 0.16]}
                 disableAnimation={false}
                 enableMouseInteraction={false}
                 mouseRadius={0.3}

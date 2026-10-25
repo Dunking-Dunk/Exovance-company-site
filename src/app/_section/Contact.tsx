@@ -16,7 +16,7 @@ const ContactSection = () => {
 
             {/* Ambient bloom */}
             <div className="absolute bottom-0 right-0 w-[700px] h-[500px] opacity-[0.07] pointer-events-none"
-                style={{ background: 'radial-gradient(ellipse at 85% 100%, #7800ff 0%, transparent 60%)' }} />
+                style={{ background: 'radial-gradient(ellipse at 85% 100%, #8a8a8a 0%, transparent 60%)' }} />
 
             {/* Top rule */}
             <div className="absolute top-0 left-6 right-6 md:left-12 md:right-12 lg:left-28 lg:right-28 h-px bg-gradient-to-r from-violet-500/20 via-violet-500/10 to-transparent" />
@@ -66,7 +66,7 @@ const ContactSection = () => {
                     >
                         <Link
                             href="/product/campus-suite#contact"
-                            className="inline-flex items-center justify-center px-7 py-3 rounded-full bg-violet-600/80 hover:bg-violet-500/90 text-white text-xs font-mono tracking-[0.25em] uppercase transition-all duration-300 shadow-lg shadow-violet-900/20"
+                            className="inline-flex items-center justify-center px-7 py-3 rounded-full bg-white hover:bg-white/85 text-black text-xs font-mono tracking-[0.25em] uppercase transition-all duration-300 shadow-lg shadow-violet-900/20"
                         >
                             Get Early Access — Campus Suite
                         </Link>

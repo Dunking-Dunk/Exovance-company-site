@@ -10,12 +10,12 @@
 @layer base {
   :root {
     /* Single permanent dark palette — no light/dark switching */
-    --custom-black: #06060c;
-    --custom-gray-light: #e8e8f0;
-    --custom-gray: #c8c8d8;
-    --custom-gray-dark: #9898aa;
-    --custom-gray-darker: #606070;
-    --custom-black-alt: #1a1a28;
+    --custom-black: #050505;
+    --custom-gray-light: #ededed;
+    --custom-gray: #c4c4c4;
+    --custom-gray-dark: #969696;
+    --custom-gray-darker: #5e5e5e;
+    --custom-black-alt: #191919;
     --app-height: 100vh;
   }
 }
@@ -41,7 +41,7 @@ body {
   position: relative;
   min-height: var(--app-height);
   /* Deep near-black with a barely-perceptible cool/blue tint — Active Theory style */
-  background-color: #06060c;
+  background-color: #050505;
   color: var(--custom-gray);
   font-family: "Inter", "Exo", sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -58,17 +58,26 @@ body::before {
   z-index: 0;
   background:
     /* Primary violet bloom — top-center */
-    radial-gradient(ellipse 80% 45% at 50% -8%, rgba(120, 0, 255, 0.18) 0%, transparent 100%),
+    radial-gradient(ellipse 80% 45% at 50% -8%, rgba(255,255,255,0.081) 0%, transparent 100%),
     /* Secondary softer bloom — offset right */
-    radial-gradient(ellipse 50% 32% at 78% 12%, rgba(160, 32, 255, 0.09) 0%, transparent 100%),
+    radial-gradient(ellipse 50% 32% at 78% 12%, rgba(255,255,255,0.041) 0%, transparent 100%),
     /* Tertiary left counter-bloom */
-    radial-gradient(ellipse 45% 28% at 18% 18%, rgba(90, 0, 220, 0.07) 0%, transparent 100%),
+    radial-gradient(ellipse 45% 28% at 18% 18%, rgba(255,255,255,0.032) 0%, transparent 100%),
     /* Bottom purple footer glow — ties sections together */
-    radial-gradient(ellipse 60% 20% at 50% 105%, rgba(100, 0, 200, 0.06) 0%, transparent 100%);
+    radial-gradient(ellipse 60% 20% at 50% 105%, rgba(255,255,255,0.027) 0%, transparent 100%);
   transition: opacity 0.7s ease;
 }
 
-/* Light mode overrides removed — single dark theme only */
+/* Light mode: the site is pure black and white, so flipping the whole page gives a
+   clean white version. next-themes puts the "light" class on <html>. Photos and videos
+   are flipped back so they keep their real colours. */
+html.light {
+  filter: invert(1) hue-rotate(180deg);
+}
+html.light video,
+html.light img:not([src*="logo"]) {
+  filter: invert(1) hue-rotate(180deg);
+}
 
 @layer utilities {
   .text-balance {

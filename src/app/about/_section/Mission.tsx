@@ -35,7 +35,7 @@ const Mission = () => {
         <section className="relative min-h-screen flex items-center justify-center px-6 md:px-12 lg:px-28 py-32 z-[1]">
 
             {/* Faint violet top bloom */}
-            <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 40% at 50% 0%, rgba(100,0,200,0.06) 0%, transparent 100%)' }} />
+            <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 40% at 50% 0%, rgba(255,255,255,0.027) 0%, transparent 100%)' }} />
 
             <div className="relative z-10 w-full max-w-6xl mx-auto">
 

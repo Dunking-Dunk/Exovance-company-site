@@ -29,7 +29,7 @@ const Journey = () => {
 
             {/* Ambient bloom */}
             <div className="absolute bottom-0 left-0 w-[600px] h-[400px] opacity-[0.05] pointer-events-none"
-                style={{ background: 'radial-gradient(ellipse at 15% 100%, #7800ff 0%, transparent 60%)' }} />
+                style={{ background: 'radial-gradient(ellipse at 15% 100%, #8a8a8a 0%, transparent 60%)' }} />
 
             <div className="relative z-10 max-w-6xl mx-auto">
 
@@ -71,7 +71,7 @@ const Journey = () => {
                     >
                         <Link
                             href="/product/campus-suite#contact"
-                            className="inline-flex items-center gap-3 px-7 py-3 rounded-full bg-violet-600/80 hover:bg-violet-500/90 text-white text-xs font-mono tracking-[0.25em] uppercase transition-all duration-300 shadow-lg shadow-violet-900/20 group"
+                            className="inline-flex items-center gap-3 px-7 py-3 rounded-full bg-white hover:bg-white/85 text-black text-xs font-mono tracking-[0.25em] uppercase transition-all duration-300 shadow-lg shadow-violet-900/20 group"
                         >
                             Get Early Access — Campus Suite
                             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" />

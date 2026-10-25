@@ -35,7 +35,7 @@ const ProofLine = () => {
     const items = Array.from({ length: COPIES * 2 }, (_, i) => (
         <span key={i} className="flex shrink-0 items-center gap-8 pr-8">
             {TEXT}
-            <i aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-violet-400" />
+            <i aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-accent-400" />
         </span>
     ));
 

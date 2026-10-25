@@ -93,5 +93,5 @@ export const colorOf = (code: string) => {
     return COLORS[Math.abs(h) % COLORS.length];
 };
 
-export const btn = 'inline-flex min-h-[44px] items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold transition-opacity disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300';
+export const btn = 'inline-flex min-h-[44px] items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold transition-opacity disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-appviolet-300';
 export const card = { background: 'var(--exo-surface-2)', borderColor: 'var(--exo-border)' } as const;

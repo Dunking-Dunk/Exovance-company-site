@@ -186,7 +186,7 @@ const Layout = ({ children }: Props) => {
                     WebkitOverflowScrolling: 'touch',
                     WebkitTextSizeAdjust: '100%',
                 }}
-                className='bg-[#06060c]'
+                className='bg-[#050505]'
             >
                 <PageTransition />
                 <AmbientLighting />

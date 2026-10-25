@@ -97,13 +97,13 @@ export default function PageTransition() {
             style={{
                 opacity: 0,
                 background:
-                    'radial-gradient(ellipse at 50% 40%, rgba(76,29,149,0.35) 0%, rgba(6,6,12,0.97) 60%), #06060c',
+                    'radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.158) 0%, rgba(5,5,5,0.97) 60%), #050505',
             }}
         >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img ref={markRef} src="/logo/only logo white.png" alt="" className="h-10 w-auto opacity-0" />
-            <div className="mt-6 h-px w-40 overflow-hidden rounded-full bg-violet-400/15">
-                <div ref={lineRef} className="h-full w-full origin-left bg-violet-300/80" style={{ transform: 'scaleX(0)' }} />
+            <div className="mt-6 h-px w-40 overflow-hidden rounded-full bg-accent-400/15">
+                <div ref={lineRef} className="h-full w-full origin-left bg-accent-300/80" style={{ transform: 'scaleX(0)' }} />
             </div>
         </div>
     )

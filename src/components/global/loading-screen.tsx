@@ -121,7 +121,7 @@ const LoadingScreen = ({ onLoadingComplete, preload = true }: Props) => {
     return (
         <div
             className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden text-customGray loader"
-            style={{ background: 'radial-gradient(ellipse at 50% 42%, rgba(76,29,149,0.38) 0%, rgba(6,6,12,0.97) 62%), #06060c' }}
+            style={{ background: 'radial-gradient(ellipse at 50% 42%, rgba(255,255,255,0.171) 0%, rgba(5,5,5,0.97) 62%), #050505' }}
             role="status"
             aria-label={`Loading ${pct} percent`}
         >
@@ -131,8 +131,8 @@ const LoadingScreen = ({ onLoadingComplete, preload = true }: Props) => {
                 <div className="mt-8 font-display text-7xl sm:text-8xl font-light tabular-nums tracking-tight text-customGrayLight">
                     {pct}<span className="text-violet-300/70 text-3xl sm:text-4xl align-top ml-1">%</span>
                 </div>
-                <div className="mt-8 h-px w-48 sm:w-64 overflow-hidden rounded-full bg-violet-400/15">
-                    <div className="h-full origin-left bg-violet-300/80" style={{ transform: `scaleX(${displayProgress / 100})` }} />
+                <div className="mt-8 h-px w-48 sm:w-64 overflow-hidden rounded-full bg-accent-400/15">
+                    <div className="h-full origin-left bg-accent-300/80" style={{ transform: `scaleX(${displayProgress / 100})` }} />
                 </div>
                 <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.35em] text-violet-300/50">Exovance</p>
             </div>

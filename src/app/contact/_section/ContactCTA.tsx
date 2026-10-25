@@ -14,7 +14,7 @@ const ContactCTA = () => {
 
                 {/* Inner bloom */}
                 <div className="absolute -top-20 -right-20 w-[400px] h-[300px] opacity-[0.12] pointer-events-none"
-                    style={{ background: 'radial-gradient(ellipse at 80% 20%, #8b5cf6 0%, transparent 60%)' }} />
+                    style={{ background: 'radial-gradient(ellipse at 80% 20%, #a3a3a3 0%, transparent 60%)' }} />
 
                 <motion.p
                     className="font-mono text-[9px] tracking-[0.5em] uppercase text-violet-400/50 mb-6"
@@ -56,7 +56,7 @@ const ContactCTA = () => {
                 >
                     <a
                         href="#enquiry"
-                        className="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full bg-violet-600/80 hover:bg-violet-500/90 text-white text-xs font-mono tracking-[0.25em] uppercase transition-all duration-300 shadow-lg shadow-violet-900/20"
+                        className="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full bg-white hover:bg-white/85 text-black text-xs font-mono tracking-[0.25em] uppercase transition-all duration-300 shadow-lg shadow-violet-900/20"
                     >
                         Send an enquiry
                     </a>

@@ -40,7 +40,7 @@ const JoinTeam = () => {
 
             {/* Ambient bloom */}
             <div className="absolute bottom-0 left-0 w-[700px] h-[500px] opacity-[0.05] pointer-events-none"
-                style={{ background: 'radial-gradient(ellipse at 10% 100%, #7800ff 0%, transparent 60%)' }} />
+                style={{ background: 'radial-gradient(ellipse at 10% 100%, #8a8a8a 0%, transparent 60%)' }} />
 
             <div className="relative z-10">
                 <motion.p

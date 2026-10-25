@@ -9,7 +9,7 @@ const ContactHero = () => {
 
             {/* Ambient bloom */}
             <div className="absolute top-0 right-0 w-[600px] h-[400px] opacity-[0.07] pointer-events-none"
-                style={{ background: 'radial-gradient(ellipse at 80% 0%, #7800ff 0%, transparent 65%)' }} />
+                style={{ background: 'radial-gradient(ellipse at 80% 0%, #8a8a8a 0%, transparent 65%)' }} />
 
             <motion.p
                 className="font-mono text-[10px] tracking-[0.5em] uppercase text-violet-400/50 mb-8"
