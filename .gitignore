@@ -37,3 +37,6 @@ next-env.d.ts
 
 # enquiry backups
 /data
+
+# secrets and local settings: set these in the hosting dashboard instead
+.env
