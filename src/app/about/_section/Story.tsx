@@ -128,17 +128,17 @@ const Story = () => {
                     className="mt-24"
                 >
                     <p className="font-mono text-[9px] tracking-[0.45em] text-violet-400/40 uppercase mb-10">
-                        The People Who Built This
+                        The Person Who Built This
                     </p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 gap-6 max-w-2xl">
 
                         {/* Hursun */}
                         <div className="group p-8 rounded-xl border border-white/[0.05] bg-white/[0.02] hover:border-violet-500/20 hover:bg-violet-500/[0.03] transition-all duration-500">
                             <div className="flex items-start justify-between mb-6">
                                 <div>
                                     <h3 className="font-display font-bold text-xl text-customGrayLight tracking-tight">Hursun SS</h3>
-                                    <p className="font-mono text-[8px] tracking-[0.35em] text-violet-400/55 uppercase mt-1">CEO &amp; Tech Lead</p>
+                                    <p className="font-mono text-[8px] tracking-[0.35em] text-violet-400/55 uppercase mt-1">Founder</p>
                                 </div>
                                 <div className="flex gap-3">
                                     <a
@@ -168,39 +168,6 @@ const Story = () => {
 
                             <div className="flex flex-wrap gap-2">
                                 {['React', 'Next.js', 'Three.js', 'Django', 'React Native', 'AI & ML', 'IoT'].map((tag) => (
-                                    <span key={tag} className="font-mono text-[7px] tracking-[0.3em] uppercase px-2.5 py-1 rounded-sm border border-violet-500/15 bg-violet-500/[0.04] text-customGrayDarker">
-                                        {tag}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Dhayananth */}
-                        <div className="group p-8 rounded-xl border border-white/[0.05] bg-white/[0.02] hover:border-violet-500/20 hover:bg-violet-500/[0.03] transition-all duration-500">
-                            <div className="flex items-start justify-between mb-6">
-                                <div>
-                                    <h3 className="font-display font-bold text-xl text-customGrayLight tracking-tight">Dhayananth C</h3>
-                                    <p className="font-mono text-[8px] tracking-[0.35em] text-violet-400/55 uppercase mt-1">Co-Founder &amp; Business</p>
-                                </div>
-                                <div className="flex gap-3">
-                                    <a
-                                        href="https://www.linkedin.com/in/dhayananth-c/"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-violet-400/40 hover:text-violet-300 transition-colors"
-                                        aria-label="LinkedIn"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764c.967 0 1.75.79 1.75 1.764s-.783 1.764-1.75 1.764zm13.5 11.268h-3v-5.604c0-1.337-.026-3.06-1.865-3.06-1.867 0-2.154 1.459-2.154 2.965v5.699h-3v-10h2.878v1.367h.041c.401-.761 1.379-1.563 2.838-1.563 3.036 0 3.597 2.001 3.597 4.603v5.593z" /></svg>
-                                    </a>
-                                </div>
-                            </div>
-
-                            <p className="text-sm leading-[1.85] text-customGrayDark font-light mb-7">
-                                <span className="text-customGray">AIML student at SRM University</span>. Owns the business side of Exovance — market positioning, college outreach, and the product decisions that translate engineering into something an institution will actually sign up for.
-                            </p>
-
-                            <div className="flex flex-wrap gap-2">
-                                {['TypeScript', 'Next.js', 'Node.js', 'PostgreSQL', 'UX', 'AIML', 'Product'].map((tag) => (
                                     <span key={tag} className="font-mono text-[7px] tracking-[0.3em] uppercase px-2.5 py-1 rounded-sm border border-violet-500/15 bg-violet-500/[0.04] text-customGrayDarker">
                                         {tag}
                                     </span>

@@ -1,5 +1,4 @@
 import React from 'react'
-import TeamCarousel from './_component/TeamCarousel'
 import { TextGenerateEffect } from '@/components/ui/text-generate-effect'
 import Leadership from './_section/Leadership'
 import CoreTeam from './_section/CoreTeam'
@@ -20,16 +19,15 @@ const TeamPage = () => {
                 />
                 <div className="relative z-10 px-6 md:px-12 lg:px-28 mb-20">
                     <p className='font-mono text-[10px] tracking-[0.5em] text-violet-400/50 uppercase mb-10'>
-                        The People Behind It
+                        The Person Behind It
                     </p>
                     <TextGenerateEffect className='text-6xl md:text-9xl text-customGrayLight mb-8'
-                        words='The Team <br/> Behind Exovance'
+                        words='The Founder <br/> Behind Exovance'
                     />
                     <p className='text-lg text-customGrayDark max-w-2xl leading-relaxed'>
-                        We&rsquo;re final-year engineering students from Tamil Nadu. We got tired of watching our campus run on WhatsApp groups and spreadsheets. So we built the tools to fix it &mdash; and decided to keep going.
+                        I&rsquo;m a final-year engineering student from Tamil Nadu. I got tired of watching our campus run on WhatsApp groups and spreadsheets. So I built the tools to fix it &mdash; and decided to keep going.
                     </p>
                 </div>
-                <TeamCarousel />
             </section>
             <Leadership />
             {/* <CoreTeam /> */}

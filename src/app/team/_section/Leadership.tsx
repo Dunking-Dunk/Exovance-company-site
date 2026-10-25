@@ -25,19 +25,19 @@ const Leadership = () => {
                     transition={{ duration: 0.6 }}
                     className="font-mono text-[10px] tracking-[0.45em] text-violet-400/60 uppercase mb-10"
                 >
-                    01 &mdash;&nbsp; The Founders
+                    01 &mdash;&nbsp; The Founder
                 </motion.p>
 
                 <div className="mb-12 md:mb-16">
                     <h2 className="text-4xl md:text-6xl font-bold text-customGrayLight mb-3">
-                        The Founders
+                        The Founder
                     </h2>
                     <p className="text-customGrayDarker text-lg max-w-xl">
-                        Engineering students who got tired of waiting for someone else to fix the problem.
+                        An engineering student who got tired of waiting for someone else to fix the problem.
                     </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid gap-6 max-w-5xl">
                     {founders.map((f, i) => (
                         <motion.div
                             key={f.name + i}
@@ -45,7 +45,7 @@ const Leadership = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5, delay: i * 0.05 }}
-                            className="group rounded-2xl border border-white/[0.06] bg-white/[0.03] backdrop-blur-sm overflow-hidden hover:border-violet-500/20 transition-colors duration-300"
+                            className="group rounded-2xl border border-white/[0.06] bg-white/[0.03] backdrop-blur-sm overflow-hidden hover:border-violet-500/20 transition-colors duration-300 md:grid md:grid-cols-[2fr_3fr]"
                         >
                             <div className="relative aspect-[3/4] w-full overflow-hidden">
                                 <Image
@@ -53,7 +53,7 @@ const Leadership = () => {
                                     alt={f.name}
                                     fill
                                     className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    sizes="(max-width: 768px) 100vw, 40vw"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                                 {/* Role badge over image */}

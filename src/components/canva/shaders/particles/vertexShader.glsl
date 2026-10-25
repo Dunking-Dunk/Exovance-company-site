@@ -21,6 +21,7 @@ uniform float uRadiusScale;
 uniform float uCurrentPosition;
 uniform float uParticleOffset;
 uniform float uMouseActive;// 0 = mouse never moved, >0 = timestamp of last move
+uniform vec4 uTrail[12];// recent cursor positions (xy) with fading velocity (zw)
 
 varying vec4 vColor;
 varying float vSparkle;
@@ -56,6 +57,18 @@ vec3 calculatePosition(vec3 pos){
     float ripple=sin(ripplePhase)*.07*mouseEffect*mouseGate;
     finalPos.z+=ripple;
     
+    // Water wake: the cursor drags nearby particles along its path and leaves a soft eddy.
+    // Strength fades on the CPU side, so the particles ease back into their shape.
+    for(int i=0;i<12;i++){
+        vec4 tr=uTrail[i];
+        vec2 d=finalPos.xy-tr.xy*MOUSE_INFLUENCE;
+        float f=exp(-dot(d,d)*.7);
+        vec2 v=tr.zw*MOUSE_INFLUENCE;
+        finalPos.xy+=(v+vec2(-v.y,v.x)*.35*sin(d.x*2.+d.y*2.+uTime))*f*.9;
+    }
+    // Slow ambient current so the field never sits still
+    finalPos.xy+=vec2(sin(finalPos.y*1.4+uTime*.4),cos(finalPos.x*1.2+uTime*.35))*.04;
+
     // Apply scroll-based scaling — radiusScale from Particles.tsx is the sole size control
     finalPos*=uRadiusScale;
     // NOTE: per-state multipliers removed — they were over-scaling models into rings/circles

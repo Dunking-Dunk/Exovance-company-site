@@ -8,17 +8,22 @@ type Props = {
     onLoadingComplete?: () => void;
     blockUntilParticlesReady?: boolean;
     particlesReady?: boolean;
+    preload?: boolean;
 }
 
-const LoadingScreen = ({ onLoadingComplete }: Props) => {
+const LoadingScreen = ({ onLoadingComplete, preload = true }: Props) => {
     const { progress, active, loaded, total } = useProgress();
     const [displayProgress, setDisplayProgress] = useState(0);
     const [assetsReady, setAssetsReady] = useState(false);
     const completionCalledRef = useRef(false);
     const startTimeRef = useRef(Date.now());
 
-    // Preload all 3D assets up-front
+    // Preload all 3D assets up-front (only the home page uses them)
     useEffect(() => {
+        if (!preload) {
+            setTimeout(() => setAssetsReady(true), 300);
+            return;
+        }
         const preloadAssets = async () => {
             try {
                 await Promise.all([
@@ -26,6 +31,8 @@ const LoadingScreen = ({ onLoadingComplete }: Props) => {
                     useGLTF.preload('/3d/human_head.glb'),
                     useGLTF.preload('/3d/spider_robot.glb'),
                     useGLTF.preload('/3d/vertebral.glb'),
+                    useGLTF.preload('/3d/dna_3.glb'),
+                    useGLTF.preload('/3d/exovance-3d.glb'),
                 ]);
                 setTimeout(() => setAssetsReady(true), 600);
             } catch {
@@ -36,28 +43,17 @@ const LoadingScreen = ({ onLoadingComplete }: Props) => {
     }, []);
 
     const startExitAnimation = () => {
-        gsap.set('.revealer svg', { scale: 0 });
-        const revealer = document.querySelector('.revealer svg');
         const loader = document.querySelector('.loader');
-        if (revealer) {
-            gsap.to(revealer, {
-                scale: 45,
-                duration: 1.2,
-                ease: 'power3.out',
-                onComplete: () => {
-                    if (loader) {
-                        gsap.to(loader, {
-                            opacity: 0,
-                            duration: 0.4,
-                            ease: 'power4.out',
-                            onComplete: () => {
-                                document.querySelector('.loader')?.remove();
-                            },
-                        });
-                    }
-                },
-            });
-        }
+        if (!loader) return;
+        // The number and mark drift up and fade, then the veil lifts to reveal the page
+        gsap.to('.loader-content', { y: -16, opacity: 0, duration: 0.5, ease: 'power2.in' });
+        gsap.to(loader, {
+            opacity: 0,
+            duration: 0.9,
+            delay: 0.25,
+            ease: 'power2.inOut',
+            onComplete: () => { document.querySelector('.loader')?.remove(); },
+        });
     };
 
     const completeNow = () => {
@@ -120,10 +116,25 @@ const LoadingScreen = ({ onLoadingComplete }: Props) => {
         return () => clearTimeout(t);
     }, [onLoadingComplete]);
 
+    const pct = Math.round(displayProgress);
+
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[#06060c] text-customGray loader">
-            <div className="text-9xl font-light">
-                {Math.round(displayProgress)}%
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden text-customGray loader"
+            style={{ background: 'radial-gradient(ellipse at 50% 42%, rgba(76,29,149,0.38) 0%, rgba(6,6,12,0.97) 62%), #06060c' }}
+            role="status"
+            aria-label={`Loading ${pct} percent`}
+        >
+            <div className="loader-content flex flex-col items-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo/only logo white.png" alt="" className="h-10 w-auto opacity-90" />
+                <div className="mt-8 font-display text-7xl sm:text-8xl font-light tabular-nums tracking-tight text-customGrayLight">
+                    {pct}<span className="text-violet-300/70 text-3xl sm:text-4xl align-top ml-1">%</span>
+                </div>
+                <div className="mt-8 h-px w-48 sm:w-64 overflow-hidden rounded-full bg-violet-400/15">
+                    <div className="h-full origin-left bg-violet-300/80" style={{ transform: `scaleX(${displayProgress / 100})` }} />
+                </div>
+                <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.35em] text-violet-300/50">Exovance</p>
             </div>
 
             {process.env.NODE_ENV === 'development' && (
@@ -133,12 +144,6 @@ const LoadingScreen = ({ onLoadingComplete }: Props) => {
                     <div>Active: {active ? 'yes' : 'no'}</div>
                 </div>
             )}
-
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 revealer">
-                <svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="scale-0">
-                    <circle cx="100" cy="100" r="50" className="fill-customGray stroke-[#06060c] stroke-[3]" />
-                </svg>
-            </div>
         </div>
     );
 };

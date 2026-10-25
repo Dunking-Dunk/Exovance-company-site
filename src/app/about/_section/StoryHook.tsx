@@ -83,10 +83,10 @@ const StoryHook = () => {
                     className="mt-16 pt-10 border-t border-violet-500/10"
                 >
                     <p className="font-display font-semibold text-base md:text-lg text-customGrayLight leading-[1.75] max-w-xl">
-                        &ldquo;We&rsquo;re building the AI that should have existed when we were sitting in those 8 AM classes.&rdquo;
+                        &ldquo;I&rsquo;m building the AI that should have existed when I was sitting in those 8 AM classes.&rdquo;
                     </p>
                     <p className="font-mono text-[9px] tracking-[0.35em] text-violet-400/40 uppercase mt-4">
-                        Hursun SS &amp; Dhayananth C &mdash; Co-Founders
+                        Hursun SS &mdash; Founder
                     </p>
                 </motion.div>
 

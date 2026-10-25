@@ -6,145 +6,225 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
-// ─── Each "scene" describes where the four orbs sit + their opacities.
-// Orbs: [A] top-edge  [B] right-edge  [C] bottom-left  [D] far-right accent
-// Values are CSS strings — we tween them via GSAP inline-style props.
-interface Scene {
-    // orb A — large bloom that anchors to the top
-    aX: string; aY: string; aOpacity: number; aColor: string
-    // orb B — right-edge accent (Active Theory's signature right glow)
-    bX: string; bY: string; bOpacity: number; bColor: string
-    // orb C — bottom / left atmosphere
-    cX: string; cY: string; cOpacity: number; cColor: string
-    // orb D — floating mid accent
-    dX: string; dY: string; dOpacity: number; dColor: string
-}
+// One full-screen fragment shader paints the whole background: five soft glows (four purples
+// plus one cool blue accent), a slow drift, a low horizon light and a faint glow that follows
+// the cursor. Grain and the vignette are plain CSS layers on top.
 
-// Purple-first palette — matches the particle system palette
+// Each orb: [x, y, radius, r, g, b, strength]. x and y are fractions of the viewport (y down).
+type Orb = [number, number, number, number, number, number, number]
+type Scene = Orb[]
+
+const hex = (h: string): [number, number, number] => [
+    parseInt(h.slice(1, 3), 16) / 255,
+    parseInt(h.slice(3, 5), 16) / 255,
+    parseInt(h.slice(5, 7), 16) / 255,
+]
+const orb = (x: number, y: number, r: number, color: string, a: number): Orb => [x, y, r, ...hex(color), a]
+
+// Cool accent that keeps the purple from feeling flat
+const BLUE = '#1d6fb8'
+
 const SCENES: Record<string, Scene> = {
-    // ── Hero ─────────────────────────────────────────────────────────────
-    hero: {
-        aX: '50%',  aY: '-18%', aOpacity: 0.55, aColor: 'radial-gradient(ellipse at center, #6d28d9 0%, #4c1d95 30%, transparent 70%)',
-        bX: '105%', bY: '30%',  bOpacity: 0.40, bColor: 'radial-gradient(ellipse at center, #7c3aed 0%, #5b21b6 35%, transparent 72%)',
-        cX: '-20%', cY: '80%',  cOpacity: 0.18, cColor: 'radial-gradient(ellipse at center, #4c1d95 0%, transparent 65%)',
-        dX: '80%',  dY: '70%',  dOpacity: 0.12, dColor: 'radial-gradient(ellipse at center, #8b5cf6 0%, transparent 60%)',
-    },
-    // ── About ────────────────────────────────────────────────────────────
-    about: {
-        aX: '-10%', aY: '10%',  aOpacity: 0.30, aColor: 'radial-gradient(ellipse at center, #5b21b6 0%, #3b0764 40%, transparent 70%)',
-        bX: '110%', bY: '50%',  bOpacity: 0.50, bColor: 'radial-gradient(ellipse at center, #7c3aed 0%, #4c1d95 30%, transparent 68%)',
-        cX: '20%',  cY: '90%',  cOpacity: 0.25, cColor: 'radial-gradient(ellipse at center, #6d28d9 0%, transparent 65%)',
-        dX: '60%',  dY: '20%',  dOpacity: 0.10, dColor: 'radial-gradient(ellipse at center, #8b5cf6 0%, transparent 55%)',
-    },
-    // ── Vision ───────────────────────────────────────────────────────────
-    vision: {
-        aX: '50%',  aY: '-10%', aOpacity: 0.45, aColor: 'radial-gradient(ellipse at center, #7c3aed 0%, #4c1d95 35%, transparent 70%)',
-        bX: '108%', bY: '20%',  bOpacity: 0.65, bColor: 'radial-gradient(ellipse at center, #8b5cf6 0%, #5b21b6 28%, transparent 65%)',
-        cX: '-15%', cY: '60%',  cOpacity: 0.20, cColor: 'radial-gradient(ellipse at center, #3b0764 0%, transparent 60%)',
-        dX: '75%',  dY: '85%',  dOpacity: 0.15, dColor: 'radial-gradient(ellipse at center, #6d28d9 0%, transparent 55%)',
-    },
-    // ── Product ──────────────────────────────────────────────────────────
-    product: {
-        aX: '15%',  aY: '-5%',  aOpacity: 0.30, aColor: 'radial-gradient(ellipse at center, #4c1d95 0%, transparent 65%)',
-        bX: '112%', bY: '40%',  bOpacity: 0.55, bColor: 'radial-gradient(ellipse at center, #7c3aed 0%, #3b0764 32%, transparent 68%)',
-        cX: '-5%',  cY: '75%',  cOpacity: 0.35, cColor: 'radial-gradient(ellipse at center, #5b21b6 0%, #2e1065 38%, transparent 70%)',
-        dX: '85%',  dY: '15%',  dOpacity: 0.20, dColor: 'radial-gradient(ellipse at center, #8b5cf6 0%, transparent 52%)',
-    },
-    // ── Abstract ─────────────────────────────────────────────────────────
-    abstract: {
-        aX: '50%',  aY: '50%',  aOpacity: 0.20, aColor: 'radial-gradient(ellipse at center, #5b21b6 0%, transparent 62%)',
-        bX: '105%', bY: '60%',  bOpacity: 0.35, bColor: 'radial-gradient(ellipse at center, #7c3aed 0%, transparent 58%)',
-        cX: '-10%', cY: '30%',  cOpacity: 0.28, cColor: 'radial-gradient(ellipse at center, #4c1d95 0%, transparent 60%)',
-        dX: '70%',  dY: '-5%',  dOpacity: 0.22, dColor: 'radial-gradient(ellipse at center, #6d28d9 0%, transparent 55%)',
-    },
-    // ── Contact ──────────────────────────────────────────────────────────
-    contact: {
-        aX: '50%',  aY: '110%', aOpacity: 0.45, aColor: 'radial-gradient(ellipse at center, #6d28d9 0%, #3b0764 35%, transparent 70%)',
-        bX: '108%', bY: '70%',  bOpacity: 0.45, bColor: 'radial-gradient(ellipse at center, #8b5cf6 0%, #5b21b6 30%, transparent 65%)',
-        cX: '-15%', cY: '85%',  cOpacity: 0.30, cColor: 'radial-gradient(ellipse at center, #4c1d95 0%, transparent 60%)',
-        dX: '25%',  dY: '40%',  dOpacity: 0.15, dColor: 'radial-gradient(ellipse at center, #7c3aed 0%, transparent 55%)',
-    },
+    hero: [
+        orb(0.5, -0.18, 0.55, '#6d28d9', 0.55), orb(1.05, 0.3, 0.5, '#7c3aed', 0.4),
+        orb(-0.2, 0.8, 0.5, '#4c1d95', 0.18), orb(0.8, 0.7, 0.4, '#8b5cf6', 0.12),
+        orb(0.12, 0.38, 0.4, BLUE, 0.16),
+    ],
+    about: [
+        orb(-0.1, 0.1, 0.55, '#5b21b6', 0.3), orb(1.1, 0.5, 0.5, '#7c3aed', 0.5),
+        orb(0.2, 0.9, 0.5, '#6d28d9', 0.25), orb(0.6, 0.2, 0.4, '#8b5cf6', 0.1),
+        orb(0.9, 0.92, 0.42, BLUE, 0.18),
+    ],
+    vision: [
+        orb(0.5, -0.1, 0.55, '#7c3aed', 0.45), orb(1.08, 0.2, 0.5, '#8b5cf6', 0.65),
+        orb(-0.15, 0.6, 0.5, '#3b0764', 0.2), orb(0.75, 0.85, 0.4, '#6d28d9', 0.15),
+        orb(0.08, 0.15, 0.42, BLUE, 0.2),
+    ],
+    product: [
+        orb(0.15, -0.05, 0.55, '#4c1d95', 0.3), orb(1.12, 0.4, 0.5, '#7c3aed', 0.55),
+        orb(-0.05, 0.75, 0.5, '#5b21b6', 0.35), orb(0.85, 0.15, 0.4, '#8b5cf6', 0.2),
+        orb(0.5, 0.98, 0.45, BLUE, 0.18),
+    ],
+    abstract: [
+        orb(0.5, 0.5, 0.55, '#5b21b6', 0.2), orb(1.05, 0.6, 0.5, '#7c3aed', 0.35),
+        orb(-0.1, 0.3, 0.5, '#4c1d95', 0.28), orb(0.7, -0.05, 0.4, '#6d28d9', 0.22),
+        orb(0.92, 0.2, 0.4, BLUE, 0.16),
+    ],
+    contact: [
+        orb(0.5, 1.1, 0.55, '#6d28d9', 0.45), orb(1.08, 0.7, 0.5, '#8b5cf6', 0.45),
+        orb(-0.15, 0.85, 0.5, '#4c1d95', 0.3), orb(0.25, 0.4, 0.4, '#7c3aed', 0.15),
+        orb(0.1, 0.12, 0.4, BLUE, 0.14),
+    ],
 }
 
-const ORB_SIZE = 'min(120vw, 120vh)'
+const flat = (s: Scene) => s.flat()
+
+const VERT = `attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }`
+const FRAG = `
+precision mediump float;
+uniform vec2 uRes;
+uniform float uTime;
+uniform vec2 uMouse;
+uniform float uEnergy;
+uniform vec3 uPos[5];
+uniform vec4 uCol[5];
+void main(){
+    vec2 uv = gl_FragCoord.xy / uRes;
+    uv.y = 1. - uv.y;
+    float asp = uRes.x / uRes.y;
+    // slow drift so the glow breathes instead of sitting still
+    vec2 p = uv + .025 * vec2(sin(uv.y * 3. + uTime * .07), cos(uv.x * 2.6 - uTime * .06));
+    vec3 c = vec3(0.);
+    for (int i = 0; i < 5; i++) {
+        vec2 d = (p - uPos[i].xy) * vec2(asp, 1.);
+        float r = uPos[i].z;
+        c += uCol[i].rgb * uCol[i].a * exp(-dot(d, d) / (r * r));
+    }
+    // faint glow that follows the cursor and brightens while it moves
+    vec2 dm = (uv - uMouse) * vec2(asp, 1.);
+    c += vec3(.55, .35, 1.) * uEnergy * .12 * exp(-dot(dm, dm) / .05);
+    // low horizon light
+    float h = (uv.y - .97) / .09;
+    c += vec3(.30, .16, .62) * exp(-h * h) * .10;
+    c = 1. - exp(-c * .8);
+    // premultiplied alpha: the glow adds light over whatever is behind it (stars, logo, page)
+    gl_FragColor = vec4(c, max(c.r, max(c.g, c.b)));
+}`
 
 export default function AmbientLighting() {
-    const orbA = useRef<HTMLDivElement>(null)
-    const orbB = useRef<HTMLDivElement>(null)
-    const orbC = useRef<HTMLDivElement>(null)
-    const orbD = useRef<HTMLDivElement>(null)
-
-    const applyScene = (scene: Scene, duration = 1.8) => {
-        const ease = 'power2.inOut'
-        const common = { duration, ease, overwrite: true }
-
-        gsap.to(orbA.current, { ...common, opacity: scene.aOpacity, left: scene.aX, top: scene.aY })
-        gsap.to(orbB.current, { ...common, opacity: scene.bOpacity, left: scene.bX, top: scene.bY })
-        gsap.to(orbC.current, { ...common, opacity: scene.cOpacity, left: scene.cX, top: scene.cY })
-        gsap.to(orbD.current, { ...common, opacity: scene.dOpacity, left: scene.dX, top: scene.dY })
-
-        // background can't be tweened by GSAP — swap instantly on scene change
-        if (orbA.current) orbA.current.style.background = scene.aColor
-        if (orbB.current) orbB.current.style.background = scene.bColor
-        if (orbC.current) orbC.current.style.background = scene.cColor
-        if (orbD.current) orbD.current.style.background = scene.dColor
-    }
+    const canvasRef = useRef<HTMLCanvasElement>(null)
 
     useEffect(() => {
-        // Set initial scene immediately
-        applyScene(SCENES.hero, 0)
+        const canvas = canvasRef.current
+        if (!canvas) return
+        const gl = canvas.getContext('webgl', { antialias: false, alpha: true, premultipliedAlpha: true, powerPreference: 'low-power' })
+        if (!gl) return
 
-        const SECTION_SCENES: Array<{ selector: string; scene: Scene }> = [
-            { selector: '[data-section="hero"]',    scene: SCENES.hero },
-            { selector: '[data-section="about"]',   scene: SCENES.about },
-            { selector: '[data-section="vision"]',  scene: SCENES.vision },
-            { selector: '[data-section="product"]', scene: SCENES.product },
-            { selector: '[data-section="abstract"]',scene: SCENES.abstract },
-            { selector: '[data-section="contact"]', scene: SCENES.contact },
-        ]
+        const compile = (type: number, src: string) => {
+            const s = gl.createShader(type)!
+            gl.shaderSource(s, src)
+            gl.compileShader(s)
+            return s
+        }
+        const prog = gl.createProgram()!
+        gl.attachShader(prog, compile(gl.VERTEX_SHADER, VERT))
+        gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG))
+        gl.linkProgram(prog)
+        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return
+        gl.useProgram(prog)
+
+        const buf = gl.createBuffer()
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf)
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
+        const loc = gl.getAttribLocation(prog, 'p')
+        gl.enableVertexAttribArray(loc)
+        gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0)
+
+        const u = (n: string) => gl.getUniformLocation(prog, n)
+        const uRes = u('uRes'), uTime = u('uTime'), uMouse = u('uMouse'), uEnergy = u('uEnergy'), uPos = u('uPos'), uCol = u('uCol')
+
+        // The glow is soft, so it renders at half size and the browser scales it up
+        const resize = () => {
+            canvas.width = Math.max(2, Math.round(window.innerWidth * 0.5))
+            canvas.height = Math.max(2, Math.round(window.innerHeight * 0.5))
+            gl.viewport(0, 0, canvas.width, canvas.height)
+        }
+        resize()
+        window.addEventListener('resize', resize)
+
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        const cur = flat(SCENES.hero)
+        const tween = { v: 1 }
+
+        const applyScene = (scene: Scene, duration = 1.8) => {
+            const from = cur.slice()
+            const to = flat(scene)
+            tween.v = 0
+            gsap.killTweensOf(tween)
+            gsap.to(tween, {
+                v: 1, duration, ease: 'power2.inOut',
+                onUpdate: () => { for (let i = 0; i < cur.length; i++) cur[i] = from[i] + (to[i] - from[i]) * tween.v },
+            })
+        }
+
+        const mouse = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5, energy: 0 }
+        const onMove = (e: MouseEvent) => {
+            const nx = e.clientX / window.innerWidth, ny = e.clientY / window.innerHeight
+            mouse.energy = Math.min(1, mouse.energy + Math.hypot(nx - mouse.tx, ny - mouse.ty) * 6)
+            mouse.tx = nx; mouse.ty = ny
+        }
+        window.addEventListener('mousemove', onMove, { passive: true })
 
         const triggers: ScrollTrigger[] = []
-
-        SECTION_SCENES.forEach(({ selector, scene }) => {
-            const el = document.querySelector(selector)
+        const SECTIONS: Array<[string, Scene]> = [
+            ['hero', SCENES.hero], ['about', SCENES.about], ['vision', SCENES.vision],
+            ['product', SCENES.product], ['abstract', SCENES.abstract], ['contact', SCENES.contact],
+        ]
+        SECTIONS.forEach(([name, scene]) => {
+            const el = document.querySelector(`[data-section="${name}"]`)
             if (!el) return
-
-            const st = ScrollTrigger.create({
-                trigger: el,
-                start: 'top 60%',
-                end: 'bottom 40%',
-                onEnter:     () => applyScene(scene),
-                onEnterBack: () => applyScene(scene),
-            })
-            triggers.push(st)
+            triggers.push(ScrollTrigger.create({
+                trigger: el, start: 'top 60%', end: 'bottom 40%',
+                onEnter: () => applyScene(scene), onEnterBack: () => applyScene(scene),
+            }))
         })
 
-        return () => triggers.forEach(t => t.kill())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        const posArr = new Float32Array(15)
+        const colArr = new Float32Array(20)
+        let raf = 0, last = 0
+        const t0 = performance.now()
+        const frame = (now: number) => {
+            raf = requestAnimationFrame(frame)
+            if (document.hidden || now - last < 33) return // about 30 fps is plenty for a slow glow
+            last = now
+            for (let i = 0; i < 5; i++) {
+                const o = i * 7
+                posArr[i * 3] = cur[o]; posArr[i * 3 + 1] = cur[o + 1]; posArr[i * 3 + 2] = cur[o + 2]
+                colArr[i * 4] = cur[o + 3]; colArr[i * 4 + 1] = cur[o + 4]; colArr[i * 4 + 2] = cur[o + 5]; colArr[i * 4 + 3] = cur[o + 6]
+            }
+            mouse.x += (mouse.tx - mouse.x) * 0.08
+            mouse.y += (mouse.ty - mouse.y) * 0.08
+            mouse.energy *= 0.94
+            gl.uniform2f(uRes, canvas.width, canvas.height)
+            gl.uniform1f(uTime, reduceMotion ? 0 : (now - t0) / 1000)
+            gl.uniform2f(uMouse, mouse.x, mouse.y)
+            gl.uniform1f(uEnergy, mouse.energy)
+            gl.uniform3fv(uPos, posArr)
+            gl.uniform4fv(uCol, colArr)
+            gl.drawArrays(gl.TRIANGLES, 0, 3)
+        }
+        raf = requestAnimationFrame(frame)
+
+        return () => {
+            cancelAnimationFrame(raf)
+            window.removeEventListener('resize', resize)
+            window.removeEventListener('mousemove', onMove)
+            triggers.forEach(t => t.kill())
+            gsap.killTweensOf(tween)
+        }
     }, [])
 
-    const orbStyle: React.CSSProperties = {
-        position: 'fixed',
-        width: ORB_SIZE,
-        height: ORB_SIZE,
-        borderRadius: '50%',
-        pointerEvents: 'none',
-        transform: 'translate(-50%, -50%)',
-        willChange: 'transform, opacity, left, top',
-        // mix-blend-mode screen keeps orbs additive on the dark background
-        mixBlendMode: 'screen',
-        filter: 'blur(80px)',
-    }
-
     return (
-        <div
-            aria-hidden="true"
-            className="fixed inset-0 pointer-events-none z-[1] overflow-hidden"
-        >
-            <div ref={orbA} style={{ ...orbStyle, left: '50%', top: '-18%', opacity: 0.55, background: SCENES.hero.aColor }} />
-            <div ref={orbB} style={{ ...orbStyle, left: '105%', top: '30%', opacity: 0.40, background: SCENES.hero.bColor }} />
-            <div ref={orbC} style={{ ...orbStyle, left: '-20%', top: '80%', opacity: 0.18, background: SCENES.hero.cColor }} />
-            <div ref={orbD} style={{ ...orbStyle, left: '80%',  top: '70%', opacity: 0.12, background: SCENES.hero.dColor }} />
+        <div aria-hidden="true" className="fixed inset-0 pointer-events-none z-[1] overflow-hidden">
+            <canvas
+                ref={canvasRef}
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+            />
+            {/* vignette: darken the corners a little for depth */}
+            <div
+                style={{
+                    position: 'absolute', inset: 0,
+                    background: 'radial-gradient(ellipse at center, transparent 55%, rgba(3,3,8,0.4) 100%)',
+                }}
+            />
+            {/* fine film grain removes banding in the dark gradients */}
+            <div
+                style={{
+                    position: 'absolute', inset: 0, opacity: 0.05,
+                    backgroundImage:
+                        "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
+                }}
+            />
         </div>
     )
 }

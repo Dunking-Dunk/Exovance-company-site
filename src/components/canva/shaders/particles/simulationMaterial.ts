@@ -137,14 +137,47 @@ const robotVertices = () => {
     // return allVertices.length > 0 ? new Float32Array(allVertices) : new Float32Array();
 };
 
-const logoVertices = () => {
+const logoGeometry = () => {
     try {
         const { nodes } = useGLTF('/3d/exovance-3d.glb');
-        if (!nodes.Curve003 || !nodes.Curve003.geometry) return new Float32Array();
-        return nodes.Curve003.geometry.attributes.position.array;
-    } catch {
-        return new Float32Array();
+        if (!nodes.Curve003 || !nodes.Curve003.geometry) return { positions: new Float32Array(), index: null };
+        const g = nodes.Curve003.geometry;
+        return { positions: g.attributes.position.array, index: g.index ? g.index.array : null };
+    } catch (e) {
+        // useGLTF throws a promise while the file is still loading. Swallowing it
+        // left the logo empty, so every particle collapsed into one ball. Let React retry.
+        if (e && typeof e.then === 'function') throw e;
+        return { positions: new Float32Array(), index: null };
     }
+};
+
+// The logo mesh has only ~2,300 vertices and big flat faces, so using vertices alone leaves
+// the faces empty and clumps particles on the corners. Scatter points over the triangles instead.
+const sampleSurface = (positions, index, count) => {
+    const tris = index ? index.length / 3 : Math.floor(positions.length / 9);
+    const vert = (t, k) => (index ? index[t * 3 + k] : t * 3 + k) * 3;
+    const cumulative = new Float32Array(tris);
+    let total = 0;
+    for (let t = 0; t < tris; t++) {
+        const a = vert(t, 0), b = vert(t, 1), c = vert(t, 2);
+        const ux = positions[b] - positions[a], uy = positions[b + 1] - positions[a + 1], uz = positions[b + 2] - positions[a + 2];
+        const vx = positions[c] - positions[a], vy = positions[c + 1] - positions[a + 1], vz = positions[c + 2] - positions[a + 2];
+        const cx = uy * vz - uz * vy, cy = uz * vx - ux * vz, cz = ux * vy - uy * vx;
+        total += 0.5 * Math.sqrt(cx * cx + cy * cy + cz * cz);
+        cumulative[t] = total;
+    }
+    let seed = 1337;
+    const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+    const out = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+        const r = rand() * total;
+        let lo = 0, hi = tris - 1;
+        while (lo < hi) { const mid = (lo + hi) >> 1; if (cumulative[mid] < r) lo = mid + 1; else hi = mid; }
+        const a = vert(lo, 0), b = vert(lo, 1), c = vert(lo, 2);
+        const s = Math.sqrt(rand()), u = 1 - s, v = rand() * s, w = 1 - u - v;
+        for (let k = 0; k < 3; k++) out[i * 3 + k] = positions[a + k] * u + positions[b + k] * v + positions[c + k] * w;
+    }
+    return out;
 };
 
 
@@ -196,7 +229,8 @@ class SimulationMaterial extends THREE.ShaderMaterial {
         // Euler XYZ [-PI/2, PI, PI] transforms vertex (x,y,z) → (x, -z, y).
         // After that we auto-normalise to ±1.6 world units so it matches
         // brain / face scale in particle space.
-        const rawLogo = logoVertices();
+        const { positions: rawMesh, index: rawIndex } = logoGeometry();
+        const rawLogo = rawMesh.length >= 9 ? sampleSurface(rawMesh, rawIndex, size * size) : new Float32Array();
         let logoPositions: Float32Array;
         if (rawLogo.length >= 3) {
             const transformed = new Float32Array(rawLogo.length);

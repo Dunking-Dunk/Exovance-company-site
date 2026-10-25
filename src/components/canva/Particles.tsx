@@ -20,11 +20,14 @@ extend({ SimulationMaterial: SimulationMaterial });
 
 
 // Increase simulation size to 128 for a much denser, "Active Theory" style effect (16,384 particles)
-const SIZE = 100;
+// Particle grid side. Phones get 64x64 (4,096 particles) instead of 100x100 (10,000).
+const TRAIL = 12;
+const TRAIL_STEP_MS = 40;
 const POSITIONS = new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0]);
 const UVS = new Float32Array([0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0]);
 
 export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
+    const [SIZE] = useState(() => (typeof window !== 'undefined' && (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches) ? 64 : 100));
     const points = useRef();
     const simulationMaterialRef = useRef();
     const [isReady, setIsReady] = useState(false);
@@ -92,7 +95,12 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
         uFade: { value: 1 },
         uMouse: { value: new THREE.Vector3(-9, -9, 0) },
         uMouseActive: { value: 0 },
+        uTrail: { value: Array.from({ length: TRAIL }, () => new THREE.Vector4(0, 0, 0, 0)) },
     }), []);
+    const trailVel = useRef(Array.from({ length: TRAIL }, () => ({ vx: 0, vy: 0, born: -1e9 })));
+    const trailIdx = useRef(0);
+    const lastTrailAt = useRef(0);
+    const lastRaw = useRef({ x: 0, y: 0, set: false });
 
     const mouse = useRef(new THREE.Vector3());
     // Frame skipping to reduce costly FBO renders. Render every N frames.
@@ -103,6 +111,21 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
 
         const x = (e.clientX / window.innerWidth) * 2 - 1;
         const y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+        // Water wake: remember where the cursor was and which way it was moving
+        const nowMs = performance.now();
+        if (lastRaw.current.set && nowMs - lastTrailAt.current > TRAIL_STEP_MS) {
+            const vx = Math.max(-0.12, Math.min(0.12, x - lastRaw.current.x));
+            const vy = Math.max(-0.12, Math.min(0.12, y - lastRaw.current.y));
+            const slot = trailIdx.current % TRAIL;
+            const tr = points.current?.material.uniforms.uTrail.value[slot];
+            if (tr) { tr.x = x; tr.y = y; trailVel.current[slot] = { vx, vy, born: nowMs }; }
+            trailIdx.current++;
+            lastTrailAt.current = nowMs;
+            lastRaw.current.x = x; lastRaw.current.y = y;
+        } else if (!lastRaw.current.set) {
+            lastRaw.current = { x, y, set: true };
+        }
 
 
         const prevX = mousePosition.current.targetX;
@@ -410,6 +433,16 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
         points.current.material.uniforms.uParticleOffset.value = particleOffset.current;
         points.current.material.uniforms.uMouse.value = mouse.current;
         points.current.material.uniforms.uMouseActive.value = mouseActive.current;
+        // The wake fades out so the particles settle back like water
+        // Each point eases in over 150ms, then fades out quickly, so nothing pops in or out
+        const trail = points.current.material.uniforms.uTrail.value;
+        const nowMs = performance.now();
+        for (let i = 0; i < TRAIL; i++) {
+            const t = trailVel.current[i];
+            const age = (nowMs - t.born) / 1000;
+            const env = age < 0 ? 0 : Math.min(age / 0.15, 1) * Math.exp(-age * 4.5);
+            trail[i].z = t.vx * env; trail[i].w = t.vy * env;
+        }
     });
 
     try {

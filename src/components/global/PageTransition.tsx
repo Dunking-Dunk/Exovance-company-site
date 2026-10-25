@@ -4,22 +4,6 @@ import { useEffect, useRef } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import gsap from 'gsap'
 
-// ─── Grid config ────────────────────────────────────────────
-const COLS = 12
-const ROWS = 8
-const TOTAL = COLS * ROWS
-
-const COLORS = [
-    '#0d0221',
-    '#1a0533',
-    '#2d1b69',
-    '#4c1d95',
-    '#7c3aed',
-    '#1e1b4b',
-    '#06b6d4',
-    '#0e0e1a',
-]
-
 // ─── Module-level singleton ─────────────────────────────────
 // Any component can call `navigateTo(href)` without needing a provider.
 type NavFn = (href: string) => void
@@ -34,101 +18,93 @@ export const navigateTo: NavFn = (href) => {
 }
 
 // ─── Component ──────────────────────────────────────────────
+// A soft dark veil with a faint violet glow, the Exovance mark and a thin line that fills.
 export default function PageTransition() {
     const pathname = usePathname()
     const router = useRouter()
-    const gridRef = useRef<HTMLDivElement>(null)
+    const veilRef = useRef<HTMLDivElement>(null)
+    const markRef = useRef<HTMLImageElement>(null)
+    const lineRef = useRef<HTMLDivElement>(null)
     const tlRef = useRef<gsap.core.Timeline | null>(null)
     const awaitingReveal = useRef(false)
+    const failsafe = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-    const getBlocks = () =>
-        gridRef.current
-            ? Array.from(gridRef.current.querySelectorAll<HTMLElement>('.ptx-block'))
-            : []
+    const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-    const randomiseColors = (blocks: HTMLElement[]) => {
-        blocks.forEach(b => {
-            b.style.backgroundColor = COLORS[Math.floor(Math.random() * COLORS.length)]
-        })
-    }
-
-    const cover = (blocks: HTMLElement[]): Promise<void> =>
+    const cover = (): Promise<void> =>
         new Promise(resolve => {
-            randomiseColors(blocks)
+            const veil = veilRef.current
+            if (!veil) { resolve(); return }
             tlRef.current?.kill()
+            veil.style.pointerEvents = 'auto'
+            const fast = reduced()
             tlRef.current = gsap.timeline({ onComplete: resolve })
-            tlRef.current.set(blocks, { scaleY: 0, transformOrigin: 'top center' })
-            tlRef.current.to(blocks, {
-                scaleY: 1,
-                duration: 0.22,
-                ease: 'power4.inOut',
-                stagger: { each: 0.006, from: 'random' },
-            })
+            tlRef.current
+                .set(lineRef.current, { scaleX: 0 })
+                .set(markRef.current, { y: 10, opacity: 0 })
+                .to(veil, { opacity: 1, duration: fast ? 0.15 : 0.45, ease: 'power2.inOut' })
+            if (!fast) {
+                tlRef.current
+                    .to(markRef.current, { y: 0, opacity: 1, duration: 0.4, ease: 'power3.out' }, 0.15)
+                    .to(lineRef.current, { scaleX: 1, duration: 0.45, ease: 'power2.inOut' }, 0.2)
+            }
         })
 
-    const reveal = (blocks: HTMLElement[]) => {
-        randomiseColors(blocks)
+    const reveal = () => {
+        const veil = veilRef.current
+        if (!veil) return
+        if (failsafe.current) clearTimeout(failsafe.current)
         tlRef.current?.kill()
-        tlRef.current = gsap.timeline()
-        tlRef.current.to(blocks, {
-            scaleY: 0,
-            transformOrigin: 'bottom center',
-            duration: 0.22,
-            ease: 'power4.inOut',
-            stagger: { each: 0.006, from: 'random' },
-        })
+        const fast = reduced()
+        tlRef.current = gsap.timeline({ onComplete: () => { veil.style.pointerEvents = 'none' } })
+        tlRef.current
+            .to(markRef.current, { y: -8, opacity: 0, duration: fast ? 0.1 : 0.3, ease: 'power2.in' })
+            .to(veil, { opacity: 0, duration: fast ? 0.15 : 0.6, ease: 'power2.out' }, fast ? 0 : 0.15)
     }
 
     // Register the singleton navigate function
     useEffect(() => {
         _navigateTo = async (href: string) => {
             if (href === window.location.pathname) return
-            const blocks = getBlocks()
-            if (!blocks.length) { router.push(href); return }
+            if (!veilRef.current) { router.push(href); return }
 
-            // Phase 1 — cover screen
-            await cover(blocks)
+            // Phase 1: fade the veil in
+            await cover()
 
-            // Phase 2 — push route while screen is covered
+            // Phase 2: push the route while the screen is covered
             awaitingReveal.current = true
             router.push(href)
+            // Never leave the visitor stuck behind the veil if the route does not change
+            failsafe.current = setTimeout(() => { awaitingReveal.current = false; reveal() }, 4000)
         }
         return () => { _navigateTo = null }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [router])
 
-    // Phase 3 — reveal on new page mount
+    // Phase 3: fade out once the new page has mounted
     useEffect(() => {
         if (!awaitingReveal.current) return
         awaitingReveal.current = false
-        const blocks = getBlocks()
-        if (blocks.length) reveal(blocks)
+        reveal()
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pathname])
 
     return (
         <div
-            ref={gridRef}
+            ref={veilRef}
             aria-hidden="true"
-            className="fixed inset-0 pointer-events-none z-[9990]"
+            className="fixed inset-0 z-[9990] pointer-events-none flex flex-col items-center justify-center"
             style={{
-                display: 'grid',
-                gridTemplateColumns: `repeat(${COLS}, 1fr)`,
-                gridTemplateRows: `repeat(${ROWS}, 1fr)`,
+                opacity: 0,
+                background:
+                    'radial-gradient(ellipse at 50% 40%, rgba(76,29,149,0.35) 0%, rgba(6,6,12,0.97) 60%), #06060c',
             }}
         >
-            {Array.from({ length: TOTAL }, (_, i) => (
-                <div
-                    key={i}
-                    className="ptx-block"
-                    style={{
-                        backgroundColor: COLORS[i % COLORS.length],
-                        transform: 'scaleY(0)',
-                        transformOrigin: 'top center',
-                        outline: '0.5px solid rgba(124,58,237,0.07)',
-                    }}
-                />
-            ))}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img ref={markRef} src="/logo/only logo white.png" alt="" className="h-10 w-auto opacity-0" />
+            <div className="mt-6 h-px w-40 overflow-hidden rounded-full bg-violet-400/15">
+                <div ref={lineRef} className="h-full w-full origin-left bg-violet-300/80" style={{ transform: 'scaleX(0)' }} />
+            </div>
         </div>
     )
 }

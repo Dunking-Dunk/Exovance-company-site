@@ -27,34 +27,10 @@ export interface FoundingTeamMember {
 export const foundingTeam: FoundingTeamMember[] = [
     {
         name: "Hursun",
-        role: "CEO",
+        role: "Founder",
         image: "/team/hursun2.webp",
         description: "Tech founder, community lead, and full Stack developer with 5+ years in web and AI"
     },
-    {
-        name: "Shantosh",
-        role: "CTO",
-        image: "/team/shan-placeholder.jpg",
-        description: "AI architect, innovation leader with 10+ years in machine learning"
-    },
-    {
-        name: "Dhayananth",
-        role: "CMO",
-        image: "/team/dhaya2.webp",
-        description: "Operations expert, growth strategist focused on scaling tech companies"
-    },
-    {
-        name: "Avinash",
-        role: "CHO",
-        image: "/team/avinash.webp",
-        description: "Operations expert, growth strategist focused on scaling tech companies"
-    },
-    {
-        name: "Manovikram",
-        role: "CDO",
-        image: "/team/mano.webp",
-        description: "Operations expert, growth strategist focused on scaling tech companies"
-    }
 ];
 
 export interface Founder {
@@ -74,7 +50,7 @@ export interface Founder {
 export const founders: Founder[] = [
     {
         name: "Hursun SS",
-        role: "CEO & Tech Lead",
+        role: "Founder",
         photo: "/team/hursun2.webp",
         oneLiner: "Built the CP-SAT timetabling engine from scratch while preparing for finals. Now shipping it to real colleges.",
         bio: "Final-year student at Rajalakshmi Engineering College and president of its largest tech club. Full-stack across React, Next.js, Django, Three.js, and React Native — with AI and IoT layered in. Leads all technical architecture at Exovance.",
@@ -83,54 +59,6 @@ export const founders: Founder[] = [
             linkedin: "https://www.linkedin.com/in/hursun-ss-377659233/",
             github: "https://github.com/Dunking-Dunk"
         }
-    },
-    {
-        name: "Shanthosh S",
-        role: "AI Lead",
-        photo: "/team/shan-placeholder.jpg",
-        oneLiner: "Smart India Hackathon 2024 Finalist. Leads AI architecture — LangGraph agents, RAG pipelines, and the intelligence layer inside Campus Suite.",
-        bio: "Computer Science student and Technical Lead of Intellexa (1,600+ members). Built AI and RAG models for coal mining operations in SIH 2024. Now architecting the LangGraph-based agent system that powers Campus Intelligence.",
-        expertise: ["Python", "TensorFlow", "LangChain", "FastAPI", "YOLOv8", "Scikit-Learn", "GCP"],
-        links: {
-            linkedin: "https://www.linkedin.com/in/shanthosh-s-3a1930257/",
-            github: "https://github.com/aijurist",
-        },
-    },
-    {
-        name: "Dhayananth C",
-        role: "Co-Founder & Product",
-        photo: "/team/dhaya3.webp",
-        oneLiner: "Designed and built the product layer — full stack, front to back — from a dorm room in SRM.",
-        bio: "Final-year AIML student at SRM University. Owns the product and business side of Exovance: positioning, UX, and go-to-market. Also builds full-stack — TypeScript, Next.js, Node.js, PostgreSQL.",
-        expertise: ["TypeScript", "Next.js", "Node.js", "PostgreSQL", "UX"],
-        links: {
-            linkedin: "#",
-            github: "#",
-        },
-    },
-    {
-        name: "Avinash S",
-        role: "Software & IoT Developer",
-        photo: "/team/avinash.webp",
-        oneLiner: "An innovative developer focused on IoT systems, custom programming languages, and AI-driven solutions.",
-        bio: "A Computer Science Engineering student specializing in IoT and systems programming. A Smart India Hackathon 2024 Finalist for developing an IoT-based system for coal mines. He has also built a custom programming language and compiler from scratch.He serves as the IoT Lead for the Intellexa Technical Club.",
-        expertise: ["C++", "Go", "Python", "LLVM", "Flex", "Bison", "Docker", "Azure", "IoT", "Arduino", "Esp32"],
-        links: {
-            linkedin: "https://linkedin.com/in/avinash-s",
-            github: "https://github.com/alphastar-avi",
-        },
-    },
-    {
-        name: "MANOVIKRAM K",
-        role: "Creative Developer & AI Enthusiast",
-        photo: "/team/mano.webp",
-        oneLiner: "A creative developer passionate about solving real-world problems with a blend of technical expertise and design thinking.",
-        bio: "A Mechanical Engineering student with hands-on experience in AI model deployment, full-stack development, and UI/UX design. Experienced as a 3D Artist and Frontend Intern, with a strong foundation in building intelligent systems using frameworks like YOLOV5 and FastAPI. Currently serving as the Vice President of the DEVS Club at Rajalakshmi Engineering College.",
-        expertise: ["Python", "FastAPI", "Django", "React", "YOLOV5", "Blender", "Figma"],
-        links: {
-            linkedin: "https://linkedin.com/in/manovikramk",
-            github: "https://github.com/manov-ik",
-        },
     },
 ];
 
@@ -221,36 +149,10 @@ type Member = {
 
 export const members: Member[] = [
     {
-        name: "Avinash",
-        role: "Hardware Developer",
-        photo: "/team/avinash.webp",
-        bio: "Designs and develops innovative hardware solutions, specializing in embedded systems and IoT devices.",
-        links: { linkedin: "#", github: "#" },
-    },
-    {
         name: "Hursun",
-        role: "Full Stack Developer & AI",
+        role: "Founder",
         photo: "/team/hursun2.webp",
         bio: "Building scalable full-stack applications while developing cutting-edge AI solutions and machine learning models.",
         links: { linkedin: "#" },
-    },
-    {
-        name: "Dhayanath",
-        role: "Marketing & Finance",
-        photo: "/team/dhaya2.webp",
-        bio: "Drives strategic marketing initiatives and manages financial operations to fuel company growth and market expansion.",
-        links: { github: "#" },
-    },
-    {
-        name: "Shantosh",
-        role: "AI Developer",
-        photo: "/team/shantosh.webp",
-        bio: "Developing advanced artificial intelligence algorithms and neural networks for next-generation applications.",
-    },
-    {
-        name: "Mano Vikram",
-        role: "UI/UX Designer & 3D Modeler",
-        photo: "/team/mano.webp",
-        bio: "Creating intuitive user experiences and stunning 3D visualizations that bring digital concepts to life.",
     },
 ];

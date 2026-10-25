@@ -24,7 +24,7 @@ export const Common = ({ color }: { color?: string }) => (
  * but without multiple webgl renders or scissor cutouts, meaning 
  * PostProcessing / EffectComposer works globally and flawlessly!
  */
-function DOMSyncGroup({ track, children, orbit }: any) {
+function DOMSyncGroup({ track, children, orbit, fit }: any) {
     const groupRef = useRef<THREE.Group>(null)
     const { camera, size } = useThree()
 
@@ -56,6 +56,9 @@ function DOMSyncGroup({ track, children, orbit }: any) {
             // Scale NDC by the world footprint size to get correct 3D positional shift
             groupRef.current.position.x = ndcX * (widthAtZ / 2)
             groupRef.current.position.y = ndcY * (heightAtZ / 2)
+
+            // Viewport-sized children are cropped to the element so they do not spill over its neighbours
+            if (fit) groupRef.current.scale.set(rect.width / screenW, rect.height / screenH, 1)
         }
     })
 
@@ -70,7 +73,8 @@ function DOMSyncGroup({ track, children, orbit }: any) {
 const View = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & {
     children: React.ReactNode
     orbit?: boolean;
-}>(({ children, orbit, ...props }, ref) => {
+    fit?: boolean;
+}>(({ children, orbit, fit, ...props }, ref) => {
     const localRef = useRef<HTMLDivElement>(null)
     useImperativeHandle(ref, () => localRef.current!)
 
@@ -78,7 +82,7 @@ const View = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & {
         <>
             <div ref={localRef} {...props} />
             <Three>
-                <DOMSyncGroup track={localRef} orbit={orbit}>
+                <DOMSyncGroup track={localRef} orbit={orbit} fit={fit}>
                     {children}
                 </DOMSyncGroup>
             </Three>

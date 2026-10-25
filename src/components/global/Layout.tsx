@@ -32,8 +32,6 @@ const TransparentPlane: any = dynamic(() => import('@/components/canva/Transpare
 
 if (typeof window !== 'undefined') {
     import('@/components/canva/View');
-    import('@/components/canva/Particles');
-    import('@/components/canva/TransparentPlane');
 }
 
 type Props = {
@@ -213,6 +211,7 @@ const Layout = ({ children }: Props) => {
                 />}
                 {children}
                 <Scene
+                    bloom={render3DComponents.showParticles}
                     style={{
                         position: 'fixed',
                         top: 0,
@@ -234,7 +233,7 @@ const Layout = ({ children }: Props) => {
                     {/* {render3DComponents.showTransparentPlane && <TransparentPlane />} */}
                     {/* <AdaptiveDpr pixelated /> */}
                 </View>
-                {isLoading && <LoadingScreen onLoadingComplete={handleLoadingComplete} blockUntilParticlesReady={render3DComponents.showParticles} particlesReady={particlesReady} />}
+                {isLoading && <LoadingScreen preload={render3DComponents.showParticles} onLoadingComplete={handleLoadingComplete} blockUntilParticlesReady={render3DComponents.showParticles} particlesReady={particlesReady} />}
                 <Footer />
             </div>
         </ReactLenis >
