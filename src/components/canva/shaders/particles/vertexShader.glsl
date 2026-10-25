@@ -21,7 +21,8 @@ uniform float uRadiusScale;
 uniform float uCurrentPosition;
 uniform float uParticleOffset;
 uniform float uMouseActive;// 0 = mouse never moved, >0 = timestamp of last move
-uniform vec4 uTrail[12];// recent cursor positions (xy) with fading velocity (zw)
+uniform vec4 uTrail[12];
+uniform float uPixelRatio;// keeps particles the same on-screen size at any resolution// recent cursor positions (xy) with fading velocity (zw)
 
 varying vec4 vColor;
 varying float vSparkle;
@@ -145,5 +146,5 @@ void main(){
     baseSize*=(.5+randomScale);
     
     float pulseSize=baseSize*(1.+.4*pulseEffect);
-    gl_PointSize=clamp(pulseSize,POINT_SIZE_MIN,POINT_SIZE_MAX);
+    gl_PointSize=clamp(pulseSize,POINT_SIZE_MIN,POINT_SIZE_MAX)*uPixelRatio;
 }

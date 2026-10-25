@@ -58,7 +58,10 @@ function DOMSyncGroup({ track, children, orbit, fit }: any) {
             groupRef.current.position.y = ndcY * (heightAtZ / 2)
 
             // Viewport-sized children are cropped to the element so they do not spill over its neighbours
+            // Always set the scale: the tunnel can hand a group that was cropped to one element
+            // (the footer) over to another view, which then stayed squashed
             if (fit) groupRef.current.scale.set(rect.width / screenW, rect.height / screenH, 1)
+            else groupRef.current.scale.set(1, 1, 1)
         }
     })
 

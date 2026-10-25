@@ -95,6 +95,7 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
         uFade: { value: 1 },
         uMouse: { value: new THREE.Vector3(-9, -9, 0) },
         uMouseActive: { value: 0 },
+        uPixelRatio: { value: 1 },
         uTrail: { value: Array.from({ length: TRAIL }, () => new THREE.Vector4(0, 0, 0, 0)) },
     }), []);
     const trailVel = useRef(Array.from({ length: TRAIL }, () => ({ vx: 0, vy: 0, born: -1e9 })));
@@ -433,6 +434,7 @@ export const Particles = ({ onReady = null }: { onReady?: () => void }) => {
         points.current.material.uniforms.uParticleOffset.value = particleOffset.current;
         points.current.material.uniforms.uMouse.value = mouse.current;
         points.current.material.uniforms.uMouseActive.value = mouseActive.current;
+        points.current.material.uniforms.uPixelRatio.value = gl.getPixelRatio();
         // The wake fades out so the particles settle back like water
         // Each point eases in over 150ms, then fades out quickly, so nothing pops in or out
         const trail = points.current.material.uniforms.uTrail.value;
