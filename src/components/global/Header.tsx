@@ -125,6 +125,9 @@ const Header = () => {
 
     return (
         <div className='fixed w-full top-0 z-50'>
+            {pathname === '/product/campus-suite' && (
+                <div aria-hidden='true' className='pointer-events-none absolute inset-x-0 top-0 -z-10 h-24 bg-[#06060c]/60 backdrop-blur-md' style={{ maskImage: 'linear-gradient(to bottom, black 55%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, black 55%, transparent)' }} />
+            )}
             <div className='flex justify-between items-center w-full md:px-12 px-4 py-6'>
                 <div className='cursor-pointer z-[500] flex items-center gap-3'>
                     <Image

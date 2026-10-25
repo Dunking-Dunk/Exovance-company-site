@@ -12,9 +12,31 @@ import { EXO_TOKENS as TOKENS } from './exo-tokens';
 import { BanIcon, CheckCircle2, ChevronRight, Clock, Info, LayoutGrid, RotateCcw, Users } from 'lucide-react';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-const FIRST_HOUR = 8;
-const HOURS = 9; // 8:00 to 17:00
 const ROW_H = 40;
+// The college's period grid. Every session starts and ends on one of these boundaries.
+type Row = { start: string; end: string; h: number; gap?: string };
+const ROWS: Row[] = [
+    { start: '08:00', end: '08:50', h: ROW_H },
+    { start: '08:50', end: '09:40', h: ROW_H },
+    { start: '09:40', end: '10:00', h: 14, gap: 'Break' },
+    { start: '10:00', end: '10:50', h: ROW_H },
+    { start: '10:50', end: '11:40', h: ROW_H },
+    { start: '11:40', end: '12:30', h: ROW_H },
+    { start: '12:30', end: '13:20', h: 20, gap: 'Lunch' },
+    { start: '13:20', end: '14:10', h: ROW_H },
+    { start: '14:10', end: '15:00', h: ROW_H },
+    { start: '15:00', end: '15:50', h: ROW_H },
+    { start: '15:50', end: '16:40', h: ROW_H },
+];
+const GRID_H = ROWS.reduce((n, row) => n + row.h, 0);
+const yOf = (t: string, atEnd: boolean) => {
+    let y = 0;
+    for (const row of ROWS) {
+        if ((atEnd ? row.end : row.start) === t) return atEnd ? y + row.h : y;
+        y += row.h;
+    }
+    return 0;
+};
 
 type Session = { day: number; start: string; end: string };
 type Offering = {
@@ -50,7 +72,7 @@ const BUCKETS: Bucket[] = [
         { id: 'o9', courseId: 'CS312', code: 'CS312', name: 'Information Security', faculty: 'Dr. Nisha A', seatsLeft: 0, maxSeats: 60, sessions: [s(0, '10:50', '11:40'), s(3, '10:50', '11:40')] },
     ] },
     { id: 'b4', name: 'Open elective', group: 2, offerings: [
-        { id: 'o10', courseId: 'AI301', code: 'AI301', name: 'Machine Learning', faculty: 'Prof. Tara J', seatsLeft: 20, maxSeats: 40, sessions: [s(1, '11:40', '12:30'), s(4, '11:40', '12:30')] },
+        { id: 'o10', courseId: 'MG301', code: 'MG301', name: 'Principles of Management', faculty: 'Prof. Tara J', seatsLeft: 20, maxSeats: 40, sessions: [s(1, '11:40', '12:30'), s(4, '11:40', '12:30')] },
         { id: 'o11', courseId: 'HS301', code: 'HS301', name: 'Entrepreneurship', faculty: 'Dr. Manoj V', seatsLeft: 33, maxSeats: 40, sessions: [s(2, '11:40', '12:30'), s(4, '08:00', '08:50')] },
         { id: 'o12', courseId: 'MA311', code: 'MA311', name: 'Operations Research', faculty: 'Prof. Ishita G', seatsLeft: 15, maxSeats: 40, sessions: [s(1, '13:20', '14:10'), s(3, '13:20', '14:10')] },
     ] },
@@ -160,7 +182,7 @@ const StudentChoiceDemo = () => {
 
             <div className="flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm" style={{ background: 'rgba(124,58,237,0.08)', borderColor: 'rgba(124,58,237,0.25)' }}>
                 <Info size={15} className="mt-0.5 shrink-0" style={{ color: 'var(--exo-primary)' }} />
-                <p style={{ color: 'var(--exo-muted)' }}>Pick one offering in each group. Your timetable updates on the right. Options that would clash are switched off.</p>
+                <p style={{ color: 'var(--exo-muted)' }}>Pick one offering in each group. Your timetable updates <span className="xl:hidden">below</span><span className="hidden xl:inline">on the right</span>. Options that would clash are switched off.</p>
             </div>
 
             <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] xl:items-start">
@@ -327,15 +349,18 @@ const Preview = ({ picked, preview, previewClash }: { picked: Offering[]; previe
                     </div>
                     <div className="grid border-l border-t" style={{ gridTemplateColumns: '2.75rem repeat(5, minmax(0, 1fr))', borderColor: 'var(--exo-border)' }}>
                         <div>
-                            {Array.from({ length: HOURS }).map((_, h) => (
-                                <div key={h} className="border-b border-r pr-1 pt-0.5 text-right text-[10px]" style={{ height: ROW_H, borderColor: 'var(--exo-border)', color: 'var(--exo-muted)' }}>{String(FIRST_HOUR + h).padStart(2, '0')}:00</div>
+                            {ROWS.map((row) => (
+                                <div key={row.start} className="border-b border-r pr-1 pt-0.5 text-right text-[10px]" style={{ height: row.h, borderColor: 'var(--exo-border)', color: 'var(--exo-muted)', fontSize: row.gap ? 8 : undefined }}>{row.gap ?? row.start}</div>
                             ))}
                         </div>
                         {DAYS.map((_, d) => (
-                            <div key={d} className="relative border-r" style={{ height: ROW_H * HOURS, borderColor: 'var(--exo-border)', backgroundImage: `repeating-linear-gradient(to bottom, transparent 0, transparent ${ROW_H - 1}px, var(--exo-border) ${ROW_H - 1}px, var(--exo-border) ${ROW_H}px)` }}>
+                            <div key={d} className="relative border-r" style={{ height: GRID_H, borderColor: 'var(--exo-border)' }}>
+                                {ROWS.map((row) => (
+                                    <div key={row.start} className="border-b" style={{ height: row.h, borderColor: 'var(--exo-border)', background: row.gap ? 'rgba(255,255,255,0.025)' : undefined }} />
+                                ))}
                                 {entries.flatMap(({ o, ghost }) => o.sessions.filter((x) => x.day === d).map((x, i) => {
-                                    const top = ((mins(x.start) - FIRST_HOUR * 60) / 60) * ROW_H;
-                                    const height = ((mins(x.end) - mins(x.start)) / 60) * ROW_H - 2;
+                                    const top = yOf(x.start, false);
+                                    const height = yOf(x.end, true) - top - 2;
                                     const color = ghost && previewClash ? '#f87171' : colorOf(o.code);
                                     return (
                                         <div key={`${o.id}-${i}`} className="absolute left-0.5 right-0.5 overflow-hidden rounded px-1.5 py-0.5 text-[10px] leading-tight" style={{ top: top + 1, height, background: `${color}${ghost ? '1f' : '33'}`, borderLeft: `3px ${ghost ? 'dashed' : 'solid'} ${color}`, outline: ghost ? `1px dashed ${color}` : 'none', color: 'var(--exo-fg)', zIndex: ghost ? 2 : 1 }}>

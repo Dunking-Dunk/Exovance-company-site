@@ -3,6 +3,7 @@ const faqs = [
     { q: 'Does it replace our ERP?', a: 'No, it works alongside it.' },
     { q: 'Who owns our data?', a: 'You do.' },
     { q: 'What do you need from us?', a: 'Your course structure and constraints.' },
+    { q: 'What if our process is different?', a: 'Tell us how timetables and student choice work today. A few small adjustments may be needed, and we agree them with you first.' },
 ];
 
 const FaqSection = () => (
