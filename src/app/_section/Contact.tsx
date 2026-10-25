@@ -64,14 +64,12 @@ const ContactSection = () => {
                         viewport={{ once: true }}
                         transition={{ duration: 0.8, delay: 0.3 }}
                     >
-                        <a
-                            href="https://waitlist.exovance.in"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <Link
+                            href="/product/campus-suite#contact"
                             className="inline-flex items-center justify-center px-7 py-3 rounded-full bg-violet-600/80 hover:bg-violet-500/90 text-white text-xs font-mono tracking-[0.25em] uppercase transition-all duration-300 shadow-lg shadow-violet-900/20"
                         >
                             Get Early Access — Campus Suite
-                        </a>
+                        </Link>
                         <Link
                             href="/contact"
                             className="inline-flex items-center justify-center px-7 py-3 rounded-full border border-violet-500/25 hover:border-violet-400/50 text-customGrayLight hover:text-violet-200 text-xs font-mono tracking-[0.25em] uppercase transition-all duration-300"
@@ -88,8 +86,6 @@ const ContactSection = () => {
                         viewport={{ once: true }}
                         transition={{ duration: 0.7, delay: 0.4 }}
                     >
-                        <a href="mailto:exovancelab@gmail.com" className="font-mono text-[10px] tracking-[0.3em] text-violet-400/50 hover:text-violet-300 transition-colors uppercase">exovancelab@gmail.com</a>
-                        <span className="hidden sm:inline text-violet-500/20">/</span>
                         <a href="tel:+918056201341" className="font-mono text-[10px] tracking-[0.3em] text-violet-400/50 hover:text-violet-300 transition-colors uppercase">+91 80562 01341</a>
                     </motion.div>
                 </div>

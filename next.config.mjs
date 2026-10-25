@@ -7,6 +7,12 @@ withPWA({
   })
 
   
-const nextConfig = {};
+const nextConfig = {
+  async redirects() {
+    return [
+      { source: '/colleges', destination: '/product/campus-suite', permanent: true },
+    ];
+  },
+};
 
 export default nextConfig;

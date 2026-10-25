@@ -1,158 +1,113 @@
-import nodemailer from 'nodemailer';
+import { randomUUID } from 'crypto';
+import { storeEnquiry, type Enquiry } from '@/lib/enquiry-store';
 
 export const runtime = 'nodejs';
 
-type ContactPayload = {
-    name: string;
-    email: string;
-    subject: string;
-    message: string;
-    website?: string;
-};
+const MAX_PER_HOUR = 5;
+const HOUR = 60 * 60 * 1000;
+const MIN_FILL_MS = 3000;
+const attempts = new Map<string, number[]>();
 
-const emailAttempts = new Map<string, number[]>();
-const MAX_EMAILS_PER_DAY = 3;
-const DAY_IN_MS = 24 * 60 * 60 * 1000;
+const LIMITS = { name: 120, college: 200, role: 120, email: 200, phone: 40, note: 2000 } as const;
 
-const cleanupOldAttempts = () => {
+const clientIp = (req: Request) =>
+    req.headers.get('x-forwarded-for')?.split(',')[0].trim() || req.headers.get('x-real-ip') || 'unknown';
+
+const rateLimited = (ip: string) => {
     const now = Date.now();
-    Array.from(emailAttempts.entries()).forEach(([ip, timestamps]) => {
-        const validTimestamps = timestamps.filter((time: number) => now - time < DAY_IN_MS);
-        if (validTimestamps.length === 0) {
-            emailAttempts.delete(ip);
-        } else {
-            emailAttempts.set(ip, validTimestamps);
-        }
-    });
+    const recent = (attempts.get(ip) || []).filter((t) => now - t < HOUR);
+    if (recent.length >= MAX_PER_HOUR) {
+        attempts.set(ip, recent);
+        return true;
+    }
+    attempts.set(ip, [...recent, now]);
+    return false;
 };
 
-const checkRateLimit = (ip: string): { allowed: boolean; remaining: number } => {
-    cleanupOldAttempts();
+const escapeHtml = (s: string) =>
+    s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-    const now = Date.now();
-    const attempts = emailAttempts.get(ip) || [];
-    const recentAttempts = attempts.filter(time => now - time < DAY_IN_MS);
+const str = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 
-    const remaining = Math.max(0, MAX_EMAILS_PER_DAY - recentAttempts.length);
-    const allowed = recentAttempts.length < MAX_EMAILS_PER_DAY;
-
-    if (allowed) {
-        recentAttempts.push(now);
-        emailAttempts.set(ip, recentAttempts);
+async function sendEmail(e: Enquiry): Promise<boolean> {
+    const { RESEND_API_KEY, CONTACT_FORM_TO, CONTACT_FORM_FROM } = process.env;
+    if (!RESEND_API_KEY || !CONTACT_FORM_TO || !CONTACT_FORM_FROM) {
+        console.error('[enquiry] email not configured (RESEND_API_KEY, CONTACT_FORM_TO, CONTACT_FORM_FROM)');
+        return false;
     }
-
-    return { allowed, remaining: remaining - (allowed ? 1 : 0) };
-};
-
-const getClientIP = (req: Request): string => {
-    // Try to get real IP from headers (for proxies/CDNs)
-    const forwarded = req.headers.get('x-forwarded-for');
-    const realIP = req.headers.get('x-real-ip');
-
-    if (forwarded) {
-        return forwarded.split(',')[0].trim();
+    const rows: [string, string][] = [
+        ['Name', e.name], ['College', e.college], ['Role', e.role],
+        ['Email', e.email], ['Phone', e.phone], ['Note', e.note || '(none)'],
+    ];
+    try {
+        const res = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                from: CONTACT_FORM_FROM,
+                to: CONTACT_FORM_TO.split(',').map((a) => a.trim()).filter(Boolean),
+                reply_to: e.email,
+                subject: `Enquiry: ${e.college} (${e.name}, ${e.role})`,
+                text: rows.map(([k, v]) => `${k}: ${v}`).join('\n') + `\n\nReference: ${e.id}`,
+                html:
+                    `<div style="font-family:system-ui,sans-serif;color:#222">` +
+                    rows.map(([k, v]) => `<p><strong>${k}:</strong> ${escapeHtml(v).replace(/\n/g, '<br>')}</p>`).join('') +
+                    `<p style="color:#888;font-size:12px">Reference: ${e.id}</p></div>`,
+            }),
+        });
+        if (!res.ok) console.error('[enquiry] resend error', res.status, await res.text());
+        return res.ok;
+    } catch (err) {
+        console.error('[enquiry] resend request failed', err);
+        return false;
     }
-    if (realIP) {
-        return realIP;
-    }
-
-    // Fallback to a default for development
-    return 'unknown-ip';
-};
-
-const isValidEmail = (email: string) => /[^\s@]+@[^\s@]+\.[^\s@]+/.test(email);
+}
 
 export async function POST(req: Request) {
+    let body: Record<string, unknown>;
     try {
-        // Rate limiting check
-        const clientIP = getClientIP(req);
-        const rateLimitResult = checkRateLimit(clientIP);
-
-        if (!rateLimitResult.allowed) {
-            return Response.json({
-                error: 'Rate limit exceeded. You can send a maximum of 3 messages per day.',
-                remaining: rateLimitResult.remaining,
-                resetTime: 'in 24 hours'
-            }, { status: 429 });
-        }
-
-        const body = (await req.json()) as Partial<ContactPayload>;
-
-        if (!body) {
-            return Response.json({ error: 'Invalid request' }, { status: 400 });
-        }
-
-        const { name, email, subject, message, website } = body;
-
-        // Honeypot check
-        if (website) {
-            return Response.json({ ok: true }, { status: 200 });
-        }
-
-        if (!name || !email || !subject || !message) {
-            return Response.json({ error: 'Missing required fields' }, { status: 400 });
-        }
-
-        if (!isValidEmail(email)) {
-            return Response.json({ error: 'Invalid email address' }, { status: 400 });
-        }
-
-        const {
-            SMTP_HOST,
-            SMTP_PORT,
-            SMTP_USER,
-            SMTP_PASS,
-            SMTP_FROM,
-            SMTP_TO,
-        } = process.env as Record<string, string | undefined>;
-
-        if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS) {
-            return Response.json({ error: 'Email service not configured' }, { status: 500 });
-        }
-
-        const transporter = nodemailer.createTransport({
-            host: SMTP_HOST,
-            port: Number(SMTP_PORT) || 587,
-            secure: Number(SMTP_PORT) === 465, // true for 465, false for other ports
-            auth: {
-                user: SMTP_USER,
-                pass: SMTP_PASS,
-            },
-        });
-
-        const toAddress = SMTP_TO || SMTP_FROM || 'contact@exovance.in';
-
-        const info = await transporter.sendMail({
-            from: SMTP_FROM || `Exovance <${SMTP_USER}>`,
-            to: toAddress,
-            replyTo: email,
-            subject: `[Contact] ${subject}`,
-            text: `New contact inquiry from ${name} <${email}>
-
-Subject: ${subject}
-
-Message:
-${message}
-`,
-            html: `
-        <div style="font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color: #222;">
-          <h2>New Contact Inquiry</h2>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Subject:</strong> ${subject}</p>
-          <p><strong>Message:</strong></p>
-          <pre style="white-space: pre-wrap; font-family: inherit;">${message}</pre>
-        </div>
-      `,
-        });
-
-        return Response.json({
-            ok: true,
-            id: info.messageId,
-            remaining: rateLimitResult.remaining
-        });
-    } catch (err: any) {
-        console.error('Contact POST error:', err);
-        return Response.json({ error: 'Failed to send message' }, { status: 500 });
+        body = await req.json();
+    } catch {
+        return Response.json({ error: 'Invalid request' }, { status: 400 });
     }
+
+    // Spam protection: honeypot and a minimum fill time. Bots get a silent "success".
+    const startedAt = Number(body.startedAt);
+    if (str(body.website, 100) || !Number.isFinite(startedAt) || Date.now() - startedAt < MIN_FILL_MS) {
+        return Response.json({ ok: true });
+    }
+
+    const ip = clientIp(req);
+    if (rateLimited(ip)) {
+        return Response.json({ error: 'Too many enquiries from this connection. Please try again later.' }, { status: 429 });
+    }
+
+    const enquiry: Enquiry = {
+        id: randomUUID(),
+        receivedAt: new Date().toISOString(),
+        name: str(body.name, LIMITS.name),
+        college: str(body.college, LIMITS.college),
+        role: str(body.role, LIMITS.role),
+        email: str(body.email, LIMITS.email),
+        phone: str(body.phone, LIMITS.phone),
+        note: str(body.note, LIMITS.note),
+        ip,
+    };
+
+    if (!enquiry.name || !enquiry.college || !enquiry.role || !enquiry.email || !enquiry.phone) {
+        return Response.json({ error: 'Please fill in all required fields.' }, { status: 400 });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(enquiry.email) || /[\r\n]/.test(enquiry.email)) {
+        return Response.json({ error: 'Please enter a valid email address.' }, { status: 400 });
+    }
+    if (!/^[+()\d\s.-]{7,}$/.test(enquiry.phone)) {
+        return Response.json({ error: 'Please enter a valid phone number.' }, { status: 400 });
+    }
+
+    await storeEnquiry(enquiry);
+    const emailed = await sendEmail(enquiry);
+    if (!emailed) console.error(`[enquiry] ${enquiry.id} stored but email failed`);
+
+    // The enquiry is stored either way, so the visitor is never told it was lost.
+    return Response.json({ ok: true });
 }

@@ -62,13 +62,6 @@ const FinalCTASection = () => {
                             <span className="text-customGrayLight font-semibold text-lg">Get in touch to deploy</span>
                             <span className="text-violet-400/60 group-hover:text-violet-400 group-hover:translate-x-1 transition-all duration-300 text-xl">&rarr;</span>
                         </Link>
-                        <a
-                            href="mailto:hello@exovance.in"
-                            className="inline-flex items-center justify-between px-8 py-4 rounded-2xl border border-white/[0.06] hover:border-white/[0.1] transition-colors duration-300 group"
-                        >
-                            <span className="text-customGrayDark text-sm">hello@exovance.in</span>
-                            <span className="font-mono text-[9px] tracking-[0.3em] text-violet-400/40 uppercase">Email</span>
-                        </a>
                     </motion.div>
                 </div>
 

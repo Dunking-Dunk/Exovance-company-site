@@ -70,7 +70,7 @@ const Journey = () => {
                         className="flex flex-col sm:flex-row lg:flex-col gap-4 lg:items-start"
                     >
                         <Link
-                            href="/contact"
+                            href="/product/campus-suite#contact"
                             className="inline-flex items-center gap-3 px-7 py-3 rounded-full bg-violet-600/80 hover:bg-violet-500/90 text-white text-xs font-mono tracking-[0.25em] uppercase transition-all duration-300 shadow-lg shadow-violet-900/20 group"
                         >
                             Get Early Access — Campus Suite

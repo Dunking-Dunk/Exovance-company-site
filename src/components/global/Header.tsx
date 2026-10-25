@@ -4,9 +4,12 @@ import { Menu, X } from 'lucide-react'
 import { useCurrentScrollTheme } from '../provider/scroll-theme-provider'
 import { gsap } from 'gsap'
 import { navigateTo } from './PageTransition'
+import { usePathname } from 'next/navigation'
+import ScrollLink from './ScrollLink'
 
 const Header = () => {
     const theme = useCurrentScrollTheme()
+    const pathname = usePathname()
     const [isOpen, setIsOpen] = useState(false)
     const [viewport, setViewport] = useState({ w: 0, h: 0 })
     const overlayRef = useRef<HTMLDivElement | null>(null)
@@ -134,6 +137,15 @@ const Header = () => {
                     <span className='hidden sm:block font-mono text-[10px] tracking-[0.35em] uppercase text-customGrayDarker/70'>Exovance</span>
                 </div>
 
+                <div className='flex items-center gap-3'>
+                {pathname === '/product/campus-suite' && (
+                    <ScrollLink
+                        to='contact'
+                        className='inline-flex items-center px-5 py-2.5 rounded-full bg-violet-500 hover:bg-violet-400 text-white text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-200'
+                    >
+                        Get in touch
+                    </ScrollLink>
+                )}
                 <button
                     aria-label={isOpen ? 'Close menu' : 'Open menu'}
                     onClick={() => (isOpen ? closeMenu() : openMenu())}
@@ -143,6 +155,7 @@ const Header = () => {
                         ? <><X className='w-3.5 h-3.5' /><span className='font-mono text-[10px] tracking-[0.3em] uppercase'>Close</span></>
                         : <><span className='font-mono text-[10px] tracking-[0.3em] uppercase'>Menu</span><Menu className='w-3.5 h-3.5' /></>}
                 </button>
+                </div>
             </div>
 
             {isOpen && (

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://exovance.in"),
   applicationName: "Exovance",
   title: {
-    default: "Exovance — Technology & Innovation",
+    default: "Exovance — Technology and Innovation",
     template: "%s | Exovance",
   },
   description:
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://exovance.in/",
-    title: "Exovance — Technology & Innovation",
+    title: "Exovance — Technology and Innovation",
     siteName: "Exovance",
     description:
       "Pioneers and innovators in technology and innovation. We build AI, web, and mobile solutions.",
@@ -44,13 +44,13 @@ export const metadata: Metadata = {
         url: "/og/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Exovance — Technology & Innovation",
+        alt: "Exovance — Technology and Innovation",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Exovance — Technology & Innovation",
+    title: "Exovance — Technology and Innovation",
     description:
       "Pioneers and innovators in technology and innovation. We build AI, web, and mobile solutions.",
     site: "@exovance",
@@ -92,8 +92,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   viewportFit: 'cover',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },

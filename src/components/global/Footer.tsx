@@ -34,7 +34,7 @@ const Footer = () => {
             <div className="relative z-20 mx-6 sm:mx-10 lg:mx-28 h-full">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-y-16 gap-x-12 lg:gap-y-20 lg:gap-x-20 items-start">
                     {/* Company */}
-                    <div className='flex flex-col items-start space-y-10 lg:space-y-20'>
+                    <div className='flex flex-col items-start space-y-8'>
                         <div>
                             <div className='flex space-x-4'>
                                 <div className="mb-6">
@@ -56,22 +56,21 @@ const Footer = () => {
                         </div>
                         <div className="space-y-2">
                             <h4 className="font-mono text-[10px] uppercase tracking-[0.35em] text-violet-400/60 mb-3 relative pb-1 after:content-[''] after:block after:h-px after:w-16 after:bg-violet-500/25 after:rounded-full after:mt-1">Contact</h4>
-                            <a href="mailto:exovancelab@gmail.com" className="block text-base text-customGrayDark hover:text-violet-300 transition-colors duration-300">exovancelab@gmail.com</a>
                             <a href="tel:+918056201341" className="block text-base text-customGrayDark hover:text-violet-300 transition-colors duration-300">+91 80562 01341</a>
                         </div>
-                        <p className="text-lg sm:text-2xl pt-3">©{currentYear}</p>
+                        <p className="text-lg sm:text-xl pt-2">©{currentYear}</p>
                     </div>
 
                     {/* Explore */}
-                    <div className="flex flex-col items-start space-y-10 lg:space-y-20 md:items-center md:justify-self-center">
+                    <div className="flex flex-col items-start space-y-5 md:justify-self-center">
                         <h4 className="font-mono text-[10px] uppercase tracking-[0.35em] text-violet-400/60 relative pb-1 after:content-[''] after:block after:h-px after:w-16 after:bg-violet-500/25 after:rounded-full after:mt-1">Explore</h4>
                         <nav className="flex flex-col text-base space-y-3">
                             <Link href="/about" className="text-customGrayDark hover:text-violet-300 transition-colors duration-300">About</Link>
-                            <Link href="/product" className="text-customGrayDark hover:text-violet-300 transition-colors duration-300">Products</Link>
+                            <Link href="/products" className="text-customGrayDark hover:text-violet-300 transition-colors duration-300">Products</Link>
                             <Link href="/team" className="text-customGrayDark hover:text-violet-300 transition-colors duration-300">Team</Link>
                             <Link href="/contact" className="text-customGrayDark hover:text-violet-300 transition-colors duration-300">Contact</Link>
                         </nav>
-                        <div className="flex gap-4 pt-4">
+                        <div className="flex flex-wrap gap-3 pt-2">
                             <Link
                                 href="/contact"
                                 className="inline-flex items-center justify-center px-6 py-3 rounded-full border border-violet-500/35 text-customGrayLight hover:border-violet-400/70 hover:text-violet-200 transition-all duration-300 text-sm font-light tracking-wide"

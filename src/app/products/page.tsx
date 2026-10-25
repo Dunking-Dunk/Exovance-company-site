@@ -9,9 +9,9 @@ const products = [
         id: '01',
         slug: 'campus-suite',
         name: 'Campus Suite',
-        tagline: 'EdTech · Indian Universities · Agentic AI',
-        desc: 'Campus Schedule rewrites the timetable in 30 seconds. Campus Intelligence gives every student, teacher, and admin an AI that knows their campus live — schedules, rules, and all.',
-        tags: ['Campus Schedule', 'Campus Intelligence', 'FFCS · Hybrid · Traditional', '30 Seconds'],
+        tagline: 'Engineering colleges',
+        desc: 'Teacher, lab-slot and elective choice for engineering colleges. Live at Rajalakshmi Engineering College.',
+        tags: [] as string[],
         status: 'SHIPPING',
         statusColor: 'emerald',
         cta: 'See Campus Suite',
@@ -71,7 +71,7 @@ const ProductsPage = () => {
                 </motion.p>
 
                 {/* Product cards */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 max-w-3xl">
                     {products.map((p, i) => (
                         <motion.div
                             key={p.id}
@@ -101,7 +101,7 @@ const ProductsPage = () => {
                                 <p className="text-base leading-[1.8] text-customGrayDark font-light mb-8 flex-1">{p.desc}</p>
 
                                 {/* Tags */}
-                                <div className="flex flex-wrap gap-2 mb-10">
+                                <div className={`flex flex-wrap gap-2 ${p.tags.length ? 'mb-10' : 'mb-2'}`}>
                                     {p.tags.map((tag) => (
                                         <span key={tag} className="font-mono text-[8px] tracking-[0.3em] uppercase px-3 py-1.5 rounded-sm border border-violet-500/20 bg-violet-500/[0.05] text-customGrayDark">
                                             {tag}
@@ -130,14 +130,12 @@ const ProductsPage = () => {
                 >
                     <p className="text-customGrayDarker text-sm">
                         Pre-revenue. Early access open.{' '}
-                        <a
-                            href="https://waitlist.exovance.in"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <Link
+                            href="/product/campus-suite#contact"
                             className="text-violet-400/60 hover:text-violet-400 transition-colors underline underline-offset-2"
                         >
                             Join the waitlist &rarr;
-                        </a>
+                        </Link>
                     </p>
                 </motion.div>
 

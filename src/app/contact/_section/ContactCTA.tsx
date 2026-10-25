@@ -55,10 +55,10 @@ const ContactCTA = () => {
                     transition={{ duration: 0.8, delay: 0.3 }}
                 >
                     <a
-                        href="mailto:exovancelab@gmail.com"
+                        href="#enquiry"
                         className="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full bg-violet-600/80 hover:bg-violet-500/90 text-white text-xs font-mono tracking-[0.25em] uppercase transition-all duration-300 shadow-lg shadow-violet-900/20"
                     >
-                        Email us
+                        Send an enquiry
                     </a>
                     <a
                         href="tel:+918056201341"
