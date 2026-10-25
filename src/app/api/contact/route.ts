@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import nodemailer from 'nodemailer';
 import { storeEnquiry, type Enquiry } from '@/lib/enquiry-store';
 
 export const runtime = 'nodejs';
@@ -30,15 +31,45 @@ const escapeHtml = (s: string) =>
 const str = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 
 async function sendEmail(e: Enquiry): Promise<boolean> {
-    const { RESEND_API_KEY, CONTACT_FORM_TO, CONTACT_FORM_FROM } = process.env;
-    if (!RESEND_API_KEY || !CONTACT_FORM_TO || !CONTACT_FORM_FROM) {
-        console.error('[enquiry] email not configured (RESEND_API_KEY, CONTACT_FORM_TO, CONTACT_FORM_FROM)');
-        return false;
-    }
+    const { RESEND_API_KEY, CONTACT_FORM_TO, CONTACT_FORM_FROM, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM, SMTP_TO } = process.env;
     const rows: [string, string][] = [
         ['Name', e.name], ['College', e.college], ['Role', e.role],
         ['Email', e.email], ['Phone', e.phone], ['Note', e.note || '(none)'],
     ];
+    const subject = `Enquiry: ${e.college} (${e.name}, ${e.role})`;
+    const text = rows.map(([k, v]) => `${k}: ${v}`).join('\n') + `\n\nReference: ${e.id}`;
+    const html =
+        `<div style="font-family:system-ui,sans-serif;color:#222">` +
+        rows.map(([k, v]) => `<p><strong>${k}:</strong> ${escapeHtml(v).replace(/\n/g, '<br>')}</p>`).join('') +
+        `<p style="color:#888;font-size:12px">Reference: ${e.id}</p></div>`;
+
+    // Fallback: the company mailbox over SMTP, when no transactional service is configured
+    if (!RESEND_API_KEY && SMTP_HOST && SMTP_USER && SMTP_PASS) {
+        const to = CONTACT_FORM_TO || SMTP_TO;
+        if (!to) {
+            console.error('[enquiry] SMTP configured but no recipient (CONTACT_FORM_TO or SMTP_TO)');
+            return false;
+        }
+        try {
+            const port = Number(SMTP_PORT) || 465;
+            const transporter = nodemailer.createTransport({ host: SMTP_HOST, port, secure: port === 465, auth: { user: SMTP_USER, pass: SMTP_PASS } });
+            await transporter.sendMail({
+                from: CONTACT_FORM_FROM || SMTP_FROM || `Exovance <${SMTP_USER}>`,
+                to: to.split(',').map((a) => a.trim()).filter(Boolean),
+                replyTo: e.email,
+                subject, text, html,
+            });
+            return true;
+        } catch (err) {
+            console.error('[enquiry] smtp send failed', err);
+            return false;
+        }
+    }
+
+    if (!RESEND_API_KEY || !CONTACT_FORM_TO || !CONTACT_FORM_FROM) {
+        console.error('[enquiry] email not configured (set RESEND_API_KEY, CONTACT_FORM_TO, CONTACT_FORM_FROM, or the SMTP_* settings)');
+        return false;
+    }
     try {
         const res = await fetch('https://api.resend.com/emails', {
             method: 'POST',
@@ -47,12 +78,7 @@ async function sendEmail(e: Enquiry): Promise<boolean> {
                 from: CONTACT_FORM_FROM,
                 to: CONTACT_FORM_TO.split(',').map((a) => a.trim()).filter(Boolean),
                 reply_to: e.email,
-                subject: `Enquiry: ${e.college} (${e.name}, ${e.role})`,
-                text: rows.map(([k, v]) => `${k}: ${v}`).join('\n') + `\n\nReference: ${e.id}`,
-                html:
-                    `<div style="font-family:system-ui,sans-serif;color:#222">` +
-                    rows.map(([k, v]) => `<p><strong>${k}:</strong> ${escapeHtml(v).replace(/\n/g, '<br>')}</p>`).join('') +
-                    `<p style="color:#888;font-size:12px">Reference: ${e.id}</p></div>`,
+                subject, text, html,
             }),
         });
         if (!res.ok) console.error('[enquiry] resend error', res.status, await res.text());
