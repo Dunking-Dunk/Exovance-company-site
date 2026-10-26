@@ -4,6 +4,7 @@ import Layout from "@/components/global/Layout";
 import { ThemeProvider } from "@/components/provider/theme-provider";
 import { ScrollThemeProvider } from "@/components/provider/scroll-theme-provider";
 import { memo } from 'react';
+import { Analytics } from "@vercel/analytics/next";
 
 
 export const metadata: Metadata = {
@@ -117,6 +118,7 @@ const RootLayout = memo(({ children }: RootLayoutProps) => {
             </Layout>
           </ScrollThemeProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
