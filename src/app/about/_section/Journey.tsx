@@ -6,9 +6,8 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 const buildStages = [
-    { id: '01', status: 'SHIPPING', label: 'Campus Schedule', desc: 'CP-SAT timetabling engine + LangGraph agent. Handles FFCS, Hybrid, and Traditional structures.' },
-    { id: '02', status: 'MONTH 2', label: 'Campus Intelligence', desc: 'RAG knowledge agent with live schedule awareness. Every student and teacher gets an AI that knows their campus.' },
-    { id: '03', status: 'PARALLEL', label: 'AIVA Kiosk', desc: '3D AI voice agent avatar stack + Enterprise kiosk hardware. Sales, billing, and customer service without a human.' },
+    { id: '01', status: 'SHIPPING', label: 'Campus Schedule', shape: 'grid', desc: 'CP-SAT timetabling engine + LangGraph agent. Handles FFCS, Hybrid, and Traditional structures.' },
+    { id: '02', status: 'PARALLEL', label: 'AIVA Kiosk', shape: 'wave', desc: '3D AI voice agent avatar stack + Enterprise kiosk hardware. Sales, billing, and customer service without a human.' },
 ];
 
 const containerVariants = {
@@ -57,7 +56,7 @@ const Journey = () => {
                             <span className="block text-violet-400">FULL BUILD.</span>
                         </h2>
                         <p className="text-base leading-[1.85] text-customGrayDark font-light max-w-md">
-                            We&rsquo;re students shipping real product. No funding, no agency work, no detours. Just two product lines solving problems we lived through — still in college while building them.
+                            We&rsquo;re shipping real product. No funding, no agency work, no detours. Just two product lines solving problems we lived through.
                         </p>
                     </motion.div>
 
@@ -92,12 +91,13 @@ const Journey = () => {
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: "-60px" }}
-                    className="grid grid-cols-1 md:grid-cols-3 gap-5"
+                    className="grid grid-cols-1 md:grid-cols-2 gap-5"
                 >
                     {buildStages.map((s) => (
                         <motion.div
                             key={s.id}
                             variants={itemVariants}
+                            data-particle-shape={s.shape}
                             className="group p-7 rounded-xl border border-white/[0.05] bg-white/[0.02] hover:border-violet-500/20 hover:bg-violet-500/[0.03] transition-all duration-400"
                         >
                             <div className="flex items-center justify-between mb-5">

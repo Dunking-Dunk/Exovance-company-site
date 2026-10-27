@@ -7,16 +7,19 @@ const pillars = [
     {
         id: '01',
         label: 'The Problem',
+        shape: 'question',
         body: 'Indian engineering colleges spend 3 weeks building timetables on spreadsheets. Students can\'t get straight answers from admin. Enterprises burn human hours on work that AI should handle.',
     },
     {
         id: '02',
         label: 'The Products',
-        body: 'Campus Suite — AI timetabling and live knowledge agents for every college. AIVA — 3D AI voice agents deployed in enterprise kiosks for sales, billing, and customer service.',
+        shape: 'cube',
+        body: 'Campus Suite — AI timetabling for every college. AIVA — 3D AI voice agents deployed in enterprise kiosks for sales, billing, and customer service.',
     },
     {
         id: '03',
         label: 'The Scale',
+        shape: 'india',
         body: 'Over 1,000 engineering colleges in India share the exact same timetable problem. Every one of them is a potential Campus Suite deployment.',
     },
 ];
@@ -58,11 +61,12 @@ const Mission = () => {
                     transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
                     className="font-display font-bold text-3xl md:text-4xl lg:text-5xl text-customGrayLight leading-[1.25] tracking-tight mb-20 max-w-4xl"
                 >
-                    &ldquo;We&rsquo;re engineering students who decided to solve the real problems we lived inside &mdash; broken timetables, unanswered admin queries, and human effort wasted on work that AI should be doing.&rdquo;
+                    &ldquo;We&rsquo;re engineers who decided to solve the real problems we lived inside &mdash; broken timetables, unanswered admin queries, and human effort wasted on work that AI should be doing.&rdquo;
                 </motion.h2>
 
                 {/* Three pillars */}
                 <motion.div
+                    data-particle-group
                     variants={containerVariants}
                     initial="hidden"
                     whileInView="visible"
@@ -73,6 +77,7 @@ const Mission = () => {
                         <motion.div
                             key={p.id}
                             variants={itemVariants}
+                            data-particle-shape={'shape' in p ? p.shape : undefined}
                             className="group p-8 rounded-xl border border-white/[0.05] bg-white/[0.02] hover:border-violet-500/25 hover:bg-violet-500/[0.04] transition-all duration-500"
                         >
                             <span className="block font-mono text-[9px] tracking-[0.45em] text-violet-400/40 uppercase mb-4">{p.id}</span>

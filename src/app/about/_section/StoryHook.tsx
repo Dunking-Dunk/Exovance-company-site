@@ -12,7 +12,7 @@ const lines = [
 
 const StoryHook = () => {
     return (
-        <section className="relative w-full px-6 md:px-12 lg:px-28 py-28 md:py-40 overflow-hidden">
+        <section data-particle-chaos className="relative w-full px-6 md:px-12 lg:px-28 py-28 md:py-40 overflow-hidden">
 
             {/* Ambient bloom */}
             <div
@@ -37,12 +37,14 @@ const StoryHook = () => {
                 </motion.p>
 
                 {/* Lines — scroll to white */}
-                <div className="space-y-10">
+                {/* the last line pulls the scattered particles into a timetable grid, which then flows on into the Mission section */}
+                <div data-particle-group className="space-y-10">
                     {lines.map((line, i) => {
                         const isLast = i === lines.length - 1;
                         return (
                             <motion.p
                                 key={i}
+                                {...(isLast ? { "data-particle-shape": "grid", "data-particle-side": true } : {})}
                                 initial={{ color: "#2a2a38" }}
                                 whileInView={{ color: isLast ? "#e8e8f0" : "#9898aa" }}
                                 viewport={{ once: false, margin: "-25% 0px -25% 0px" }}

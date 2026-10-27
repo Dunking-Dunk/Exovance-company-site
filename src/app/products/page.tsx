@@ -2,7 +2,10 @@
 
 import React from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
+
+const HoverShapes = dynamic(() => import('@/components/canva/HoverShapes'), { ssr: false });
 
 const products = [
     {
@@ -14,6 +17,7 @@ const products = [
         tags: [] as string[],
         status: 'SHIPPING',
         statusColor: 'emerald',
+        shape: 'grid',
         cta: 'See Campus Suite',
         href: '/product/campus-suite',
     },
@@ -26,6 +30,7 @@ const products = [
         tags: ['Voice Agent', '3D Avatar', 'Kiosk', 'Enterprise Automation'],
         status: 'BUILDING',
         statusColor: 'amber',
+        shape: 'wave',
         cta: 'See AIVA',
         href: '/product/aiva',
     },
@@ -34,6 +39,8 @@ const products = [
 const ProductsPage = () => {
     return (
         <main className="relative w-full min-h-screen px-6 md:px-12 lg:px-28 py-40 z-10 overflow-hidden">
+
+            <HoverShapes />
 
             {/* Ambient bloom */}
             <div
@@ -75,6 +82,8 @@ const ProductsPage = () => {
                     {products.map((p, i) => (
                         <motion.div
                             key={p.id}
+                            data-particle-shape={p.shape}
+                            data-particle-side
                             initial={{ opacity: 0, y: 28 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.75, delay: 0.2 + i * 0.12, ease: [0.25, 0.46, 0.45, 0.94] }}

@@ -22,7 +22,7 @@ const milestones = [
     {
         dot: 'bg-white/60',
         label: 'Building MVP — March 2026',
-        body: 'Actively developing Campus Schedule and Campus Intelligence. AIVA kiosk hardware and avatar stack in parallel. Pre-revenue, full focus on shipping.',
+        body: 'Actively developing Campus Schedule. AIVA kiosk hardware and avatar stack in parallel. Pre-revenue, full focus on shipping.',
     },
 ];
 
@@ -131,10 +131,10 @@ const Story = () => {
                         The Person Who Built This
                     </p>
 
-                    <div className="grid grid-cols-1 gap-6 max-w-2xl">
+                    <div data-particle-group className="grid grid-cols-1 gap-6 max-w-2xl">
 
                         {/* Hursun */}
-                        <div className="group p-8 rounded-xl border border-white/[0.05] bg-white/[0.02] hover:border-violet-500/20 hover:bg-violet-500/[0.03] transition-all duration-500">
+                        <div data-particle-shape="face" className="group p-8 rounded-xl border border-white/[0.05] bg-white/[0.02] hover:border-violet-500/20 hover:bg-violet-500/[0.03] transition-all duration-500">
                             <div className="flex items-start justify-between mb-6">
                                 <div>
                                     <h3 className="font-display font-bold text-xl text-customGrayLight tracking-tight">Hursun SS</h3>
@@ -163,7 +163,7 @@ const Story = () => {
                             </div>
 
                             <p className="text-sm leading-[1.85] text-customGrayDark font-light mb-7">
-                                Engineering student at <span className="text-customGray">Rajalakshmi Engineering College</span> and president of its largest tech club. Leads every technical decision at Exovance — the CP-SAT timetabling engine, LangGraph RAG agent, AIVA avatar stack, and Flutter app. The person who built what you&rsquo;re looking at right now.
+                                Full stack developer at <span className="text-customGray">AssetPlus</span>. Leads every technical decision at Exovance — the CP-SAT timetabling engine, LangGraph RAG agent, AIVA avatar stack, and Flutter app. The person who built what you&rsquo;re looking at right now.
                             </p>
 
                             <div className="flex flex-wrap gap-2">
