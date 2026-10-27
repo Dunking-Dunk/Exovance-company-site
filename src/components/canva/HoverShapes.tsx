@@ -481,8 +481,15 @@ const STYLE_CHAOS = { dim: 0, arc: 0.5 };
 const STYLE_WALK = { dim: 0.15, arc: 0.3 };
 const STYLE_FLOW = { dim: 0.4, arc: 0.12 };
 
-// phones and tablets: fewer points, a 1x canvas and 30fps instead of 60
-const isLowPower = () => window.innerWidth < 768 || window.matchMedia("(pointer: coarse)").matches;
+// A first guess at what the device can take. Every device draws at up to 60fps; phones get a smaller
+// point budget than desktops, and weaker ones start at half of it. The real frame times then adjust it.
+function deviceTier() {
+    const nav = navigator as Navigator & { deviceMemory?: number };
+    const coarse = window.innerWidth < 768 || window.matchMedia("(pointer: coarse)").matches;
+    const weak = (nav.hardwareConcurrency || 4) <= 4 || (nav.deviceMemory ?? 4) <= 3; // memory is not reported on iOS
+    return { coarse, weak, max: coarse ? 3600 : 5000, start: weak ? 0.5 : 1, dpr: coarse ? (weak ? 1 : 1.5) : 1.75 };
+}
+const MIN_QUALITY = 0.35; // never fewer than this share of the points
 // the 3D head needs a model download and a decoder, so skip it when the visitor asked to save data
 const savesData = () => {
     const c = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
@@ -498,25 +505,34 @@ type FieldProps = {
 };
 
 function Field({ hovered, running, loadHead, headWanted, onIdle }: FieldProps) {
-    const [lowPower] = useState(isLowPower);
-    const count = lowPower ? 1600 : 3600;
+    const [tier] = useState(deviceTier);
+    const count = tier.max;
     const invalidate = useThree((st) => st.invalidate);
 
-    // the canvas only draws when asked: ~60 times a second on desktop, ~30 on phones, and not at all when idle
+    // the canvas only draws when asked: at most 60 times a second (also on 120Hz screens), and not at all when idle
     useEffect(() => {
         if (!running) return;
-        const gap = lowPower ? 32 : 0;
         let raf = 0;
         let last = 0;
         const tick = (now: number) => {
             raf = requestAnimationFrame(tick);
-            if (now - last >= gap) { last = now; invalidate(); }
+            if (now - last >= 15) { last = now; invalidate(); }
         };
         raf = requestAnimationFrame(tick);
         return () => cancelAnimationFrame(raf);
-    }, [running, lowPower, invalidate]);
+    }, [running, invalidate]);
     const shapes = useMemo(() => buildShapes(count, mulberry32(5)), [count]);
     const geometry = useMemo(() => buildGeometry(count, shapes[0]), [count, shapes]);
+
+    // Share of the points that are drawn. The points are in random order, so any share is an even spread.
+    // If frames run long the share drops; it climbs back when there is room, but never past a level that failed.
+    const quality = useRef(tier.start);
+    const ceiling = useRef(1);
+    const frameMs = useRef(16.7);
+    const sinceAdjust = useRef(0);
+    const warmup = useRef(0);
+    useEffect(() => { geometry.setDrawRange(0, Math.round(count * quality.current)); }, [geometry, count]);
+    useEffect(() => { if (running) { warmup.current = 0; frameMs.current = 16.7; } }, [running]);
     const material = useMemo(
         () =>
             new THREE.ShaderMaterial({
@@ -599,6 +615,24 @@ function Field({ hovered, running, loadHead, headWanted, onIdle }: FieldProps) {
         const { size, camera, gl, clock } = state;
         const u = material.uniforms;
         const dt = Math.min(delta, 0.05);
+
+        // adapt the point count to the frame time (skipping the first frames after a start, and stalls such as a hidden tab)
+        if (warmup.current < 20) warmup.current++;
+        else if (delta < 0.1) {
+            frameMs.current += (delta * 1000 - frameMs.current) * 0.1;
+            sinceAdjust.current += delta;
+            if (frameMs.current > 24 && sinceAdjust.current > 1 && quality.current > MIN_QUALITY) {
+                ceiling.current = Math.max(MIN_QUALITY, quality.current * 0.95);
+                quality.current = Math.max(MIN_QUALITY, quality.current * 0.75);
+                geometry.setDrawRange(0, Math.round(count * quality.current));
+                sinceAdjust.current = 0;
+                frameMs.current = 16.7;
+            } else if (frameMs.current < 18.5 && sinceAdjust.current > 4 && quality.current < ceiling.current) {
+                quality.current = Math.min(ceiling.current, quality.current * 1.15);
+                geometry.setDrawRange(0, Math.round(count * quality.current));
+                sinceAdjust.current = 0;
+            }
+        }
 
         if (hovered.current && !hovered.current.isConnected) hovered.current = null;
         const tA = geometry.getAttribute("aTargetA") as THREE.BufferAttribute;
@@ -801,7 +835,7 @@ const HoverShapes = () => {
         <div className="fixed inset-0 z-[1] pointer-events-none" aria-hidden="true">
             <Canvas
                 frameloop="demand"
-                dpr={[1, isLowPower() ? 1 : 1.75]}
+                dpr={[1, deviceTier().dpr]}
                 gl={{ alpha: true, antialias: false }}
                 camera={{ fov: FOV, near: 10, far: 6000, position: [0, 0, 1000] }}
             >
